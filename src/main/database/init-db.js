@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-12 19:32:20
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-29 17:56:46
+ * @LastEditTime: 2023-04-29 20:07:15
  * @Description: 
  */
 const sqlite3 = require('sqlite3').verbose();
@@ -12,19 +12,6 @@ const { Sequelize } = require('sequelize');
 const db = new sqlite3.Database(
     "D:/Program Files (gree)/my-library/myDB.db"
 );
-console.log('■■■■■■■■■■■■■■■■■■■■■■■■■■■■');
-console.log(db);
-db.addListener('regexp', function(v1, v2){
-    console.log('v1', v1, v2);
-    return true;
-});
-db.get("SELECT count(*), REGEXP() as bb FROM dev_history", function(err, row) {
-    toLog('开发记录数量000:', err, row);
-});
-
-console.log('\n\n\n-----');
-console.log(Reflect.ownKeys(sqlite3.__proto__));
-console.log(Reflect.ownKeys(db.__proto__));
 
 // ▼建立数据库链接
 const sqlize = new Sequelize({
@@ -42,10 +29,6 @@ async function doSql(sTheSQL){
     );
     return [results, metadata];
 };
-
-// module.exports.doSql = doSql;
-// module.exports.db = db;
-// module.exports.sqlize = sqlize;
 
 export {
     sqlize,
