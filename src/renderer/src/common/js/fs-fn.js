@@ -9,7 +9,7 @@
 
 import {mySort} from './common-fn.js';
 import {secToStr} from './pure-fn.js';
-const fsp = require('fs').promises;
+const fsp = require('node:fs/promises');
 const path = require('path');
 
 

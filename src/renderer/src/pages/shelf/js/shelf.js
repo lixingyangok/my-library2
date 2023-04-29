@@ -9,7 +9,7 @@ import {
 } from '../../../common/js/fs-fn.js';
 
 const fs = require('fs');
-const fsp = require('fs').promises;
+const fsp = require('node:fs/promises');
 const path = require('path');
 // console.log('●\n', path.extname('aa.Txt'));
 

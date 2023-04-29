@@ -6,7 +6,7 @@
  * @Description: 
  */
 
-// const fs = require('fs').promises;
+const fsp = require('node:fs/promises');
 import {sqlize} from './init-db.js';
 const { DataTypes } = require('sequelize');
 

@@ -2,12 +2,12 @@
  * @Author: 李星阳
  * @Date: 2022-01-16 10:33:24
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-29 17:51:59
+ * @LastEditTime: 2023-04-29 18:53:01
  * @Description: 
  */
 
 import {sqlize} from './init-db.js';
-const fs = require('fs').promises;
+const fsp = require('node:fs/promises');
 const { DataTypes } = require('sequelize');
 
 export const oMedia = sqlize.define('media', {

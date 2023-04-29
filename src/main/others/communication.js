@@ -12,7 +12,7 @@ import a3 from '../database/line.js';
 import a4 from '../database/dictionary.js';
 import a5 from '../database/new-word.js';
 import a6 from '../database/click-in-off.js';
-// const fsp = require('fs').promises;
+const fsp = require('node:fs/promises');
 const { ipcMain } = require('electron');
 const hasher = require('hash-wasm');
 const oDbFn = { // 所有的数据库方法

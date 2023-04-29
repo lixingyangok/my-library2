@@ -4,7 +4,7 @@ import {SubtitlesStr2Arr, fixTime, copyString, downloadSrt, fileToStrings, getMe
 import {figureOut} from './figure-out-region.js';
 import {getTubePath, getDateDiff} from '@/common/js/common-fn.js';
 import {getFolderChildren, addAllMediaDbInfo} from '@/common/js/fs-fn.js';
-const fsp = require('fs').promises;
+const fsp = require('node:fs/promises');
 let isMediaChanged = false; // 是否加载了一个新的媒体
 
 const dayjs = require("dayjs");

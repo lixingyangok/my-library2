@@ -5,7 +5,7 @@
  * @LastEditTime: 2022-10-22 12:29:00
  * @Description: 开发历史
  */
-// const fsp = require('fs').promises;
+const fsp = require('node:fs/promises');
 const { Op, DataTypes } = require('sequelize');
 import {sqlize} from './init-db.js';
 
