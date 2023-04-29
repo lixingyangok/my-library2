@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-02 20:27:04
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-29 16:56:14
+ * @LastEditTime: 2023-04-29 18:00:58
  * @Description: 
 -->
 
@@ -200,10 +200,10 @@ export default {
     //     this.getAllLines();
     //     this.getLineData();
     // },
-    // mounted(){
-    //     this.showChart();
-    //     this.getRecordTime();
-    // },  
+    mounted(){
+        this.showChart();
+        this.getRecordTime();
+    },  
     methods: {
         ...oMethods,
         async showChart(){

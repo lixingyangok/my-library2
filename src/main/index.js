@@ -4,10 +4,10 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import {makeChannels} from'./others/communication.js';
 import {db, sqlize} from './database/init-db.js';
+import {protocolRegister, protocolFnSetter} from './others/protocol-maker.js';
 
 const path = require('path');
 // ▼自定义导入
-// const {protocolRegister, protocolFnSetter} = require('./others/protocol-maker.js');
 // ▼其它声明
 const isDev = process.env.IS_DEV == "true";
 const exePath = path.dirname(app.getPath('exe'));
@@ -41,16 +41,18 @@ function createWindow() {
             contextIsolation:false, //允许渲染进程使用node.js
         }
     })
+    global.toLog = (...rest) => {
+        mainWindow.webContents.send('logInBrower', ...rest);
+    };
 
     mainWindow.on('ready-to-show', () => {
         mainWindow.show()
+        toLog('❤️❤️❤️');
     })
-
     mainWindow.webContents.setWindowOpenHandler((details) => {
         shell.openExternal(details.url)
         return { action: 'deny' }
     })
-
     // HMR for renderer base on electron-vite cli.
     // Load the remote URL for development or the local html file for production.
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -60,6 +62,9 @@ function createWindow() {
     }
     mainWindow.webContents.openDevTools();
 }
+
+// ▼要放在 app.whenReady 之前执行，只能执行一次
+protocolRegister();
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -77,6 +82,7 @@ app.whenReady().then(() => {
     // ▼创建窗口
     createWindow(); // 在此生成 toLog
     makeChannels();
+    protocolFnSetter();
 
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the

@@ -12,7 +12,7 @@ const { protocol } = require('electron');
 // 官方文档：
 // https://www.electronjs.org/docs/latest/api/protocol#protocolregisterhttpprotocolscheme-handler-completion
 
-module.exports.protocolRegister = function(){
+export function protocolRegister(){
     // 本方法要在 app.whenReady 之前执行，只能执行一次
     const privileges = {
         standard: true,
@@ -32,7 +32,7 @@ module.exports.protocolRegister = function(){
     ]);
 };
 
-module.exports.protocolFnSetter = function(){
+export function protocolFnSetter(){
     protocol.registerFileProtocol('tube', function (req, callback){
         var myobj = urlib.parse(req.url, true);
         var pathVal = myobj.query.path;
