@@ -1,4 +1,4 @@
-singleQuote: true
-semi: false
-printWidth: 100
-trailingComma: none
+# singleQuote: true
+# printWidth: 200
+# semi: false
+# trailingComma: none
