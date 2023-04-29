@@ -1,0 +1,99 @@
+// ▼字幕列表
+
+.last-part{
+	flex: 1 999 auto;
+	overflow-y: auto;
+	margin: 20px 0 0;
+	border: solid #aaa;
+	border-width: 1px 0;
+}
+
+.sentence-wrap{
+	list-style: none;
+	.one-line{
+		display: flex;
+		font-size: 16px;
+		font-weight: 500;
+		height: var(--height);
+		cursor: pointer;
+		overflow: hidden;
+		border-bottom: solid 1px #e9e9e9;
+		&[class~=cur]{
+			background: #ceffe7;
+		}
+		&:hover{
+			background: #aef3d1;
+		}
+	}
+	.not_done{
+		border-bottom: solid 1px rgba(255, 165, 0, 1) !important;
+		box-shadow: 0px -1px 1px rgba(255, 165, 0, 0.3) inset;
+	}
+}
+
+.one-line{
+	&[class~=key-line]{
+		border-bottom: dashed 1px #555;
+	}
+    .idx{
+		flex: none;
+		font-style: normal;
+		font-weight: normal;
+		text-align: center;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-width: 2em;
+		width: var(--width);
+	}
+	.time{
+		flex: none;
+		width: 200px;
+		border: solid #aaa;
+		border-width: 0 1px;
+		margin: 0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 0 10px;
+		color: #777;
+		i{
+			margin: 0 2px;
+		}
+		em{
+			font-style: normal;
+			font-weight: normal;
+		}
+	}
+}
+
+p.text{
+	min-height: 1.3em;
+	line-height: 1.3;
+	margin: 0;
+	padding: 0.4em 0.8em;
+	box-sizing: content-box;
+	word-break: break-word;
+	position: relative;
+	&[class~=changed]{
+		&::after{
+			content: "";
+			display: block;
+			position: absolute;
+			width: 0px;
+			height: 0px;
+			top: 0;
+			left: 0;
+			border-style: solid;
+			border-width: 5px;
+			border-color: red transparent transparent red;
+		}
+	}
+	.word{
+		&:hover{
+			background: yellow;
+		}
+	}
+
+}
+

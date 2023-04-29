@@ -18,7 +18,17 @@
   },
   "dependencies": {
     "@electron-toolkit/preload": "^1.0.3",
-    "@electron-toolkit/utils": "^1.0.2"
+    "@electron-toolkit/utils": "^1.0.2",
+    "dayjs": "^1.11.7",
+    "echarts": "^5.4.2",
+    "element-plus": "^2.3.4",
+    "hash-wasm": "^4.9.0",
+    "moment": "^2.29.4",
+    "sass": "^1.62.1",
+    "sequelize": "^6.31.0",
+    "sqlite3": "^5.1.6",
+    "store2": "^2.14.2",
+    "vue-router": "^4.1.6"
   },
   "devDependencies": {
     "@electron/notarize": "^1.2.3",

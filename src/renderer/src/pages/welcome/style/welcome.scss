@@ -1,0 +1,60 @@
+.welcome-page{
+    padding: 20px;
+}
+
+.big-title{
+    margin: 15px 0 0;
+    font-size: 26px;
+    font-weight: bold;
+    ruby{
+        margin: 0 10px 0 0;
+    }
+    rt{
+        opacity: 0.5;
+        font-weight: normal;
+    }
+}
+
+.click-in-bar{
+    margin: 30px 0 10px;
+}
+
+.first-list{
+    margin: 30px 0 20px;
+    line-height: 1.8;
+    .folder-name{
+        font-weight: bold;
+    }
+    .the-first{
+        opacity: 0.7;
+    }
+}
+
+.btn-bar{
+    padding: 20px 0 30px;
+    button{
+        margin: 0 10px 0 0;
+    }
+}
+
+.two-columns{
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0 0;
+    &>*{
+        width: calc(50% - 15px);
+    }
+    em{
+        display: block;
+        font-weight: bold;
+        margin: 10px 0 -19px;
+        color: red;
+    }
+}
+
+.box1{
+    width: 100%;
+    height: 260px;
+    background: #eee;
+}
+

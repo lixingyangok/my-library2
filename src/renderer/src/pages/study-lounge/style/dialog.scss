@@ -1,0 +1,67 @@
+.one-box{
+	min-height: 100px;
+	margin: 0 0 30px;
+	.title{
+		width: 100%;
+		border-bottom: solid 1px gray;
+		line-height: 1.8;
+		font-weight: bold;
+	}
+}
+
+.one-type-word-ul{
+	display: flex;
+	flex-flow: row wrap;
+	li{
+		margin: 0 3px 0 0;
+		line-height: 1.7;
+		cursor: pointer;
+		padding: 0px 5px;
+		border-radius: 3px;
+		font-size: 18px;
+		i{
+			opacity: 0;
+			margin-left: 5px;
+			&:hover{
+				color: red;
+			}
+		}
+		&:hover{
+			background: #eee;
+			i{
+				opacity: 1;
+			}
+		}
+	}
+}
+
+.folder-btn-warp{
+	padding: 15px 0 0;
+	text-align: center;
+}
+
+// ▼同级文件
+.siblings-list{
+	margin: 25px 0 0;
+	.file-name{
+		cursor: pointer;
+		&:hover,
+		&[class~=cur-file]{
+			background-color: #eee;
+			color: blue;
+		}
+	}
+}
+
+// 字幕文件列表
+.txt-file-list{
+	li{
+		cursor: pointer;
+		&:hover{
+			background-color: lightblue;
+		}
+	}
+	.gap{
+		margin: 15px 0 0;
+	}
+}

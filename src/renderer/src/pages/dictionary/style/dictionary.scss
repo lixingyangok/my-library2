@@ -1,0 +1,61 @@
+.outer-dom{
+    padding: 40px 20px 20px;
+}
+
+.result-list{
+    margin: 20px 0 0;
+    height: 80vh;
+    overflow-y: auto;
+    .dir{
+        color: #999;
+    }
+    .file-name{
+        margin: 0 0 0;
+        background: #f6f6f6;
+        line-height: 1.5;
+        color: #999;
+        padding: 0 8px;
+        margin: 5px 0;
+        border-radius: 3px;
+    }
+}
+
+ul.one-file{
+    margin: 0 50px 20px 20px;
+}
+
+li.one-dir{
+    .dir-name{
+        opacity: 1;
+    }
+    li.one-sentence{
+        margin: 0 0 0 0;
+        p{
+            line-height: 2;
+            margin: 0 0 0 30px;
+        }
+    }
+}
+
+time.start{
+    margin: 0 8px 0 0;
+    opacity: 0.5;
+}
+
+span.one-word{
+    &[class~=matched]{
+        color: red;
+    }
+    &[class~=l-01]{
+        color: red;
+        background: rgb(255, 255, 100);
+    }
+    &[class~=l-02]{
+        background: rgb(255, 255, 100);
+    }
+    &[class~=l-03]{
+        background: rgb(255, 255, 180);
+    }
+}
+
+
