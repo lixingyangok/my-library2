@@ -6,16 +6,16 @@
  * @Description: 
  */
 
+import {sqlize} from './init-db.js';
+import {oMedia} from './media.js';
 const { DataTypes } = require('sequelize');
-const { sqlize } = require('./init-db.js');
-const {media} = require('./media');
 
 const oNewWord = module.exports.line = sqlize.define('new_word', {
     mediaId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: media, // 这是对另一个模型的参考
+            model: oMedia, // 这是对另一个模型的参考
             key: 'id', // 这是引用模型的列名
         },
     },
@@ -31,7 +31,7 @@ const oNewWord = module.exports.line = sqlize.define('new_word', {
 
 oNewWord.sync();
 
-module.exports.oFn = {
+export default {
     // ▼保存
     async saveOneNewWord(obj) {
         const hasSaved = await oNewWord.findOne({ 

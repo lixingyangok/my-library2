@@ -7,7 +7,7 @@
  */
 // const fsp = require('fs').promises;
 const { Op, DataTypes } = require('sequelize');
-const { sqlize } = require('./init-db.js');
+import {sqlize} from './init-db.js';
 
 const oDict = module.exports.dictionary = sqlize.define('dictionary', {
     word: {
@@ -26,7 +26,7 @@ const oDict = module.exports.dictionary = sqlize.define('dictionary', {
 
 oDict.sync();
 
-module.exports.oFn = {
+export default {
     // ▼批量保存（停用）
     // async initDictionary() {
     //     if (1) return;

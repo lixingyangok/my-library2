@@ -2,20 +2,20 @@
  * @Author: 李星阳
  * @Date: 2022-01-16 10:40:40
  * @LastEditors: 李星阳
- * @LastEditTime: 2022-09-10 21:10:17
+ * @LastEditTime: 2023-04-29 17:55:41
  * @Description: 
  */
 
 const { Op, DataTypes } = require('sequelize');
-const { sqlize } = require('./init-db.js');
-const {media} = require('./media');
+import {sqlize} from './init-db.js';
+import {oMedia} from './media.js';
 
 const oLine = module.exports.line = sqlize.define('line', {
     mediaId: { // 媒体记录的行ID，防止文件hash变化后引发错误
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: media, // 这是对另一个模型的参考
+            model: oMedia, // 这是对另一个模型的参考
             key: 'id', // 这是引用模型的列名
         },
     },
@@ -29,7 +29,7 @@ const oLine = module.exports.line = sqlize.define('line', {
 
 oLine.sync();
 
-const oFn = module.exports.oFn = {
+export default {
     // ▼批量保存（导入用）
     async saveLine(arr) {
         const res = await oLine.bulkCreate(arr, {

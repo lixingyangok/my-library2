@@ -7,8 +7,8 @@
  */
 
 // const fs = require('fs').promises;
+import {sqlize} from './init-db.js';
 const { DataTypes } = require('sequelize');
-const { sqlize } = require('./init-db.js');
 
 const oClock = module.exports.clock_record = sqlize.define('clock_record', {
     // stime: DataTypes.STRING, // 日期时间
@@ -20,7 +20,7 @@ oClock.sync({ alter: true }) // 这将检查数据库中表的当前状态(它�
 
 
 
-module.exports.oFn = {
+export default {
     // ▼保存
     async setClockRecord() {
         const obj = {};

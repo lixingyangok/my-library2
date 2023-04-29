@@ -2,12 +2,12 @@ import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import {makeChannels} from'./others/communication.js';
+import {db, sqlize} from './database/init-db.js';
 
 const path = require('path');
 // ▼自定义导入
-// const {makeChannels} = require('./others/communication.js');
 // const {protocolRegister, protocolFnSetter} = require('./others/protocol-maker.js');
-// const {db, sqlize, initDataBase} = require('./database/init-db.js');
 // ▼其它声明
 const isDev = process.env.IS_DEV == "true";
 const exePath = path.dirname(app.getPath('exe'));
@@ -16,8 +16,8 @@ const exePath = path.dirname(app.getPath('exe'));
 if (!exePath) console.log('exe位置 =', exePath);
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 global.toLog = () => null;
-// global.db = db;
-// global.sqlize = sqlize;
+global.db = db;
+global.sqlize = sqlize;
 global.newPromise = function (){
     let fnResolve, fnReject;
     const oPromise = new Promise((f1, f2) => {
@@ -58,6 +58,7 @@ function createWindow() {
     } else {
         mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
     }
+    mainWindow.webContents.openDevTools();
 }
 
 // This method will be called when Electron has finished
@@ -73,8 +74,9 @@ app.whenReady().then(() => {
     app.on('browser-window-created', (_, window) => {
         optimizer.watchWindowShortcuts(window)
     })
-
-    createWindow()
+    // ▼创建窗口
+    createWindow(); // 在此生成 toLog
+    makeChannels();
 
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the

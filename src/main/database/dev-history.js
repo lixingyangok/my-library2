@@ -2,12 +2,11 @@
  * @Author: 李星阳
  * @Date: 2022-01-16 20:03:49
  * @LastEditors: 李星阳
- * @LastEditTime: 2022-02-08 21:28:40
+ * @LastEditTime: 2023-04-29 17:46:27
  * @Description: 
  */
-
+import {sqlize} from './init-db.js';
 const { DataTypes } = require('sequelize');
-const {sqlize} = require('./init-db.js');
 
 const oHistory = ( module.exports.history ) = sqlize.define('dev_history', {
     note: {
@@ -16,11 +15,9 @@ const oHistory = ( module.exports.history ) = sqlize.define('dev_history', {
 }, {
     // freezeTableName: true,
 });
-
 oHistory.sync();
 
-
-module.exports.oFn = {
+export default {
     // ▼插入一条开发记录（废弃）
     async addDevRecord (){
         db.run("INSERT INTO dev_history VALUES ($time)", {
@@ -53,5 +50,5 @@ module.exports.oFn = {
         //     toLog('开发记录数量03：', e2);
         // }
     },
-};
+}
 

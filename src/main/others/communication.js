@@ -2,27 +2,31 @@
  * @Author: 李星阳
  * @Date: 2022-01-10 20:03:47
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-29 17:02:24
+ * @LastEditTime: 2023-04-29 18:00:22
  * @Description: 
  */
-const fsp = require('fs').promises;
+import {doSql} from '../database/init-db.js';
+import a1 from '../database/dev-history.js';
+import a2 from '../database/media.js';
+import a3 from '../database/line.js';
+import a4 from '../database/dictionary.js';
+import a5 from '../database/new-word.js';
+import a6 from '../database/click-in-off.js';
+// const fsp = require('fs').promises;
 const { ipcMain } = require('electron');
 const hasher = require('hash-wasm');
-const { doSql } = require('../database/init-db.js');
+const oDbFn = { // 所有的数据库方法
+    ...a1,
+    ...a2,
+    ...a3,
+    ...a4,
+    ...a5,
+    ...a6,
+    doSql,
+};
 
-// const oDbFn = { // 所有的数据库方法
-//     ...require('../database/dev-history.js').oFn,
-//     ...require('../database/media.js').oFn,
-//     ...require('../database/line.js').oFn,
-//     ...require('../database/dictionary.js').oFn,
-//     ...require('../database/new-word.js').oFn,
-//     ...require('../database/click-in-off.js').oFn,
-//     doSql,
-// };
-
-module.exports.aaa = 123;
-
-module.exports.makeChannels = function(){
+// module.exports.makeChannels = function makeChannels(){
+export function makeChannels(){
     // ▼接收一个测试消息
     ipcMain.on('channel01', (event, arg) => {
         toLog('收到窗口内容：\n', arg);

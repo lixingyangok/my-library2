@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-12 19:32:20
  * @LastEditors: 李星阳
- * @LastEditTime: 2022-07-31 09:31:17
+ * @LastEditTime: 2023-04-29 17:56:46
  * @Description: 
  */
 const sqlite3 = require('sqlite3').verbose();
@@ -43,9 +43,16 @@ async function doSql(sTheSQL){
     return [results, metadata];
 };
 
-module.exports.doSql = doSql;
-module.exports.db = db;
-module.exports.sqlize = sqlize;
+// module.exports.doSql = doSql;
+// module.exports.db = db;
+// module.exports.sqlize = sqlize;
+
+export {
+    sqlize,
+    doSql,
+    db,
+}
+
 
 /* 
     'close',               'exec',

@@ -2,15 +2,15 @@
  * @Author: 李星阳
  * @Date: 2022-01-16 10:33:24
  * @LastEditors: 李星阳
- * @LastEditTime: 2022-10-22 14:46:39
+ * @LastEditTime: 2023-04-29 17:51:59
  * @Description: 
  */
 
+import {sqlize} from './init-db.js';
 const fs = require('fs').promises;
 const { DataTypes } = require('sequelize');
-const { sqlize } = require('./init-db.js');
 
-const oMedia = module.exports.media = sqlize.define('media', {
+export const oMedia = sqlize.define('media', {
     hash: {
         type: DataTypes.STRING,
         unique: true,
@@ -37,7 +37,7 @@ User.sync({ force: true }) - 将创建表,如果表已经存在,则将其首先�
 User.sync({ alter: true }) - 这将检查数据库中表的当前状态(它具有哪些列,它们的数据类型等),然后在表中进行必要的更改以使其与模型匹配.
 */
 
-module.exports.oFn = {
+export default {
     // ▼保存：一个媒体信息
     async saveMediaInfo(obj) {
         const oState = await fs.stat(`${obj.dir}/${obj.name}`);
