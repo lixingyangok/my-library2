@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-02 20:27:04
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-29 18:00:58
+ * @LastEditTime: 2023-04-29 19:37:15
  * @Description: 
 -->
 
@@ -67,7 +67,7 @@
                 </el-table-column>
             </el-table>
         </div>
-        <!-- <TodayHistory/> -->
+        <TodayHistory/>
         <section>
             <div class="box1" ref="box1"></div>
         </section>
@@ -194,12 +194,12 @@ export default {
             return obj;
         },
     },
-    // created(){
-    //     this.getPendingList();
-    //     this.updateTheRecent();
-    //     this.getAllLines();
-    //     this.getLineData();
-    // },
+    created(){
+        this.getPendingList();
+        this.updateTheRecent();
+        this.getAllLines();
+        this.getLineData();
+    },
     mounted(){
         this.showChart();
         this.getRecordTime();
