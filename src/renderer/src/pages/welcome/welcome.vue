@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-02 20:27:04
  * @LastEditors: 李星阳
- * @LastEditTime: 2022-11-13 12:39:15
+ * @LastEditTime: 2023-04-29 16:56:14
  * @Description: 
 -->
 
@@ -67,7 +67,7 @@
                 </el-table-column>
             </el-table>
         </div>
-        <TodayHistory/>
+        <!-- <TodayHistory/> -->
         <section>
             <div class="box1" ref="box1"></div>
         </section>
@@ -118,7 +118,7 @@
             <button @click="showScreen" >
                 定时唤醒
             </button>
-            &emsp;Store值：{{$store.state.userInfo.name}}
+            <!-- &emsp;Store值：{{$store.state.userInfo.name}} -->
         </div>
         <myInputing/>
         <div class="two-columns" >
@@ -194,16 +194,16 @@ export default {
             return obj;
         },
     },
-    created(){
-        this.getPendingList();
-        this.updateTheRecent();
-        this.getAllLines();
-        this.getLineData();
-    },
-    mounted(){
-        this.showChart();
-        this.getRecordTime();
-    },  
+    // created(){
+    //     this.getPendingList();
+    //     this.updateTheRecent();
+    //     this.getAllLines();
+    //     this.getLineData();
+    // },
+    // mounted(){
+    //     this.showChart();
+    //     this.getRecordTime();
+    // },  
     methods: {
         ...oMethods,
         async showChart(){

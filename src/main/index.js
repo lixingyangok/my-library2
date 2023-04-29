@@ -3,6 +3,29 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+const path = require('path');
+// ▼自定义导入
+// const {makeChannels} = require('./others/communication.js');
+// const {protocolRegister, protocolFnSetter} = require('./others/protocol-maker.js');
+// const {db, sqlize, initDataBase} = require('./database/init-db.js');
+// ▼其它声明
+const isDev = process.env.IS_DEV == "true";
+const exePath = path.dirname(app.getPath('exe'));
+
+// ▼其它
+if (!exePath) console.log('exe位置 =', exePath);
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+global.toLog = () => null;
+// global.db = db;
+// global.sqlize = sqlize;
+global.newPromise = function (){
+    let fnResolve, fnReject;
+    const oPromise = new Promise((f1, f2) => {
+        fnResolve = f1, fnReject = f2;
+    });
+    return {oPromise, fnResolve, fnReject};
+};
+
 function createWindow() {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
@@ -13,7 +36,9 @@ function createWindow() {
         ...(process.platform === 'linux' ? { icon } : {}),
         webPreferences: {
             preload: join(__dirname, '../preload/index.js'),
-            sandbox: false
+            sandbox: false,
+            nodeIntegration:true,   //允许渲染进程使用node.js
+            contextIsolation:false, //允许渲染进程使用node.js
         }
     })
 

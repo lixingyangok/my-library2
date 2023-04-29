@@ -1,7 +1,6 @@
 <template>
     <myNav class="left-part" />
     <div class="right-right">
-        as;dklfjas;dklfja;sdjkfa;sdjkf
         <router-view v-if="show" ></router-view>
     </div>
 </template>
@@ -19,16 +18,16 @@ export default {
             show: true,
         };
     },
-    // created(){
-    //     window.vm = this;
-    //     // ▼插入一条学习记录
-    //     fnInvoke('db','addOneRecord'); 
-    //     // ▼注册一个方法，用于接收主进程的消息
-    //     oRenderer.on('logInBrower', (event, ...arg) => {
-    //         if (arg.length == 1) arg = arg[0];
-    //         console.log('▼ 主进程来信：\n', arg);
-    //     });
-    // },
+    created(){
+        window.vm = this;
+        // ▼插入一条学习记录
+        fnInvoke('db','addOneRecord'); 
+        // ▼注册一个方法，用于接收主进程的消息
+        oRenderer.on('logInBrower', (event, ...arg) => {
+            if (arg.length == 1) arg = arg[0];
+            console.log('▼ 主进程来信：\n', arg);
+        });
+    },
     methods:{
         async f5(){
             this.show = false;
