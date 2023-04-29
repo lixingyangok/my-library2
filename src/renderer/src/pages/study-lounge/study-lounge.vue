@@ -285,10 +285,10 @@
                 </el-descriptions-item>
             </el-descriptions>
             <div class="folder-btn-warp">
-                <el-button size="small" type="text" @click="visitNeighbor(-1)">
+                <el-button size="small" link @click="visitNeighbor(-1)">
                     上一个
                 </el-button>
-                <el-button size="small" type="text" @click="visitNeighbor(1)">
+                <el-button size="small" link @click="visitNeighbor(1)">
                     下一个
                 </el-button>
             </div>
@@ -310,10 +310,10 @@
                     <el-table-column prop="finishedAt_" label="完成时间" width="160" />
                     <el-table-column label="操作" width="155">
                         <template #default="scope">
-                            <el-button type="text" @click="visitSibling(scope.row)" >
+                            <el-button link @click="visitSibling(scope.row)" >
                                 跳转
                             </el-button>
-                            <el-button type="text" @click="setItFinished(scope.row)" >
+                            <el-button link @click="setItFinished(scope.row)" >
                                 切换状态
                             </el-button>
                         </template>

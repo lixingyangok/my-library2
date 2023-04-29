@@ -57,10 +57,10 @@
                 </el-table-column>
                 <el-table-column label="操作" width="150">
                     <template #default="scope">
-                        <el-button type="text" @click="goToLounge(scope.row)" >
+                        <el-button link @click="goToLounge(scope.row)" >
                             推进
                         </el-button>
-                        <el-button type="text" @click="delFile(scope.row)" >
+                        <el-button link @click="delFile(scope.row)" >
                             删除
                         </el-button>
                     </template>
@@ -88,13 +88,13 @@
                 </el-table-column>
                 <el-table-column label="操作" width="220">
                     <template #default="scope">
-                        <el-button type="text" @click="goToLounge(scope.row.oFirst)" >
+                        <el-button link @click="goToLounge(scope.row.oFirst)" >
                             推进
                         </el-button>
-                        <el-button type="text" @click="goFolder(scope.row)" >
+                        <el-button link @click="goFolder(scope.row)" >
                             访问目录
                         </el-button>
-                        <el-button type="text" @click="putToTop(scope.row)" >
+                        <el-button link @click="putToTop(scope.row)" >
                             置顶
                         </el-button>
                     </template>
