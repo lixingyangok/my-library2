@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-02 20:27:04
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-29 18:57:44
+ * @LastEditTime: 2023-04-29 19:04:09
  * @Description: 
 -->
 
@@ -17,7 +17,7 @@
                     {{cur}}
                 </span>
                 &nbsp;
-                <el-button link @click="showDialog(cur)">
+                <el-button link type="primary" @click="showDialog(cur)">
                     弹出窗口
                 </el-button>
             </li>
@@ -89,7 +89,7 @@
                         <span class="count" :class="{full: data.hasMedia==oMediaHomes[data.sPath]}">
                             {{`${oMediaHomes[data.sPath] || 0}/${data.hasMedia}`}}
                         </span>
-                        <el-button link @click="checkFolder(data)">
+                        <el-button link type="primary" @click="checkFolder(data)">
                             实施入库
                         </el-button>
                     </span>

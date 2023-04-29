@@ -2,17 +2,15 @@
  * @Author: 李星阳
  * @Date: 2022-01-23 18:49:41
  * @LastEditors: 李星阳
- * @LastEditTime: 2022-10-30 19:13:01
+ * @LastEditTime: 2023-04-29 19:17:57
  * @Description: 
 -->
 <template>
     <article class="outer-dom" v-show="!beDialog || isShowSelf">
-        <component :is="beDialog ? 'el-dialog' : 'div'"
-            v-model="isShowSelf"
+        <component v-model="isShowSelf"
+            :is="beDialog ? 'el-dialog' : 'div'"
+            :title="beDialog ? '查字典' : ''"
         >
-            <template #title v-if="beDialog">
-                查字典
-            </template>
             <div class="search-bar">
                 单词：
                 <input v-model="sKey" @input="toSearch"/>

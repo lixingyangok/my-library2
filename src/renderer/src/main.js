@@ -10,7 +10,6 @@ import './common/style/minireset.css';
 import './common/style/global.scss';
 import './common/lib/fontawesome-free-5.15.4-web/css/all.min.css';
 import 'element-plus/dist/index.css';
-
 const { ipcRenderer } = require('electron');
 
 
@@ -25,8 +24,6 @@ window.fnInvoke = ipcRenderer.invoke;
 ls.set('oRecent', ls.get('oRecent') || {});
 setGlobal();
 
-
-// createApp(App).mount('#app')
 // ▼ app
 const myApp = createApp(App);
 myApp.use(router);
