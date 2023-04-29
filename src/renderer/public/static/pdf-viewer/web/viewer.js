@@ -2186,7 +2186,7 @@ let validateFileURL;
         origin,
         protocol
       } = new URL(file, window.location.href);
-      // 说明：注释以便能打开本地文件
+      // ▼ 说明，注意，：注释以便能打开本地文件 ▼
       // if (origin !== viewerOrigin && protocol !== "blob:") {
       //   throw new Error("file origin does not match viewer's 123");
       // }
