@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-16 10:40:40
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-29 17:55:41
+ * @LastEditTime: 2023-04-30 11:09:41
  * @Description: 
  */
 
@@ -29,7 +29,7 @@ const oLine = module.exports.line = sqlize.define('line', {
 
 oLine.sync();
 
-export default {
+const oFn = {
     // ▼批量保存（导入用）
     async saveLine(arr) {
         const res = await oLine.bulkCreate(arr, {
@@ -40,8 +40,11 @@ export default {
     },
     // ▼修改字幕
     async updateLine(obj) {
-        const {toSaveArr=[], toDelArr=[]} = obj;
+        const {toSaveArr=[], toDelArr=[], isReturnAll} = obj;
         const arr = [[], 0];
+        const mediaId = toSaveArr.concat(toDelArr).find(cur=>{
+            return cur.mediaId;
+        });
         if (toSaveArr.length) {
             obj.toSaveArr.forEach(cur => {
                 if (cur.filledAt || !cur.text) return;
@@ -55,10 +58,16 @@ export default {
             });
         }
         const res = await Promise.all(arr);
-        if (res[0]?.map){
-            res[0] = res[0].map(cur => cur.dataValues);
+        let aNewRows = [];
+        if (isReturnAll){
+            aNewRows = await oFn.getLineByMedia(mediaId);
         }
-        return res;
+        const oResult = {
+            save: res[0]?.map(cur => cur.dataValues) || [],
+            delete: res[1],
+            newRows: aNewRows,
+        };
+        return oResult;
     },
     // ▼查询：统计所有【媒体字幕】
     async getLineInfo() {
@@ -74,7 +83,7 @@ export default {
         });
         return oPromise;
     },
-    // ▼查询：某个媒体的字幕
+    // ▼查询：某个媒体的所有字幕行
     async getLineByMedia(mediaId) {
         const res = await oLine.findAll({
             attributes: ['id', 'start', 'end', 'text', 'filledAt'], // filledAt 是有必要的
@@ -104,4 +113,5 @@ export default {
     },
 };
 
+export default oFn;
 

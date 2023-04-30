@@ -23,7 +23,7 @@ export function mainPart(){
 		oTodayBar: null,
 	});
 	const oOperation = { // 编辑功能
-		oIdStore: {}, // 查出来立即存在这
+		oIdStore: {}, // 查出来立即存在这（为啥？想不起来了）
 		aLineArr: [], // 所有行
 		oAllLine: {}, // 查出来就保存上，备份
 		iCurLineIdx: 0,
@@ -133,8 +133,10 @@ export function mainPart(){
 		getNewWords();
 	}
 	// ▼查询库中的字幕
-	async function getLinesFromDB(){
-		const aRes = await fnInvoke('db', 'getLineByMedia', oData.oMediaInfo.id);
+	async function getLinesFromDB(aRes=[]){
+		if (!aRes.length){
+			aRes = await fnInvoke('db', 'getLineByMedia', oData.oMediaInfo.id);
+		}
 		if (!aRes?.length) {
 			if (oData.oMediaBuffer) setFirstLine();
 			oData.iSubtitle = -1; // -1 表示文件不存在 

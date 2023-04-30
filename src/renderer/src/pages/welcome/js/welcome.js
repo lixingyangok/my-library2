@@ -125,9 +125,10 @@ const oRecordFn = {
             console.log('err', err);
         });
         if (!r01) return;
-        console.log('总行数：', r01[0]);
+        this.iAllLines = r01[0].iCount;
     },
     async getLineData(){
+        const iDays = 50;
         const sql = `
             SELECT
                 lcDate,
@@ -137,7 +138,7 @@ const oRecordFn = {
                     strftime('%Y-%m-%d', filledAt, 'localtime') as lcDate,
                     julianday('now', 'localtime') - julianday(filledAt, 'localtime') as daysAgo
                 FROM "line"
-                where daysAgo <= 50
+                where daysAgo <= ${iDays}
             ) as t01
             group by t01.lcDate
             order by t01.lcDate desc
@@ -146,7 +147,7 @@ const oRecordFn = {
             console.log('err', err);
         });
         if (!r01) return;
-        console.log('行统计', r01);
+        console.log(`${iDays}天内录入行数：${r01.length}`);
     },
 };
 

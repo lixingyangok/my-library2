@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-02 20:27:04
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-29 19:37:15
+ * @LastEditTime: 2023-04-29 21:41:55
  * @Description: 
 -->
 
@@ -33,6 +33,8 @@
             </span>
             &nbsp;
             <el-button @click="$root.f5()">刷新</el-button>
+            &nbsp;&nbsp;
+            总行数：{{ iAllLines.toLocaleString() }}
         </div>
         <!-- ▲大标题 -->
         <div class="first-list" >
@@ -179,6 +181,7 @@ export default {
             aPending: [],
             aRecent: [],
             aClockIn: [], // 打卡数据
+            iAllLines: 0,
         };
     },
     computed:{

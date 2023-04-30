@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-26 20:59:43
+ * @LastEditTime: 2023-04-30 22:48:24
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -441,7 +441,7 @@ export function fnAllKeydownFn() {
             word, mediaId: This.oMediaInfo.id,
         });
         if (!res) return This.$message.error('保存未成功');
-        console.log('res\n', res);
+        // console.log('res\n', res);
         This.$message.success('保存成功');
         This.getNewWords();
     }
@@ -537,17 +537,26 @@ export function fnAllKeydownFn() {
         if (!toSaveArr.length && !toDelArr.length) {
             return This.$message.warning(`没有修改，无法保存`);
         }
+        console.time('保存与查询');
         isSavingToDB = true;
-        const [res0, res1] = await fnInvoke('db', 'updateLine', {
-            toSaveArr, toDelArr,
+        console.log('将保存字幕：\n', toSaveArr, toDelArr);
+        const oResult = await fnInvoke('db', 'updateLine', {
+            toSaveArr, toDelArr, isReturnAll: true,
         });
-        // console.log('保存了字幕\n', toSaveArr, toDelArr);
-        const sTips = `成功：修改 ${res0.length} 条，删除 ${res1} 条`;
-        This.$message.success(sTips);
+        console.timeEnd('保存与查询');
+        if (!oResult) {
+            isSavingToDB = false;
+            return;
+        }
+        // ▼ 加载新字幕
+        This.getLinesFromDB(oResult.aNewRows).then(res=>{
+            isSavingToDB = false;
+        });
+        This.$message.success(`
+            成功：已修改 ${oResult.save.length} 条，删除 ${oResult.delete} 条
+        `.trim());
         This.deletedSet.clear();
         This.oTodayBar.init();
-        await This.getLinesFromDB(); // 异步加载新字幕
-        isSavingToDB = false;
     }
     // ▼撤销-恢复
     function setHistory(iType) {
