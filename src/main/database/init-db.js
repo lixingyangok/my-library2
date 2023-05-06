@@ -2,21 +2,19 @@
  * @Author: 李星阳
  * @Date: 2022-01-12 19:32:20
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-29 20:07:15
+ * @LastEditTime: 2023-05-05 21:17:11
  * @Description: 
  */
 const sqlite3 = require('sqlite3').verbose();
 const { Sequelize } = require('sequelize');
-
+const sPathForDB = "D:/Program Files (gree)/my-library/myDB.db";
 // ▼建立数据库链接
-const db = new sqlite3.Database(
-    "D:/Program Files (gree)/my-library/myDB.db"
-);
+const db = new sqlite3.Database(sPathForDB);
 
 // ▼建立数据库链接
 const sqlize = new Sequelize({
     dialect: 'sqlite',
-    storage: 'D:/Program Files (gree)/my-library/myDB.db',
+    storage: sPathForDB,
     define: {
         freezeTableName: true,
     },
@@ -34,6 +32,7 @@ export {
     sqlize,
     doSql,
     db,
+    sPathForDB,
 }
 
 
