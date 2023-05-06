@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-16 19:07:38
+ * @LastEditTime: 2023-05-06 09:17:58
  * @Description: 
  */
 
@@ -41,23 +41,26 @@ export async function getMediaDuration(sFilePath){
 }
 
 export async function fileToBuffer(oFile){
-	const iBeginTime = new Date();
+	const iBeginTime = new Date().getTime();
 	let resolveFn = xx => xx;
 	const promise = new Promise(f1 => resolveFn = f1);
 	const onload = async evt => {
 		const {result} = evt.currentTarget; // arrayBuffer
 		let audioContext = new window.AudioContext();
-		const oRealBuffer = await audioContext.decodeAudioData(result).catch(err=>{
+		let oRealBuffer = await audioContext.decodeAudioData(result).catch(err=>{
 			console.error('执行 decodeAudioData() 出错\n无法解析波形信息 👇\n', err);
 		});
 		if (!oRealBuffer) return;
 		audioContext = null; // 据说：如果不销毁audioContext，audio标签无法播放
+		const t02 = new Date().getTime();
 		const oBuffer = getFakeBuffer(oRealBuffer);
+		const tGap = ((new Date() - t02)/1000).toFixed(2) * 1;
+		oRealBuffer = null;
 		const sizeMB = (oFile.size/1024/1024).toFixed(2);
 		const fElapsedSec = ((new Date() - iBeginTime) / 1000).toFixed(2) * 1;
 		oBuffer.fElapsedSec = fElapsedSec;
 		resolveFn(oBuffer);
-		console.log(`■ 波形解析信息：\n■ 体积：${sizeMB}MB / 时长：${oBuffer.sDuration_} / 加载耗时：${fElapsedSec}秒\n`);
+		console.log(`■ 波形解析信息：\n■ 体积：${sizeMB}MB / 时长：${oBuffer.sDuration_} / 加载耗时：${fElapsedSec}秒\n波形压缩：${tGap}秒`);
 	};
 	Object.assign(new FileReader(), {
 		onload,
