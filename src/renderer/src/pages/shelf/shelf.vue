@@ -13,7 +13,7 @@
             <li v-for="(cur, idx) of oConfig.aRoot" :key="idx"
                 :class="{active: aPath.join('/').startsWith(cur)}"
             >
-                <span @click="choseRoot(cur)">
+                <span class="folder" @click="choseRoot(cur)">
                     {{cur}}
                 </span>
                 &nbsp;

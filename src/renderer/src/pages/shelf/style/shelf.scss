@@ -27,13 +27,20 @@
 }
 
 .path-list{
-    .el-button{
-        // padding: 2px 0;
-        height: 26px;
+    .folder{
+        cursor: pointer;
+        &:hover{
+            color: blue;
+        }
     }
     .active{
-        color: blue;
-        font-weight: bold;
+        .folder{
+            color: blue;
+            font-weight: bold;
+        }
+    }
+    .el-button{
+        height: 26px;
     }
 }
 

@@ -5,9 +5,11 @@ import {figureOut} from './figure-out-region.js';
 import {getTubePath, getDateDiff} from '@/common/js/common-fn.js';
 import {getFolderChildren, addAllMediaDbInfo} from '@/common/js/fs-fn.js';
 const fsp = require('node:fs/promises');
+const dayjs = require("dayjs");
+
+
 let isMediaChanged = false; // 是否加载了一个新的媒体
 
-const dayjs = require("dayjs");
 export function mainPart(){
 	const oDom = reactive({
 		oIframe: null,

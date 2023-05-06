@@ -32,6 +32,7 @@
 }
 
 .one-line{
+	--side-words: #aaa;
 	&[class~=key-line]{
 		border-bottom: dashed 1px #555;
 	}
@@ -45,18 +46,19 @@
 		align-items: center;
 		min-width: 2em;
 		width: var(--width);
+		color: var(--side-words);
 	}
 	.time{
 		flex: none;
+		margin: 0;
+		padding: 0;
 		width: 200px;
 		border: solid #aaa;
 		border-width: 0 1px;
-		margin: 0;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		padding: 0 10px;
-		color: #777;
+		color: var(--side-words);
 		i{
 			margin: 0 2px;
 		}

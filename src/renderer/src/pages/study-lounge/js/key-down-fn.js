@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-30 22:48:24
+ * @LastEditTime: 2023-05-01 11:58:13
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -187,7 +187,7 @@ export function fnAllKeydownFn() {
         if (text.length <= 2) return;
         const aPieces = text.match(wordsReExp); // 将当前句分割
         if (!aPieces) return;
-        console.time('定位耗时');
+        console.time('耗时：');
         // ▼输入的上一行没有成功匹配时，会取到 -1 很不好
         const {iLeftLine = -1, iMatchEnd: iLastMatchEnd} = This.oTopLineMatch || {}; // 取得之前匹配到的位置信息
         // console.log("上次匹配：", (This.oTopLineMatch || {}).$dc());
@@ -217,8 +217,8 @@ export function fnAllKeydownFn() {
         })();
         iLastTimeChecked = This.iCurLineIdx;
         isLastTimeGotResult = !!oResult;
-        console.timeEnd('定位耗时');
-        console.log(`定位行号: ${oResult?.iWriting ?? '没成功'} ---`);
+        console.timeEnd('耗时：');
+        console.log(`定位到行: ${oResult?.iWriting ?? '没成功'} ---`);
         oResult && setLeftTxtTop(oResult);
     }
     // ▼跳转到目标行（将来补充动画效果）
