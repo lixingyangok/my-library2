@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-01 11:58:13
+ * @LastEditTime: 2023-05-07 20:46:52
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -187,7 +187,7 @@ export function fnAllKeydownFn() {
         if (text.length <= 2) return;
         const aPieces = text.match(wordsReExp); // 将当前句分割
         if (!aPieces) return;
-        console.time('耗时：');
+        console.time('耗时');
         // ▼输入的上一行没有成功匹配时，会取到 -1 很不好
         const {iLeftLine = -1, iMatchEnd: iLastMatchEnd} = This.oTopLineMatch || {}; // 取得之前匹配到的位置信息
         // console.log("上次匹配：", (This.oTopLineMatch || {}).$dc());
@@ -217,7 +217,7 @@ export function fnAllKeydownFn() {
         })();
         iLastTimeChecked = This.iCurLineIdx;
         isLastTimeGotResult = !!oResult;
-        console.timeEnd('耗时：');
+        console.timeEnd('耗时');
         console.log(`定位到行: ${oResult?.iWriting ?? '没成功'} ---`);
         oResult && setLeftTxtTop(oResult);
     }
@@ -420,8 +420,8 @@ export function fnAllKeydownFn() {
     }
     // ▼搜索
     function searchWord() {
-        const sKey = window.getSelection().toString().trim();
-        if (!sKey) return;
+        const sKey = window.getSelection().toString().trim() || '';
+        // if (!sKey) return;
         console.log('搜索：', sKey);
         This.sSearching = sKey;
         This.isShowDictionary = true;
@@ -525,13 +525,14 @@ export function fnAllKeydownFn() {
     async function saveLines() {
         if (isSavingToDB) return; // 防抖
         const toSaveArr = [];
+        const mediaId = This.oMediaInfo.id;
         This.aLineArr.forEach(cur => {
             This.deletedSet.delete(cur.id); // 防止误删
             if (!This.checkIfChanged(cur)) return; // 没变动不删除
             ['start', 'end'].forEach(key => {
                 cur[key] = Number.parseFloat(cur[key].toFixed(2));
             });
-            toSaveArr.push({ ...cur, mediaId: This.oMediaInfo.id });
+            toSaveArr.push({ ...cur, mediaId }); // mediaId 的用途是标记此行所属的媒体
         });
         const toDelArr = [...This.deletedSet];
         if (!toSaveArr.length && !toDelArr.length) {
@@ -541,15 +542,21 @@ export function fnAllKeydownFn() {
         isSavingToDB = true;
         console.log('将保存字幕：\n', toSaveArr, toDelArr);
         const oResult = await fnInvoke('db', 'updateLine', {
-            toSaveArr, toDelArr, isReturnAll: true,
+            toSaveArr,
+            toDelArr,
+            isReturnAll: true,
+            mediaId,
         });
         console.timeEnd('保存与查询');
         if (!oResult) {
             isSavingToDB = false;
             return;
         }
+        afterSaved(oResult);
+    }
+    function afterSaved(oResult){
         // ▼ 加载新字幕
-        This.getLinesFromDB(oResult.aNewRows).then(res=>{
+        This.getLinesFromDB(oResult.newRows).then(res=>{
             isSavingToDB = false;
         });
         This.$message.success(`

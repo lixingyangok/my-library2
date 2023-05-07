@@ -2,13 +2,17 @@
  * @Author: 李星阳
  * @Date: 2022-01-16 10:40:40
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-30 11:09:41
+ * @LastEditTime: 2023-05-07 20:43:38
  * @Description: 
  */
 
-const { Op, DataTypes } = require('sequelize');
-import {sqlize} from './init-db.js';
+import {sqlize, sPathForDB} from './init-db.js';
 import {oMedia} from './media.js';
+const { Op, DataTypes } = require('sequelize');
+const Database = require('better-sqlite3');
+const db02 = new Database(sPathForDB, 
+    { /* verbose: console.log  */}    
+);
 
 const oLine = module.exports.line = sqlize.define('line', {
     mediaId: { // 媒体记录的行ID，防止文件hash变化后引发错误
@@ -40,11 +44,9 @@ const oFn = {
     },
     // ▼修改字幕
     async updateLine(obj) {
-        const {toSaveArr=[], toDelArr=[], isReturnAll} = obj;
+        const t01 = new Date().getTime();
+        const {toSaveArr=[], toDelArr=[], isReturnAll, mediaId} = obj;
         const arr = [[], 0];
-        const mediaId = toSaveArr.concat(toDelArr).find(cur=>{
-            return cur.mediaId;
-        });
         if (toSaveArr.length) {
             obj.toSaveArr.forEach(cur => {
                 if (cur.filledAt || !cur.text) return;
@@ -67,6 +69,7 @@ const oFn = {
             delete: res[1],
             newRows: aNewRows,
         };
+        toLog('修改耗时：', new Date() - t01);
         return oResult;
     },
     // ▼查询：统计所有【媒体字幕】
@@ -85,13 +88,27 @@ const oFn = {
     },
     // ▼查询：某个媒体的所有字幕行
     async getLineByMedia(mediaId) {
+        Promise.resolve().then(()=>{
+            const t01 = new Date()*1;
+            const sql = `
+                SELECT id, start, end, text, filledAt, updatedAt
+                FROM line
+                where mediaId = ${mediaId}
+                ORDER BY start ASC
+            `.replace(/\s+/g, ' ');
+            const a01Result = db02.prepare(sql).all();
+            toLog('查询耗时111：', (new Date() - t01), a01Result);
+        });
+        const t02 = new Date()*1;
         const res = await oLine.findAll({
             attributes: ['id', 'start', 'end', 'text', 'filledAt'], // filledAt 是有必要的
             where: {mediaId},
             order: [['start', 'asc']],
         });
         if (!res) return;
-        return res.map(cur => cur.dataValues);
+        toLog('查询耗时222：', (new Date() - t02));
+        const aResult = res.map(cur => cur.dataValues);
+        return aResult;
     },
     // ▼查询：按单词搜索字幕
     async searchLineBybWord(word) {
