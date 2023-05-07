@@ -1,11 +1,49 @@
+// ▼页面模式的外套
 .outer-dom{
     padding: 40px 20px 20px;
+    height: 100%;
+    // ▼关闭弹出窗口的动画
+    ::v-deep(.dialog-fade-enter-active),
+    ::v-deep(.dialog-fade-enter-to),
+    ::v-deep(.dialog-fade-leave-active),
+    ::v-deep(.dialog-fade-leave-to){
+        animation: none !important;
+        transform: none !important;
+    }
+}
+// ▼窗口模式的外套
+.outer-dom ::v-deep(.el-dialog__body){
+    // box-shadow: 1px 1px 3px red inset;
+    opacity: 1;
+}
+
+.search-bar{
+    border: solid 1px #eee;
+    &>*{
+        height: 23px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+}
+
+.content-box{
+    // height: 75vh;
+    --page-height: 70vh;
+    overflow-y: auto;
+    ::v-deep(.el-tabs__content){
+        height: var(--page-height);
+        overflow-y: auto;
+    }
+}
+
+.baidu{
+    height: var(--page-height);
+    box-shadow: 0px 0px 3px blue inset;
 }
 
 .result-list{
-    margin: 20px 0 0;
-    height: 80vh;
-    overflow-y: auto;
+    // margin: 20px 0 0;
+    height: 100%;
     .dir{
         color: #999;
     }

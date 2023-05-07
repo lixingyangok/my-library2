@@ -2,56 +2,68 @@
  * @Author: 李星阳
  * @Date: 2022-01-23 18:49:41
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-29 19:17:57
+ * @LastEditTime: 2023-05-07 19:49:48
  * @Description: 
 -->
 <template>
     <article class="outer-dom" v-show="!beDialog || isShowSelf">
         <component v-model="isShowSelf"
+            top="3vh"
+            width="1000px"
+            class="dialog-clothes"
             :is="beDialog ? 'el-dialog' : 'div'"
             :title="beDialog ? '查字典' : ''"
+            @opened="afterOpened"
         >
             <div class="search-bar">
-                单词：
                 <input v-model="sKey" @input="toSearch"/>
                 <button @click="toSearch">
                     搜索
                 </button>
-                <button Aclick="toSearch">
-                    全字匹配
-                </button>
+                <!-- <button Aclick="toSearch"> 全字匹配 </button> -->
                 <span>
                     结果{{iResult}}条
                 </span>
             </div>
             <!-- ▼结果列表 -->
-            <ul class="result-list">
-                <li class="one-dir" v-for="(cur,idx) of aResult" :key="idx">
-                    <h3 class="dir-name" >{{cur.dir.split('/').slice(2).join(' > ')}}</h3>
-                    <ul class="one-file" >
-                        <li class="one-sentence" v-for="(item, i02) of cur.aList" :key="i02">
-                            <h4 class="file-name" v-if="(i02 === 0) || item.name != cur.aList[i02-1].name">
-                                {{item.name}}
-                            </h4>
-                            <p title="secToStr(item.start)">
-                                <time class="start">{{secToStr(item.start)}}</time>
-                                <span class="one-word" :class="{'matched': sWord.word}"
-                                    v-for="(sWord, i02) of splitSentence(item.text, sKey || word)" :key="`${idx}-${i02}`"
-                                >
-                                    {{sWord.word || sWord}}
-                                </span>
-                            </p>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+            <section class="content-box" >
+                <el-tabs v-model="activeName" @tab-click="handleClick">
+                    <el-tab-pane label="本地" name="first">
+                        <ul class="result-list">
+                            <li class="one-dir" v-for="(cur,idx) of aResult" :key="idx">
+                                <h3 class="dir-name" >{{cur.dir.split('/').slice(2).join(' > ')}}</h3>
+                                <ul class="one-file" >
+                                    <li class="one-sentence" v-for="(item, i02) of cur.aList" :key="i02">
+                                        <h4 class="file-name" v-if="(i02 === 0) || item.name != cur.aList[i02-1].name">
+                                            {{item.name}}
+                                        </h4>
+                                        <p title="secToStr(item.start)">
+                                            <time class="start">{{secToStr(item.start)}}</time>
+                                            <span class="one-word" :class="{'matched': sWord.word}"
+                                                v-for="(sWord, i02) of splitSentence(item.text, sKey || word)" :key="`${idx}-${i02}`"
+                                            >
+                                                {{sWord.word || sWord}}
+                                            </span>
+                                        </p>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </el-tab-pane>
+                    <el-tab-pane label="百度" name="second">
+                        <div class="site baidu">百度</div>
+                    </el-tab-pane>
+                    <el-tab-pane label="朗文" name="third">角色管理</el-tab-pane>
+                    <el-tab-pane label="剑桥" name="fourth">定时任务补偿</el-tab-pane>
+                </el-tabs>
+            </section>
         </component>
     </article>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue';
-import { splitSentence, groupThem } from './js/dictionary.js';
+import { splitSentence, groupThem, afterOpened, handleClick } from './js/dictionary.js';
 import {secToStr} from '@/common/js/pure-fn.js';
 
 const props = defineProps({
@@ -68,15 +80,20 @@ const isShowSelf = computed({
         emit('update:dialogVisible', val);
     },
 });
+
+let iSearchingQ = 0;
 const sKey = ref(''); // 可填入测试用的搜索关键字
 const iResult = ref(0); // 搜索结果数量
 const aResult = ref({});
-let iSearchingQ = 0;
+const activeName = ref('first');
+
 // ▼方法
 toSearch();
 function toSearch(){
-    const sAim = sKey.v || props.word;
-    if (!sAim) return (aResult.v = {});
+    const sAim = sKey.v || props.word || '';
+    if (sAim.length < 2) {
+        return (aResult.v = {});
+    }
     (async idx => {
         const sWhere = `WHERE text like '%${sAim}%' and text like '% %'`; // 至少包含1个空格  
         const searchRows = fnInvoke('db', 'doSql', `
@@ -84,7 +101,7 @@ function toSearch(){
             FROM line left join media
             ON line.mediaId = media.id ${sWhere}
             ORDER BY media.dir, media.name, line.start
-            limit 50
+            limit 100
 		`);
         const searchCount = fnInvoke('db', 'doSql', `
 			SELECT count(*) as iCount FROM line ${sWhere}
@@ -117,4 +134,4 @@ watch(
 // COUNT(*) as iCount, 
 </script>
 
-<style lang="scss" src="./style/dictionary.scss" ></style>
+<style scoped lang="scss" src="./style/dictionary.scss" ></style>
