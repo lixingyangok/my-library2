@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-03 10:09:58
  * @LastEditors: 李星阳
- * @LastEditTime: 2022-10-22 14:29:13
+ * @LastEditTime: 2023-05-07 22:16:59
  * @Description: 
 -->
 <template>
@@ -25,7 +25,7 @@
                 @mousedown="mouseDownFn"
             >
                 <div class="long-bar" ref="oLongBar"
-                    :style="{width: `${(oMediaBuffer.duration + 0.6) * fPerSecPx}px`}"
+                    :style="{width: `${(iFinalDuration + 0.6) * fPerSecPx}px`}"
                 >
                     <ul class="scale-ul">
                         <li v-for="(cur) of aGapMarks" :key="cur" v-show="cur"
@@ -75,6 +75,10 @@ import {registerKeydownFn} from '../../common/js/common-fn.js'
 export default {
     name: 'my-wave-bar',
     props: {
+        mediaDuration: {
+            type: Number,
+            default: 0,
+        },
         mediaPath: String,
         aLineArr: {
             type: Array,
@@ -89,7 +93,7 @@ export default {
     // ▼ 声明当前组件<example/>可以在行间定义的属性
     emits: ['pipe', 'setTimeTube'],
     setup(props){
-        const {oDom, oFn, oData} = w01();
+        const {oDom, oFn, oData, iFinalDuration} = w01();
         // ▼视口范围 [起点秒，终点秒]
         const aGapSeconds = computed(() => {
             const iWidth = oDom?.oViewport?.offsetWidth || window.innerWidth;
@@ -107,7 +111,6 @@ export default {
             return arr;
         });
         const aGapRegions = computed(() => {
-            const {duration} = oData.oMediaBuffer || {};
             const [iLeftSec, iRightSec] = aGapSeconds.v;
             if (!iRightSec) return [];
             const myArr = [];
@@ -118,8 +121,8 @@ export default {
                 const IsShow = end > iLeftSec || end > iRightSec; // 此处正确无误
                 if (!IsShow) continue;
                 oCur.idx = idx;
-                if (duration > 100){
-                    oCur.iRate = (oCur.start / duration * 100).toFixed(1) * 1;
+                if (iFinalDuration.v > 100){
+                    oCur.iRate = (oCur.start / iFinalDuration.v * 100).toFixed(1) * 1;
                 }
                 myArr.push(oCur);
                 if (end > iRightSec) break;
@@ -132,6 +135,7 @@ export default {
             ...oFn,
             aGapRegions,
             aGapMarks,
+            iFinalDuration,
         };
     },
     mounted(){

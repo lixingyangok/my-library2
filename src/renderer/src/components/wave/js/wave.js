@@ -3,6 +3,8 @@ import { fileToBuffer, getPeaks, getChannelArr, } from '../../../common/js/pure-
 import { getTubePath } from '../../../common/js/common-fn.js';
 
 export default function(){
+    const oInstance = getCurrentInstance();
+    const {props} = oInstance;
     let aPeaksData = []; // 波形数据
     const oDom = reactive({ // 从上到下，从外到内
         oMyWaveBar: null, // 最外层
@@ -24,8 +26,12 @@ export default function(){
         sWaveBarClassName: '',
         scrollTimer: null, // 滚动条
     });
-    const oInstance = getCurrentInstance();
-    const {props} = oInstance;
+    const iFinalDuration = computed(() => {
+        return (
+            oData.oMediaBuffer.duration || 
+            props.mediaDuration || 0
+        )
+    });
     const oCurLine = computed(()=>{
         return props.aLineArr[
             props.iCurLineIdx
@@ -48,13 +54,13 @@ export default function(){
     }
     // ▼滚动条动后调用
     function waveWrapScroll() {
-        const {oMediaBuffer, iPerSecPx} = oData;
+        const {oMediaBuffer, iPerSecPx, fPerSecPx: fPerSecPxOld} = oData;
         const {offsetWidth, scrollLeft} = oDom.oViewport;
         const {aPeaks, fPerSecPx} = getPeaks(
             oMediaBuffer, iPerSecPx, scrollLeft, offsetWidth
         );
         aPeaksData = aPeaks;
-        oData.fPerSecPx = fPerSecPx;
+        oData.fPerSecPx = fPerSecPx || fPerSecPxOld;
         oData.iScrollLeft = Math.max(0, scrollLeft); // 把新位置记下来
         toDraw();
     }
@@ -332,7 +338,7 @@ export default function(){
 		}, iTimes);
 	}
     function moveToFirstLine(){
-        const canGo = oData.oMediaBuffer.duration && props.aLineArr.length;
+        const canGo = iFinalDuration.v && props.aLineArr.length;
         if (!canGo) return;
         setTimeout(()=>{
             // console.log('oDom.oLongBar -', oDom.oLongBar.offsetWidth);
@@ -406,7 +412,7 @@ export default function(){
         goOneLine,
         cleanCanvas,
     };
-    return { oDom, oData, oFn };
+    return { oDom, oData, oFn, iFinalDuration };
 }
 
 export function getKeyDownFnMap(This, sType){

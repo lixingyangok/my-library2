@@ -2,11 +2,15 @@
 <html lang="zh-cn">
     <head>
         <meta charset="UTF-8" />
-        <title>Electron</title>
+        <title>Library</title>
         <link rel="icon" href="/favicon.ico" />
         <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
         <meta name="viewport" content="width=device-width">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+        <!-- ▼默认的设定 -->
+        <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" /> -->
+        <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src https://*; child-src 'none';" /> -->
+        <!-- ▼添加此行可避免控制台报错，副作用是会导致无法打开外部 iframe -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline';"/>
         <script src="/app.config.js"></script>
     </head>
     <body>
