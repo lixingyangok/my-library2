@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-23 18:49:41
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-07 19:49:48
+ * @LastEditTime: 2023-05-08 21:14:18
  * @Description: 
 -->
 <template>
@@ -90,10 +90,9 @@ const activeName = ref('first');
 // ▼方法
 toSearch();
 function toSearch(){
-    const sAim = sKey.v || props.word || '';
-    if (sAim.length < 2) {
-        return (aResult.v = {});
-    }
+    if (props.word.trim()) sKey.v = props.word.trim();
+    const sAim = sKey.v;
+    if (sAim.length < 2) return (aResult.v = {}); // 返回对象不返回数组？
     (async idx => {
         const sWhere = `WHERE text like '%${sAim}%' and text like '% %'`; // 至少包含1个空格  
         const searchRows = fnInvoke('db', 'doSql', `
@@ -118,8 +117,7 @@ function toSearch(){
 watch(
     isShowSelf,
     (newVal, oldVal) => {
-        if (!newVal || !props.word) return;
-        // console.log('搜索：', props.word);
+        if (!newVal || !props.word.trim()) return;
         toSearch();
     },
 );
