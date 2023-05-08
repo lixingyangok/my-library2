@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-05 17:35:19
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-02-15 21:11:10
+ * @LastEditTime: 2023-05-07 21:31:04
  * @Description: 
 -->
 <template>
@@ -90,6 +90,7 @@
                 :media-path="sMediaSrc"
                 :a-line-arr="aLineArr"
                 :i-cur-line-idx="iCurLineIdx"
+                :mediaDuration="oMediaInfo.duration"
                 @pipe="bufferReceiver"
                 @setTimeTube="setTime"
             />

@@ -474,7 +474,8 @@ export function mainPart(){
 		});
 		if (!res) return;
 		vm.$message.success('状态变更成功');
-		getNeighbors();
+		await getNeighbors();
+		setFolderInfo();
 	}
 	// ▼查询是否修改过
 	function checkIfChanged(oOneLine){
