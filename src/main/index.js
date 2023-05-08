@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, BrowserView } from 'electron'
+import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import {makeChannels} from'./others/communication.js';
@@ -29,7 +29,7 @@ function createWindow() {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
         show: false,
-        width: 1400,
+        width: 1600,
         height: 900,
         autoHideMenuBar: false,
         webPreferences: {
@@ -58,23 +58,8 @@ function createWindow() {
     } else {
         mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
     }
-    mainWindow.webContents.openDevTools(); // 打开控制台
-    // setTimeout(()=>{
-    //     const view = new BrowserView();
-    //     mainWindow.setBrowserView(view);
-    //     view.setBounds({ x: 100, y: 100, width: 500, height: 500 }); //宽高设为0可以隐藏
-    //     view.setAutoResize({
-    //         width: true,
-    //         height: true,
-    //         horizontal: true,
-    //         vertical: true,
-    //     });
-    //     view.webContents.loadURL('https://baidu.com');
-    //     setTimeout(()=>{
-    //         mainWindow.removeBrowserView(view); // 删除
-    //         browserView.webContents.insertCSS('html{display: none}') // 隐藏
-    //     }, 6*1000);
-    // }, 3*1000);
+    // mainWindow.webContents.openDevTools(); // 打开控制台
+    return mainWindow;
 }
 
 // ▼要放在 app.whenReady 之前执行，只能执行一次
@@ -93,8 +78,8 @@ app.whenReady().then(() => {
         optimizer.watchWindowShortcuts(window)
     });
     // ▼创建窗口
-    createWindow(); // 在此生成 toLog
-    makeChannels();
+    const mainWindow = createWindow(); // 在此生成 toLog
+    makeChannels(mainWindow);
     protocolFnSetter();
 
     app.on('activate', function () {

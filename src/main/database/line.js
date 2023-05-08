@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-16 10:40:40
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-07 20:43:38
+ * @LastEditTime: 2023-05-08 21:30:55
  * @Description: 
  */
 
@@ -60,6 +60,7 @@ const oFn = {
             });
         }
         const res = await Promise.all(arr);
+        toLog('修改耗时：', new Date() - t01);
         let aNewRows = [];
         if (isReturnAll){
             aNewRows = await oFn.getLineByMedia(mediaId);
@@ -69,7 +70,6 @@ const oFn = {
             delete: res[1],
             newRows: aNewRows,
         };
-        toLog('修改耗时：', new Date() - t01);
         return oResult;
     },
     // ▼查询：统计所有【媒体字幕】

@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-10 20:03:47
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-29 18:00:22
+ * @LastEditTime: 2023-05-08 21:55:25
  * @Description: 
  */
 import {doSql} from '../database/init-db.js';
@@ -12,6 +12,8 @@ import a3 from '../database/line.js';
 import a4 from '../database/dictionary.js';
 import a5 from '../database/new-word.js';
 import a6 from '../database/click-in-off.js';
+import oBrowserViewFn from './browser-view.js';
+
 const fsp = require('node:fs/promises');
 const { ipcMain } = require('electron');
 const hasher = require('hash-wasm');
@@ -25,8 +27,7 @@ const oDbFn = { // 所有的数据库方法
     doSql,
 };
 
-// module.exports.makeChannels = function makeChannels(){
-export function makeChannels(){
+export function makeChannels(mainWindow){
     // ▼接收一个测试消息
     ipcMain.on('channel01', (event, arg) => {
         toLog('收到窗口内容：\n', arg);
@@ -42,15 +43,15 @@ export function makeChannels(){
     });
     // 主进程
     ipcMain.handle("getHash", async (event, sPath) => {
-        // console.time('读取Buffer');
+        // console.time('读取文件 Buffer');
         const oBuffer = await fsp.readFile(sPath).catch(err=>{
             toLog('读文件出错\n', err);
         });
         if (!oBuffer) return;
-        // console.timeEnd('读取Buffer');
-        // console.time('计算指纹');
+        // console.timeEnd('读取文件 Buffer');
+        // console.time('计算 Buffer指纹');
         const sHash = await hasher.xxhash64(oBuffer); // 56MB 一共耗时 60ms
-        // console.timeEnd('计算指纹');
+        // console.timeEnd('计算 Buffer指纹');
         return sHash;
     });
     // 主进程
@@ -58,6 +59,13 @@ export function makeChannels(){
         const theFn = oDbFn[sFnName];
         if (!theFn) throw 'fnName is wrong';
         const res = await theFn(oParams);
+        return res; 
+    });
+    // ▼处理子窗口相关事件
+    ipcMain.handle("BrowserView", async (event, sAction, oParams) => {
+        const theFn = oBrowserViewFn[sAction];
+        if (!theFn) throw 'sAction is wrong';
+        const res = await theFn(mainWindow, oParams);
         return res; 
     });
 };
