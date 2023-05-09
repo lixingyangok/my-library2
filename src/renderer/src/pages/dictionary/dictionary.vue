@@ -2,17 +2,20 @@
  * @Author: 李星阳
  * @Date: 2022-01-23 18:49:41
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-08 21:14:18
+ * @LastEditTime: 2023-05-09 21:18:00
  * @Description: 
 -->
 <template>
-    <article class="outer-dom" v-show="!beDialog || isShowSelf">
-        <component v-model="isShowSelf"
-            top="3vh"
-            width="1000px"
-            class="dialog-clothes"
+    <article v-show="!beDialog || isShowSelf"
+        class="outer-dom" :style="{'--top': oStyle.topVal}"
+    >
+        <component width="1000px"
+            v-model="isShowSelf"
+            :top="oStyle.topVal"
+            :class="beDialog ? 'dialog-model': 'dict_model'"
             :is="beDialog ? 'el-dialog' : 'div'"
             :title="beDialog ? '查字典' : ''"
+            :style="beDialog ? {'margin-bottom': 0} : {}"
             @opened="afterOpened"
         >
             <div class="search-bar">
@@ -26,9 +29,11 @@
                 </span>
             </div>
             <!-- ▼结果列表 -->
-            <section class="content-box" >
-                <el-tabs v-model="activeName" @tab-click="handleClick">
-                    <el-tab-pane label="本地" name="first">
+            <section class="tabs_wrap">
+                <el-tabs v-model="activeName" @tab-click="handleClick"
+                    ref="oTab"
+                >
+                    <el-tab-pane label="本地" name="A1">
                         <ul class="result-list">
                             <li class="one-dir" v-for="(cur,idx) of aResult" :key="idx">
                                 <h3 class="dir-name" >{{cur.dir.split('/').slice(2).join(' > ')}}</h3>
@@ -50,11 +55,11 @@
                             </li>
                         </ul>
                     </el-tab-pane>
-                    <el-tab-pane label="百度" name="second">
+                    <el-tab-pane label="百度" name="A2">
                         <div class="site baidu">百度</div>
                     </el-tab-pane>
-                    <el-tab-pane label="朗文" name="third">角色管理</el-tab-pane>
-                    <el-tab-pane label="剑桥" name="fourth">定时任务补偿</el-tab-pane>
+                    <el-tab-pane label="朗文" name="A3">角色管理</el-tab-pane>
+                    <el-tab-pane label="剑桥" name="A4">定时任务补偿</el-tab-pane>
                 </el-tabs>
             </section>
         </component>
@@ -62,14 +67,14 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, reactive, onMounted } from 'vue';
 import { splitSentence, groupThem, afterOpened, handleClick } from './js/dictionary.js';
 import {secToStr} from '@/common/js/pure-fn.js';
 
 const props = defineProps({
     dialogVisible: Boolean,
     beDialog: Boolean,
-    word: String,
+    word: { type: String, default: '', },
 });
 const emit = defineEmits(['update:dialogVisible']);
 const isShowSelf = computed({
@@ -85,7 +90,11 @@ let iSearchingQ = 0;
 const sKey = ref(''); // 可填入测试用的搜索关键字
 const iResult = ref(0); // 搜索结果数量
 const aResult = ref({});
-const activeName = ref('first');
+const activeName = ref('A2');
+const oTab = ref();
+const oStyle = reactive({
+    topVal: '3vh',
+});
 
 // ▼方法
 toSearch();
@@ -113,6 +122,11 @@ function toSearch(){
         aResult.v = aArr;
     })(++iSearchingQ);
 }
+
+onMounted(()=>{
+    console.log('已经挂载');
+    console.log(oTab.v);
+});
 
 watch(
     isShowSelf,
