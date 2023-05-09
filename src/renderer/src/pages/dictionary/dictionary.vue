@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-23 18:49:41
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-09 21:18:00
+ * @LastEditTime: 2023-05-09 22:14:19
  * @Description: 
 -->
 <template>
@@ -29,10 +29,8 @@
                 </span>
             </div>
             <!-- ▼结果列表 -->
-            <section class="tabs_wrap">
-                <el-tabs v-model="activeName" @tab-click="handleClick"
-                    ref="oTab"
-                >
+            <section class="tabs_wrap" ref="oTab">
+                <el-tabs v-model="activeName" @tab-click="handleClick" >
                     <el-tab-pane label="本地" name="A1">
                         <ul class="result-list">
                             <li class="one-dir" v-for="(cur,idx) of aResult" :key="idx">
@@ -67,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, reactive, onMounted } from 'vue';
+import { ref, computed, watch, reactive, onMounted, onBeforeUnmount } from 'vue';
 import { splitSentence, groupThem, afterOpened, handleClick } from './js/dictionary.js';
 import {secToStr} from '@/common/js/pure-fn.js';
 
@@ -123,9 +121,30 @@ function toSearch(){
     })(++iSearchingQ);
 }
 
+function getPosition(oDom){
+    const oDiv = oDom.querySelectorAll('.el-tabs__content')[0];
+    // const {offsetTop, offsetLeft, offsetWidth, offsetHeight} = oDiv;
+    const oInfo = oDiv.getBoundingClientRect();
+    console.log('oDivvvv', oDiv);
+    console.log(oInfo);
+    fnInvoke('BrowserView', 'show', {
+        x: oInfo.x + 1,
+        y: oInfo.y + 1,
+        width: oInfo.width -2,
+        height: oInfo.height -2,
+        // url: 'https://fanyi.baidu.com/#en/zh/',
+        url: 'https://fanyi.baidu.com/#zh/en/%E5%9D%9A%E6%8C%81%E4%B8%8B%E5%8E%BB',
+    });
+}
+
 onMounted(()=>{
-    console.log('已经挂载');
-    console.log(oTab.v);
+    setTimeout(()=>{
+        props.beDialog || getPosition(oTab.v);
+        // getPosition(oTab.v);
+    }, 100);
+});
+onBeforeUnmount(()=>{
+    fnInvoke('BrowserView', 'hide');
 });
 
 watch(

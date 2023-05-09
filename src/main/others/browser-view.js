@@ -20,13 +20,11 @@ export default {
     show(mainWindow, oParams){
         toLog('show', oParams);
         if (!view) return;
-        view.setBounds({
-            x: 100,
-            y: 100,
-            width: 500,
-            height: 500
-        });
-        view.webContents.loadURL('https://126.com');
+        const obj = Object.keys(all_zero).reduce((oResult, key)=>{
+            return {...oResult, [key]: oParams[key]}
+        }, {});
+        view.setBounds(obj);
+        view.webContents.loadURL(oParams.url);
     },
     hide(mainWindow, oParams){
         toLog('hide', oParams);

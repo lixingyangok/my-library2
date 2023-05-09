@@ -1,6 +1,6 @@
 // ▼页面模式的外套
 .outer-dom{
-    padding: 40px 20px 20px;
+    padding: 20px 20px 20px;
     height: 100%;
     // ▼关闭弹出窗口的动画
     ::v-deep(.dialog-fade-enter-active),
@@ -41,6 +41,7 @@
     flex-grow: 1;
     overflow-y: auto;
     // box-shadow: 0px 0px 3px red inset;
+    // box-shadow: 0px 0px 3px blue;
     ::v-deep(.el-tabs__content){
         height: var(--page-height);
         overflow-y: auto;
@@ -48,13 +49,20 @@
     .el-tabs{
         height: 100%;
         --el-tabs-header-height: 30px;
+        ::v-deep(.el-tabs__header){
+            margin: 0 0 10px;
+        }
         ::v-deep(.el-tabs__content){
-            height: calc(100% - 15px - var(--el-tabs-header-height));
+            height: calc(100% - 10px - var(--el-tabs-header-height));
+        }
+        .el-tab-pane{
+            border: solid 1px #ccc;
         }
         .el-tab-pane, 
         .el-tab-pane > *{
             height: 100%;
-            box-shadow: 0px 0px 3px blue inset;
+            box-sizing: border-box;
+            // box-shadow: 0px 0px 3px blue;
         }
     }
 }
