@@ -96,7 +96,7 @@ const oTab = ref();
 // ▼方法
 toSearch();
 function toSearch(){
-    const sAim = sKey.v.replace("'", "''");
+    const sAim = sKey.v.replaceAll("'", "''");
     if (sAim.length < 2) return (aResult.v = {}); // 返回对象不返回数组？
     (async idx => {
         const sWhere = `WHERE text like '%${sAim}%' and text like '% %'`; // 至少包含1个空格  
@@ -120,16 +120,16 @@ function toSearch(){
 }
 
 function showIframe(){
+    if (!oTab.v) return console.log('DOM未加载');
     const oDiv = oTab.v.querySelectorAll('.el-tabs__content')[0];
     const oInfo = oDiv.getBoundingClientRect();
     // console.log(oDiv, oInfo);
-    let url = `https://fanyi.baidu.com/#en/zh/${sKey.v}`;
     fnInvoke('BrowserView', 'show', {
-        x: oInfo.x + 1 | 0,
-        y: oInfo.y + 1 | 0,
-        width: oInfo.width -2 | 0,
-        height: oInfo.height -2 | 0,
-        url,
+        x: Math.round(oInfo.x + 1),
+        y: Math.round(oInfo.y + 1),
+        width: Math.round(oInfo.width -2),
+        height: Math.round(oInfo.height -2),
+        url: `https://fanyi.baidu.com/#en/zh/${sKey.v}`,
     });
 }
 
