@@ -47,11 +47,11 @@ export function splitSentence(text, sKey){
     return aResult;
 }
 
-export function afterOpened(){
-    console.log('窗口已经打开：准备加载外部站点');
-}
+// export function afterOpened(){
+//     console.log('窗口已经打开：准备加载外部站点');
+// }
 
-export function handleClick(tab, event) {
-    console.log('页签已经切换');
-    // console.log(tab, event);
-}
+// export function handleClick(tab, event) {
+//     console.log('页签已经切换');
+//     // console.log(tab, event);
+// }

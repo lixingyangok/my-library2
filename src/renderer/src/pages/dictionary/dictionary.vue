@@ -2,19 +2,19 @@
  * @Author: 李星阳
  * @Date: 2022-01-23 18:49:41
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-09 22:14:19
+ * @LastEditTime: 2023-05-10 22:02:25
  * @Description: 
 -->
 <template>
     <article v-show="!beDialog || isShowSelf"
-        class="outer-dom" :style="{'--top': oStyle.topVal}"
+        class="outer-dom" :style="{'--top': oData.topVal}"
     >
-        <component width="1000px"
-            v-model="isShowSelf"
-            :top="oStyle.topVal"
+        <component v-model="isShowSelf"
+            width="96vw"
+            :top="oData.topVal"
             :class="beDialog ? 'dialog-model': 'dict_model'"
             :is="beDialog ? 'el-dialog' : 'div'"
-            :title="beDialog ? '查字典' : ''"
+            :title123="beDialog ? '查字典' : ''"
             :style="beDialog ? {'margin-bottom': 0} : {}"
             @opened="afterOpened"
         >
@@ -53,11 +53,9 @@
                             </li>
                         </ul>
                     </el-tab-pane>
-                    <el-tab-pane label="百度" name="A2">
-                        <div class="site baidu">百度</div>
-                    </el-tab-pane>
-                    <el-tab-pane label="朗文" name="A3">角色管理</el-tab-pane>
-                    <el-tab-pane label="剑桥" name="A4">定时任务补偿</el-tab-pane>
+                    <el-tab-pane label="百度" name="A2"></el-tab-pane>
+                    <el-tab-pane label="朗文" name="A3"></el-tab-pane>
+                    <el-tab-pane label="剑桥" name="A4"></el-tab-pane>
                 </el-tabs>
             </section>
         </component>
@@ -66,7 +64,7 @@
 
 <script setup>
 import { ref, computed, watch, reactive, onMounted, onBeforeUnmount } from 'vue';
-import { splitSentence, groupThem, afterOpened, handleClick } from './js/dictionary.js';
+import { splitSentence, groupThem } from './js/dictionary.js';
 import {secToStr} from '@/common/js/pure-fn.js';
 
 const props = defineProps({
@@ -85,20 +83,20 @@ const isShowSelf = computed({
 });
 
 let iSearchingQ = 0;
+const oData = reactive({
+    topVal: '2.5vh',
+    aPane: ['A1', 'A2', 'A3', 'A4'],
+});
 const sKey = ref(''); // 可填入测试用的搜索关键字
 const iResult = ref(0); // 搜索结果数量
 const aResult = ref({});
-const activeName = ref('A2');
+const activeName = ref(oData.aPane[1]);
 const oTab = ref();
-const oStyle = reactive({
-    topVal: '3vh',
-});
 
 // ▼方法
 toSearch();
 function toSearch(){
-    if (props.word.trim()) sKey.v = props.word.trim();
-    const sAim = sKey.v;
+    const sAim = sKey.v.replace("'", "''");
     if (sAim.length < 2) return (aResult.v = {}); // 返回对象不返回数组？
     (async idx => {
         const sWhere = `WHERE text like '%${sAim}%' and text like '% %'`; // 至少包含1个空格  
@@ -121,27 +119,39 @@ function toSearch(){
     })(++iSearchingQ);
 }
 
-function getPosition(oDom){
-    const oDiv = oDom.querySelectorAll('.el-tabs__content')[0];
-    // const {offsetTop, offsetLeft, offsetWidth, offsetHeight} = oDiv;
+function showIframe(){
+    const oDiv = oTab.v.querySelectorAll('.el-tabs__content')[0];
     const oInfo = oDiv.getBoundingClientRect();
-    console.log('oDivvvv', oDiv);
-    console.log(oInfo);
+    // console.log(oDiv, oInfo);
+    let url = `https://fanyi.baidu.com/#en/zh/${sKey.v}`;
     fnInvoke('BrowserView', 'show', {
-        x: oInfo.x + 1,
-        y: oInfo.y + 1,
-        width: oInfo.width -2,
-        height: oInfo.height -2,
-        // url: 'https://fanyi.baidu.com/#en/zh/',
-        url: 'https://fanyi.baidu.com/#zh/en/%E5%9D%9A%E6%8C%81%E4%B8%8B%E5%8E%BB',
+        x: oInfo.x + 1 | 0,
+        y: oInfo.y + 1 | 0,
+        width: oInfo.width -2 | 0,
+        height: oInfo.height -2 | 0,
+        url,
     });
 }
 
+function handleClick(tab, event) {
+    // console.log('页签已经切换到：', tab.paneName);
+    if (tab.paneName == oData.aPane[1]){
+        showIframe();
+    }else{
+        fnInvoke('BrowserView', 'hide');
+    }
+}
+
+function afterOpened(){
+    console.log('窗口已经打开：准备加载外部站点');
+    showIframe();
+    // setTimeout(()=>{
+    // }, 0)
+}
 onMounted(()=>{
-    setTimeout(()=>{
-        props.beDialog || getPosition(oTab.v);
-        // getPosition(oTab.v);
-    }, 100);
+    if (props.beDialog){
+        setTimeout(showIframe, 100);
+    }
 });
 onBeforeUnmount(()=>{
     fnInvoke('BrowserView', 'hide');
@@ -150,8 +160,10 @@ onBeforeUnmount(()=>{
 watch(
     isShowSelf,
     (newVal, oldVal) => {
-        if (!newVal || !props.word.trim()) return;
+        if (!newVal) return fnInvoke('BrowserView', 'hide');
+        if (props.word.trim()) sKey.v = props.word.trim();
         toSearch();
+        activeName.v = oData.aPane[1];
     },
 );
 // fnInvoke(

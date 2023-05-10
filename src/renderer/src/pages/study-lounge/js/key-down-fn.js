@@ -33,6 +33,7 @@ export function getKeyDownFnMap(This, sType) {
         { key: 'Escape', name: '取消播放', fn: () => oMyWave.playing = false }, // 停止播放
     ];
     const withCtrl = [
+        { key: 'ctrl + q', name: '查字典', fn: () => This.searchWord() },
         { key: 'ctrl + b', name: '显示左栏', fn: () => This.showLeftColumn() },
         { key: 'ctrl + d', name: '删除一行', fn: () => This.toDel() },
         { key: 'ctrl + z', name: '撤销', fn: () => This.setHistory(-1) },

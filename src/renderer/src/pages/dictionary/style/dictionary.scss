@@ -14,7 +14,7 @@
 
 // ▼窗口模式的外套
 .outer-dom ::v-deep(.el-dialog__body){
-    height: calc(100vh - var(--top) * 2 - 54px);
+    height: calc(100vh - var(--top) * 2 - 30px);
     box-sizing: border-box;
     padding: 20px;
 }
