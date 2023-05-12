@@ -1,5 +1,5 @@
 .outter{
-    background-color: rgb(27, 27, 31);
+    background-color: rgb(39, 39, 43);
     text-align: center;
 }
 .nav-ul{
@@ -9,7 +9,7 @@
     margin: 0 0 30px;
     a.link{
         display: block;
-        height: 70px;
+        height: 65px;
         color: #888;
         display: flex;
         justify-content: center;
@@ -17,13 +17,14 @@
         flex-flow: column nowrap;
         &:hover,
         &[class~=router-link-active]{
-            color: var(--el-color-primary-light-8);
+            // color: var(--el-color-primary-light-8);
+            color: white;
             background: black;
         }
     }
     .icon{
         display: block;
-        font-size: 1.2em;
+        font-size: 1.1em;
     }
     .name{
         margin: 5px 0 -2px;
