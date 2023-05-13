@@ -7,11 +7,8 @@ dayjs.extend(isoWeek);
 const sPath = 'D:/Program Files (gree)/my-library/baidu_translate';
 
 
-
-
 export default {
     async init(){
-        console.log('init');
         let aKids = await fsp.readdir(sPath);
         aKids = aKids.filter(cur=>{
             return cur.toLocaleLowerCase().endsWith('.txt');
@@ -22,35 +19,38 @@ export default {
     },
     async processText(sText){
         const oNow = dayjs();
-        const o1stDayOfWeek = oNow.subtract(oNow.isoWeekday()-1, 'day');
-        const oStartDay = dayjs('2023-02-13 00:00:00'); // 开始使用百度
-        console.log('现在', oNow);
+        const oDateNow = new Date();
+        const oDateToday = new Date(oDateNow.getFullYear(), oDateNow.getMonth(), oDateNow.getDate());
+        // Monday = 1 by isoWeekday()
+        const o1stDayOfThisWeek = oNow.subtract(oNow.isoWeekday()-1, 'day').set('hour', 0).set('minute', 0).set('second', 0).toDate();
+        const oStartDay = dayjs('2023-02-12 23:59:59'); // 周日24点之后开始使用百度翻译
         const aText = sText.split(/\s*\n\s*/);
         const aRow = aText.map(cur=>{
             const aSplited = cur.split('\t');
             const createdAt = aSplited[5];
             const createdAtShort = createdAt.slice(0,10);
+            const createdAtDate = new Date(createdAtShort);
             const oCreatedAt = dayjs(createdAt, 'YYYY-MM-DD HH:mm:ss');
             const isAfterThat = oCreatedAt.isAfter(oStartDay);
-            const obj01 = {
-                // idx: aSplited[0],
+            const obj01 = { // idx: aSplited[0], definition: aSplited[3],
                 from: aSplited[1],
                 to: aSplited[2],
-                // definition: aSplited[3],
                 direction: aSplited[4],
-                createdAt,
+                // createdAt,
                 createdAtShort,
             };
             if (isAfterThat){
-                const oGo1StDayOfWeek = oCreatedAt.subtract(oCreatedAt.isoWeekday()-1, 'day');
+                const o1stDayOfThatWeekOBJ = oCreatedAt.subtract(oCreatedAt.isoWeekday()-1, 'day'); //.set('hour', 0).set('minute', 0).set('second', 0).toDate();
+                const o1stDayOfThatWeek = o1stDayOfThatWeekOBJ.set('hour', 0).set('minute', 0).set('second', 0).toDate();
                 const sYearWeek = `${createdAt.slice(0,4)} w${String(oCreatedAt.isoWeek()).padStart(2, '0')}`;
                 Object.assign(obj01, {
                     isAfterThat,
                     sYearWeek,
-                    daysAgo: oNow.diff(oCreatedAt, 'day'),
-                    weeksAgo: o1stDayOfWeek.diff(oGo1StDayOfWeek, 'week'),
-                    monthsAgo: oNow.diff(oCreatedAt, 'month'), //不准确
+                    weekBegin: o1stDayOfThatWeekOBJ.format('YYYY-MM-DD'),
                     dayOfWeek: oCreatedAt.isoWeekday(),
+                    daysAgo: getGapDays(createdAtDate, oDateToday),
+                    weeksAgo: getGapWeeks(o1stDayOfThisWeek, o1stDayOfThatWeek),
+                    monthsAgo: getGapMonths(createdAtDate, oDateToday),
                 });
             }
             return obj01;
@@ -82,7 +82,6 @@ function getDaysData(aData){
     const iWeeks = 12; // 取值截止到 x 周前
     let aWeekList = new Set([]);
     const series = [];
-    let arr = [];
     const filtered = aData.filter(cur => {
         if (!cur.isAfterThat || (cur.weeksAgo >= iWeeks)) return false;
         const {dayOfWeek, sYearWeek} = cur;
@@ -93,9 +92,8 @@ function getDaysData(aData){
         series[dayOfWeek-1].data_obj[sYearWeek]++;
         return true;
     });
-    console.table(arr);
-
-    console.log('过滤之后', filtered.$dc());
+    // console.log('过滤之后');
+    // console.table(filtered.$dc().slice(-300));
     aWeekList = [...aWeekList].sort();
     console.log('series', series);
     series.forEach(cur=>{
@@ -103,17 +101,6 @@ function getDaysData(aData){
         cur.data = aWeekList.map(sWeek => {
             return data_obj[sWeek] || 0;
         });
-        // cur.label.normal = {
-        //     show: true,
-        //     position: 'top',
-        //     formatter: function (params) {
-        //         var total = ['9', '16', '4', '9', '5', '3', '12'];
-        //         return '合计：' + total[params.dataIndex];
-        //     },
-        //     fontSize: 16,
-        //     fontWeight: 'bold',
-        //     textStyle: { color: '#000' }
-        // }
     });
     // series.push({
     //     name: "总计",
@@ -138,14 +125,13 @@ function getDaysData(aData){
     // });
     console.log('aWeekList', aWeekList);
     console.log('series', series);
-
     const option = {
         tooltip: {
             trigger: 'axis',
             axisPointer: {
                 // Use axis to trigger tooltip
-                type: 'shadow' // 'shadow' as default; can also be 'line' or 'shadow'
-            }
+                type: 'shadow', // 'shadow' as default; can also be 'line' or 'shadow'
+            },
         },
         legend: {},
         grid: {
@@ -159,64 +145,45 @@ function getDaysData(aData){
         },
         xAxis: {
             type: 'category',
-            // data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
             data: aWeekList,
         },
-        series123: [ {
-                name: 'D1',
-                type: 'bar',
-                stack: 'total',
-                label: { show: true },
-                emphasis: { focus: 'series' },
-                data: [320, 302, 301, 334, 390, 330, 320]
-            }, {
-                name: 'D2',
-                type: 'bar',
-                stack: 'total',
-                label: { show: true },
-                emphasis: { focus: 'series' },
-                data: [120, 132, 101, 134, 90, 230, 210]
-            }, {
-                name: 'D3',
-                type: 'bar',
-                stack: 'total',
-                label: { show: true },
-                emphasis: { focus: 'series' },
-                data: [220, 182, 191, 234, 290, 330, 310]
-            }, {
-                name: 'D4',
-                type: 'bar',
-                stack: 'total',
-                label: { show: true },
-                emphasis: { focus: 'series' },
-                data: [150, 212, 201, 154, 190, 330, 410]
-            }, {
-                name: 'D5',
-                type: 'bar',
-                stack: 'total',
-                label: { show: true },
-                emphasis: { focus: 'series' },
-                data: [820, 832, 901, 934, 1290, 1330, 1320]
-            }, {
-                name: 'D6',
-                type: 'bar',
-                stack: 'total',
-                label: { show: true },
-                emphasis: { focus: 'series' },
-                data: [820, 832, 901, 934, 1290, 1330, 1320]
-            }, {
-                name: 'D7',
-                type: 'bar',
-                stack: 'total',
-                label: { show: true },
-                emphasis: { focus: 'series' },
-                data: [820, 832, 901, 934, 1290, 1330, 1320]
-            },
-        ],
-        series,
+        series: [{
+            name: 'D7',
+            type: 'bar',
+            stack: 'total',
+            label: { show: true },
+            emphasis: { focus: 'series' },
+            data: [820, 832, 901, 934, 1290, 1330, 1320]
+        }],
     };
+    option.series = series;
     return option;
 }
+
+// ▼计算月份差
+function getGapMonths(startDate, endDate) {
+    const [start, end] = [startDate, endDate];
+    const years = end.getFullYear() - start.getFullYear();
+    const months = years * 12 + end.getMonth() - start.getMonth();
+    return months;
+}
+
+// ▼计算天数差
+function getGapDays(oTime01, oTime02) {
+    const _MS_PER_DAY = 1000 * 60 * 60 * 24;
+    const utc1 = Date.UTC(oTime01.getFullYear(), oTime01.getMonth(), oTime01.getDate());
+    const utc2 = Date.UTC(oTime02.getFullYear(), oTime02.getMonth(), oTime02.getDate());
+    return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+}
+
+// ▼计算星期差
+function getGapWeeks(startMonday, endMonday) {
+    const _7DaysLong = 1000 * 60 * 60 * 24 * 7;
+    const diff = Math.abs(startMonday.getTime() - endMonday.getTime());
+    const weeks = Math.floor(diff / _7DaysLong);
+    return weeks;
+}
+
 
 
 // ▼每行都有5个制表键，无例外

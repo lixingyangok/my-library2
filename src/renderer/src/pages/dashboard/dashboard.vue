@@ -9,10 +9,10 @@
 <template>
     <div class="page-body" >
         <h1>
-            单词数量：{{aAllWords.length.toLocaleString()}}
-            本月：{{aAllWords.filter(cur=>cur.monthsAgo==0).length}}
-            本周：{{aAllWords.filter(cur=>cur.weeksAgo==0).length}}
-            本日：{{aAllWords.filter(cur=>cur.daysAgo==0).length}}
+            单词数量：{{aAllWords.length.toLocaleString()}}&emsp;
+            本月：{{aAllWords.filter(cur=>cur.monthsAgo==0).length}}&emsp;
+            本周：{{aAllWords.filter(cur=>cur.weeksAgo==0).length}}&emsp;
+            本日：{{aAllWords.filter(cur=>cur.daysAgo==0).length}}&emsp;
         </h1>
         <div class="saved-by-day" ref="box1">
 
