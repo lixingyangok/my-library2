@@ -3,9 +3,15 @@ const fsp = require('node:fs/promises');
 const dayjs = require("dayjs");
 const isoWeek = require('dayjs/plugin/isoWeek');
 dayjs.extend(isoWeek);
-
 const sPath = 'D:/Program Files (gree)/my-library/baidu_translate';
 
+const reportFn = {
+    getOneDay(iDaysAgo){
+        const oNow = dayjs();
+        const oTheDay = oNow.subtract(iDaysAgo, 'day');
+        const sTheDay = oTheDay.format('YYYY-MM-DD');
+    },
+};
 
 export default {
     async init(){
@@ -56,7 +62,7 @@ export default {
             return obj01;
         });
         this.aAllWords = aRow;
-        console.log(aRow.slice(-30));
+        // console.log(aRow.slice(-30));
         this.show_each_day();
     },
     show_each_day(){
@@ -80,13 +86,13 @@ const oCommonPart = {
 
 function getDaysData(aData){
     const iWeeks = 12; // 取值截止到 x 周前
-    let aWeekList = new Set([]);
+    let aWeekListFull = new Set([]);
     const series = [];
     const filtered = aData.filter(cur => {
         if (!cur.isAfterThat || (cur.weeksAgo >= iWeeks)) return false;
-        const {dayOfWeek, sYearWeek} = cur;
+        const {dayOfWeek, sYearWeek, weekBegin} = cur;
         // if (1 || sYearWeek == '2023 w17') arr.push(cur.$dc())
-        aWeekList.add(sYearWeek);
+        aWeekListFull.add(sYearWeek + '\n' + weekBegin); //  + '\n' + weekBegin
         series[dayOfWeek-1] ||= {...structuredClone(oCommonPart), name: `D${dayOfWeek}`};
         series[dayOfWeek-1].data_obj[sYearWeek] ??= 0;
         series[dayOfWeek-1].data_obj[sYearWeek]++;
@@ -94,8 +100,8 @@ function getDaysData(aData){
     });
     // console.log('过滤之后');
     // console.table(filtered.$dc().slice(-300));
-    aWeekList = [...aWeekList].sort();
-    console.log('series', series);
+    aWeekListFull = [...aWeekListFull].sort();
+    let aWeekList = aWeekListFull.map(cur=>cur.split('\n')[0]);
     series.forEach(cur=>{
         const {data_obj} = cur;
         cur.data = aWeekList.map(sWeek => {
@@ -123,8 +129,7 @@ function getDaysData(aData){
     //         }, 0);
     //     }),
     // });
-    console.log('aWeekList', aWeekList);
-    console.log('series', series);
+    // console.log('series', series);
     const option = {
         tooltip: {
             trigger: 'axis',
@@ -145,7 +150,7 @@ function getDaysData(aData){
         },
         xAxis: {
             type: 'category',
-            data: aWeekList,
+            data: aWeekListFull, //aWeekList,
         },
         series: [{
             name: 'D7',

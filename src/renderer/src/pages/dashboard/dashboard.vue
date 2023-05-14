@@ -2,33 +2,61 @@
  * @Author: 李星阳
  * @Date: 2021-12-05 17:59:27
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-12 21:25:14
+ * @LastEditTime: 2023-05-14 16:19:38
  * @Description: 
 -->
 
 <template>
     <div class="page-body" >
-        <h1>
+        <div class="saved-by-day" ref="box1">
+
+        </div>
+        <section class="recent" >
             单词数量：{{aAllWords.length.toLocaleString()}}&emsp;
             本月：{{aAllWords.filter(cur=>cur.monthsAgo==0).length}}&emsp;
             本周：{{aAllWords.filter(cur=>cur.weeksAgo==0).length}}&emsp;
             本日：{{aAllWords.filter(cur=>cur.daysAgo==0).length}}&emsp;
-        </h1>
-        <div class="saved-by-day" ref="box1">
-
+        </section>
+        <div>
+            <ul>
+                <dayReport v-for="(val, idx) of 10" :key="idx"
+                    :iDaysAgo="idx"
+                    :baiduWords="recentDays"
+                />
+            </ul>
         </div>
     </div>
 </template>
 
 <script>
 import oMethods from './js/dashboard.js';
+import dayReport from '@/components/day-report/day-report.vue';
+
+const dayjs = require("dayjs");
+const oNow = dayjs();
+const aDayList = Array(30).fill().map((cur, idx)=>{
+    const oDay = oNow.subtract(idx, 'day');
+    return oDay.format('YYYY-MM-DD');
+});//.reverse();
 
 export default{
     name: "dashboard",
+    components: {
+        dayReport,
+    },
     data(){
         return {
             aAllWords: [],
+            aDayList,
         };
+    },
+    computed: {
+        recentDays(){
+            const aResult = this.aAllWords.filter(cur=> {
+                return cur.isAfterThat;
+            });
+            return aResult;
+        },
     },
     async created(){
         this.init();
