@@ -421,6 +421,10 @@ export function fnAllKeydownFn() {
     }
     // ▼搜索
     function searchWord() {
+        if (This.isShowDictionary) {
+            This.isShowDictionary = false; // 关闭窗口
+            return;
+        }
         const sKey = window.getSelection().toString().trim() || '';
         // if (!sKey) return;
         console.log('搜索：', sKey);
