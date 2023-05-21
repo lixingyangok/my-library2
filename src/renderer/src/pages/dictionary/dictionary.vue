@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-23 18:49:41
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-10 22:02:25
+ * @LastEditTime: 2023-05-21 16:51:34
  * @Description: 
 -->
 <template>
@@ -15,7 +15,7 @@
             :class="beDialog ? 'dialog-model': 'dict_model'"
             :is="beDialog ? 'el-dialog' : 'div'"
             :title123="beDialog ? '查字典' : ''"
-            :style="beDialog ? {'margin-bottom': 0} : {}"
+            :style="beDialog ? {'margin-bottom': 0, 'max-width': '1500px'} : {}"
             @opened="afterOpened"
         >
             <div class="search-bar">
@@ -164,6 +164,13 @@ watch(
         if (props.word.trim()) sKey.v = props.word.trim();
         toSearch();
         activeName.v = oData.aPane[1];
+        fnInvoke('BrowserView', 'show', {
+            // x: Math.round(oInfo.x + 1),
+            // y: Math.round(oInfo.y + 1),
+            // width: Math.round(oInfo.width -2),
+            // height: Math.round(oInfo.height -2),
+            url: `https://fanyi.baidu.com/#en/zh/${sKey.v}`,
+        });
     },
 );
 // fnInvoke(
