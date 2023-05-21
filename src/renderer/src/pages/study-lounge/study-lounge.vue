@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-05 17:35:19
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-07 21:31:04
+ * @LastEditTime: 2023-05-21 20:20:08
  * @Description: 
 -->
 <template>
@@ -160,20 +160,43 @@
                         :class="{cur: idx==iCurStep}"
                     ></li>
                 </ul>
+                <div class="milestone-bar">
+                    <!-- {{ aMileStones.oFrom.start_ }} - {{ aMileStones.oTo.end_ }} ●{{aMileStones.iAt}}% -->
+                    <!-- 当前分钟：{{ aMileStones.iCurMinute }}-{{ aMileStones.iNextMinute }} -->
+                    <div class="progress-bar">
+                        <ul v-if="aMileStones.aSteps.length" >
+                            <li v-for="(curRow, rowIdx) of aMileStones.aSteps" :key="rowIdx"
+                                :note="`${curRow.start_}-${curRow.end_}-${curRow.long}`"
+                                :style="{'flex-grow': curRow.long/ aMileStones.iFull*100}"
+                                :class="{
+                                    done: curRow.start <= oCurLine.start,
+                                    active: curRow.start == oCurLine.start
+                                }"
+                            ></li>
+                        </ul>
+                        <!-- <span class="pointer" :style="{left: `${aMileStones.iAt}%`}"></span> -->
+                    </div>
+                    <div class="info">
+                        <em>{{ aMileStones.iCurMinute }}</em> - <em>{{ aMileStones.iNextMinute }}</em> Minutes
+                        <!-- to <em>{{ aMileStones.iNextMinute }}</em> Minutes -->
+                    </div>
+                </div>
                 <div class="textarea" :key="iCurLineIdx">
-                    <template v-for="word of splitSentence(oCurLine.text)">
-                        <span v-if="word.sClassName" :class="word.sClassName">
+                    <template v-for="(word, widx) of splitSentence(oCurLine.text)">
+                        <span v-if="word.sClassName" :class="word.sClassName" :key="widx">
                             {{word.word}}
                         </span>
                         <template v-else>{{word}}</template>
                     </template>
+                    <!-- ▼临时注释一下 -->
+                    <!--
                     <div class="line-info" v-show="aProcess.some(cur=>cur.bLight)">
                         <span v-for="(cur, iCurIdx) of aProcess" :key="iCurIdx"
                             :class="{light: cur.bLight}"
                         >
                             {{cur.myVal}}<small>{{cur.sUnit}}</small>
                         </span>
-                    </div>
+                    </div> -->
                 </div>
                 <!-- ▲下层内容，▼上层输入框 -->
                 <textarea ref="oTextArea" class="textarea textarea-real"
@@ -189,7 +212,7 @@
                 <!-- @keydown.backspace="typed" -->
                 <ul class="candidate-list">
                     <li class="one-word"
-                        v-for="(cur, idx) of sTyped ? aCandidate : aFullWords" :key="idx"
+                        v-for="(cur, idx) of sTyped ? aCandidate : aFullWords.slice(0, 10)" :key="idx"
                     >
                         <template v-if="sTyped">
                             <i class="idx">{{idx+1}}</i>
@@ -226,8 +249,8 @@
                         <i className="idx">{{cur.ii+1}}</i>
                         <time className="time">{{cur.start_}} - {{cur.end_}}</time>
                         <p class="text" :class="{changed: checkIfChanged(cur)}">
-                            <template v-for="word of splitSentence(cur.text, cur.ii)">
-                                <span v-if="word.sClassName" :class="word.sClassName">
+                            <template v-for="(word, widx) of splitSentence(cur.text, cur.ii)">
+                                <span v-if="word.sClassName" :class="word.sClassName" :key="widx">
                                     {{word.word}}
                                 </span>
                                 <template v-else>{{word}}</template>

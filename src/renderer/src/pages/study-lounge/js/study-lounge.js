@@ -87,7 +87,7 @@ export function mainPart(){
 		});
 		return new RegExp(`\\b(${arr.join('|')})`, 'gi'); // \\b
 	});
-	// ▼进度提示
+	// ▼进度提示-旧版本
 	const aProcess = computed(()=>{
 		const {oMediaInfo, iCurLineIdx, aLineArr} = oData;
 		const iPreviousStart = aLineArr[iCurLineIdx-1]?.start;
@@ -111,6 +111,82 @@ export function mainPart(){
 			bLight: (iCurLineIdx+1) % 10 === 0,
 		};
 		return [ oLine, oMinute, oPercent, ];
+	});
+	// ▼进度提示-新版本
+	const aMileStones = computed(()=>{
+		const {oMediaInfo, iCurLineIdx, aLineArr} = oData;
+		const toNextTen = (()=>{
+			const iCurLine = iCurLineIdx + 1;
+			const iNextTenIdx = (
+				iCurLine % 10 == 0
+				? iCurLine + 10 - 1
+				: Math.ceil(iCurLine / 10) * 10 - 1
+			);
+			const oTarget = aLineArr[iNextTenIdx] || {};
+			return {
+				...oTarget,
+				goNext: `${iNextTenIdx + 1}行`,
+			};
+		})();
+		const {end=0, start=0} = oCurLine.value || {};
+		const toNextMinute = (()=>{
+			const iCurMinute = Math.floor(start / 60);
+			const iNextMinute = iCurMinute + 1;
+			let iFrom = aLineArr.slice(0, iCurLineIdx+2).findLastIndex(cur => {
+				return cur.start <= iCurMinute * 60;
+			});
+			if (iFrom == -1) iFrom = 0;
+			else if (iFrom > 0) iFrom++;
+			const oFrom = aLineArr[iFrom] || {};
+			let iTo = aLineArr.slice(iCurLineIdx).findIndex(cur=>{
+				return cur.start >= iNextMinute * 60;
+			});
+			let oTo =  {};
+			let aSteps = [];
+			if (iTo>=0){
+				iTo += iCurLineIdx;
+				oTo = aLineArr[iTo] || {};
+				aSteps = aLineArr.slice(iFrom, iTo);
+			}
+			const iFull = oTo.end - oFrom.start;
+			const iAt = (start - oFrom.start) / iFull * 100;
+			return {
+				iFull,
+				aSteps,
+				oFrom,
+				oTo,
+				iAt,
+				iCurMinute,
+				iNextMinute,
+				goNext: `${iNextMinute}分钟`,
+			};
+		})();
+		const toNextPercent = (()=>{
+			const {duration = 0} = oMediaInfo;
+			const iCurPercent = Math.ceil(end / duration * 100); // 当前位置百分比
+ 			const oneMinutePercent = 60 / duration * 100; // 每分钟占总长的百分比
+			// const iStepLong = Math.abs(10 - oneMinutePercent) < Math.abs(5 - oneMinutePercent) ? 10 : 5;
+			const iStepLong = oneMinutePercent > 5 ? 5 : 10;
+			const aCandidate = [...Array(Math.ceil(100 / iStepLong))].map((cur, idx)=>{
+				return (idx + 1) * iStepLong;
+			});
+			const iNextPercent = aCandidate.findLast(iCouldGotTo => {
+				if (iCouldGotTo - iCurPercent <= iStepLong){
+					return Math.min(iCouldGotTo, 100);
+				}
+			});
+			const oTarget = aLineArr.slice(iCurLineIdx).find(cur=>{
+				return Math.ceil(cur.start / duration * 100) >= iNextPercent;
+			}) || {};
+			return {
+				...oTarget,
+				goNext: `${iCurPercent}/${iNextPercent}%`,
+			}
+		})();
+		const oResult = [toNextMinute, toNextPercent].sort((aa, bb)=>{
+			return aa.start - bb.start;
+		});
+		return toNextMinute;
 	});
 	// ▼ 字幕文件位置（todo 用tube管道取
 	const sSubtitleSrc = (()=>{
@@ -624,5 +700,6 @@ export function mainPart(){
 		...oFn,
 		oCurLine,
 		aProcess,
+		aMileStones,
     });
 };
