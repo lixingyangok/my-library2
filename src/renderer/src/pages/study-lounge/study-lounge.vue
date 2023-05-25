@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-05 17:35:19
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-25 22:01:06
+ * @LastEditTime: 2023-05-25 22:23:12
  * @Description: 
 -->
 <template>
@@ -185,7 +185,7 @@
                         <li v-for="(iMinute, iMitIndex) of ~~(oMediaInfo.duration/60) + 1"
                             :key="iMinute"
                             :class="{
-                                'done': oCurLine.start / 60 > iMinute,
+                                'done': aMinutesAnalyze[iMitIndex]?.done,
                                 'done-today': aMinutesAnalyze[iMitIndex]?.doneByToday
                             }"
                         ></li>

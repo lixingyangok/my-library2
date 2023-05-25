@@ -96,21 +96,25 @@ export function mainPart(){
 		const aMinutesList = aLineArr.reduce((aResult, oCur)=>{
 			const iCurMinute = Math.floor(oCur.start / 60);
 			aResult[iCurMinute] ||= {allSteps: {}};
+			const oThisMin = aResult[iCurMinute];
+			oThisMin.finishLong ??= 0;
+			oThisMin.allLong ??= 0;
+			oThisMin.allLong += oCur.long;
 			if (oCur.filledAt_){
 				const sFilledAt = oCur.filledAt_.slice(0,10);
-				const oThisMin = aResult[iCurMinute];
 				oThisMin.allSteps[sFilledAt] = oCur.long + (oThisMin.allSteps[sFilledAt] || 0);
-				oThisMin.allLong = oCur.long + (oThisMin.allLong || 0);
+				oThisMin.finishLong += oCur.long;
 			}
 			return aResult;
 		}, []);
 		aMinutesList.forEach(cur=>{
-			const {allLong} = cur;
+			const {allLong, finishLong} = cur;
 			let aSomeDay = Object.entries(cur.allSteps).find(aOneDay=>{
 				return aOneDay[1] / allLong > 0.5;
-			}) || '';
+			}) || [];
 			cur.sMainDate = aSomeDay[0];
-			cur.doneByToday = sToday == aSomeDay[0];
+			cur.doneByToday = (sToday == aSomeDay[0]);
+			cur.done = finishLong / allLong > 0.9;
 		});
 		console.log('aMinutesList', aMinutesList.$dc());
 		return aMinutesList;
