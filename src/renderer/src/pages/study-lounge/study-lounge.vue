@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-05 17:35:19
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-21 20:20:08
+ * @LastEditTime: 2023-05-25 22:01:06
  * @Description: 
 -->
 <template>
@@ -154,17 +154,18 @@
                 />
             </article>
             <!-- ▼输入 -->
-            <div class="type-box" v-if="aLineArr[iCurLineIdx]">
+            <div class="type-box" v-if="oCurLine">
                 <ul class="history-ul" :style="{'--max': iHisMax}">
                     <li v-for="(cur, idx) of aHistory" :key="idx"
                         :class="{cur: idx==iCurStep}"
                     ></li>
                 </ul>
-                <div class="milestone-bar">
+                <!-- ▼进度条 -->
+                <section class="milestone-bar">
                     <!-- {{ aMileStones.oFrom.start_ }} - {{ aMileStones.oTo.end_ }} ●{{aMileStones.iAt}}% -->
                     <!-- 当前分钟：{{ aMileStones.iCurMinute }}-{{ aMileStones.iNextMinute }} -->
                     <div class="progress-bar">
-                        <ul v-if="aMileStones.aSteps.length" >
+                        <ul v-if="aMileStones.aSteps.length" class="box-ul" >
                             <li v-for="(curRow, rowIdx) of aMileStones.aSteps" :key="rowIdx"
                                 :note="`${curRow.start_}-${curRow.end_}-${curRow.long}`"
                                 :style="{'flex-grow': curRow.long/ aMileStones.iFull*100}"
@@ -174,13 +175,22 @@
                                 }"
                             ></li>
                         </ul>
+                        <div class="info">
+                            <em>{{ aMileStones.iCurMinute }}</em> - <em>{{ aMileStones.iNextMinute }}</em> Minutes
+                            <!-- to <em>{{ aMileStones.iNextMinute }}</em> Minutes -->
+                        </div>
                         <!-- <span class="pointer" :style="{left: `${aMileStones.iAt}%`}"></span> -->
                     </div>
-                    <div class="info">
-                        <em>{{ aMileStones.iCurMinute }}</em> - <em>{{ aMileStones.iNextMinute }}</em> Minutes
-                        <!-- to <em>{{ aMileStones.iNextMinute }}</em> Minutes -->
-                    </div>
-                </div>
+                    <ul class="latern-list box-ul" v-if="oMediaInfo.duration">
+                        <li v-for="(iMinute, iMitIndex) of ~~(oMediaInfo.duration/60) + 1"
+                            :key="iMinute"
+                            :class="{
+                                'done': oCurLine.start / 60 > iMinute,
+                                'done-today': aMinutesAnalyze[iMitIndex]?.doneByToday
+                            }"
+                        ></li>
+                    </ul>
+                </section>
                 <div class="textarea" :key="iCurLineIdx">
                     <template v-for="(word, widx) of splitSentence(oCurLine.text)">
                         <span v-if="word.sClassName" :class="word.sClassName" :key="widx">

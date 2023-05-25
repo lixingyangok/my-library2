@@ -9,6 +9,7 @@ const dayjs = require("dayjs");
 
 
 let isMediaChanged = false; // 是否加载了一个新的媒体
+const sToday = dayjs().format('YYYY-MM-DD');
 
 export function mainPart(){
 	const oDom = reactive({
@@ -87,7 +88,34 @@ export function mainPart(){
 		});
 		return new RegExp(`\\b(${arr.join('|')})`, 'gi'); // \\b
 	});
-	// ▼进度提示-旧版本
+	// ▼ 抓捕字幕的正则表达式
+	const aMinutesAnalyze = computed(()=>{
+		const {oMediaInfo, iCurLineIdx, aLineArr} = oData;
+		const iLong = Math.ceil(oMediaInfo.duration/60);
+		if (!aLineArr.length) return [];
+		const aMinutesList = aLineArr.reduce((aResult, oCur)=>{
+			const iCurMinute = Math.floor(oCur.start / 60);
+			aResult[iCurMinute] ||= {allSteps: {}};
+			if (oCur.filledAt_){
+				const sFilledAt = oCur.filledAt_.slice(0,10);
+				const oThisMin = aResult[iCurMinute];
+				oThisMin.allSteps[sFilledAt] = oCur.long + (oThisMin.allSteps[sFilledAt] || 0);
+				oThisMin.allLong = oCur.long + (oThisMin.allLong || 0);
+			}
+			return aResult;
+		}, []);
+		aMinutesList.forEach(cur=>{
+			const {allLong} = cur;
+			let aSomeDay = Object.entries(cur.allSteps).find(aOneDay=>{
+				return aOneDay[1] / allLong > 0.5;
+			}) || '';
+			cur.sMainDate = aSomeDay[0];
+			cur.doneByToday = sToday == aSomeDay[0];
+		});
+		console.log('aMinutesList', aMinutesList.$dc());
+		return aMinutesList;
+	});
+	// ▼进度提示-旧版本（停用了）
 	const aProcess = computed(()=>{
 		const {oMediaInfo, iCurLineIdx, aLineArr} = oData;
 		const iPreviousStart = aLineArr[iCurLineIdx-1]?.start;
@@ -209,6 +237,7 @@ export function mainPart(){
 		getLinesFromDB();
 		await getNeighbors(); // 一定要 await 下方的方法才会正常运行
 		getNewWords();
+		console.log('aLineArr!!\n', oData.aLineArr.$dc());
 	}
 	// ▼查询库中的字幕
 	async function getLinesFromDB(aRes=[]){
@@ -667,6 +696,8 @@ export function mainPart(){
 	}
 	// ============================================================================
 	init();
+	
+
 	const oFn = {
 		chooseFile,
 		init,
@@ -701,5 +732,6 @@ export function mainPart(){
 		oCurLine,
 		aProcess,
 		aMileStones,
+		aMinutesAnalyze,
     });
 };
