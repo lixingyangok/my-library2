@@ -161,6 +161,8 @@ export function mainPart(){
 			};
 		})();
 		const {end=0, start=0} = oCurLine.value || {};
+		const {duration = 0} = oMediaInfo;
+		const iAllMinutes = Math.floor(duration / 60);
 		const toNextMinute = (()=>{
 			const iCurMinute = Math.floor(start / 60);
 			const iNextMinute = iCurMinute + 1;
@@ -170,15 +172,18 @@ export function mainPart(){
 			if (iFrom == -1) iFrom = 0;
 			else if (iFrom > 0) iFrom++;
 			const oFrom = aLineArr[iFrom] || {};
-			let iTo = aLineArr.slice(iCurLineIdx).findIndex(cur=>{
-				return cur.start >= iNextMinute * 60;
-			});
+			let iTo = (()=>{
+				if (iNextMinute > iAllMinutes) return aLineArr.length-1;
+				let iResult = aLineArr.slice(iCurLineIdx).findIndex((cur, idx, wholeArr)=>{
+					return (cur.end >= (iCurMinute+1) * 60);
+				});
+				if (iResult>=0) return iResult + iCurLineIdx;
+			})();
 			let oTo =  {};
 			let aSteps = [];
-			if (iTo>=0){
-				iTo += iCurLineIdx;
+			if (iTo > 0){
 				oTo = aLineArr[iTo] || {};
-				aSteps = aLineArr.slice(iFrom, iTo);
+				aSteps = aLineArr.slice(iFrom, iTo+1);
 			}
 			const iFull = oTo.end - oFrom.start;
 			const iAt = (start - oFrom.start) / iFull * 100;
