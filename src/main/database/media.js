@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-16 10:33:24
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-29 18:53:01
+ * @LastEditTime: 2023-05-28 08:52:04
  * @Description: 
  */
 
@@ -40,7 +40,7 @@ User.sync({ alter: true }) - 这将检查数据库中表的当前状态(它具�
 export default {
     // ▼保存：一个媒体信息
     async saveMediaInfo(obj) {
-        const oState = await fs.stat(`${obj.dir}/${obj.name}`);
+        const oState = await fsp.stat(`${obj.dir}/${obj.name}`);
         obj.size = oState.size;
         const res = await oMedia.create(obj);
         return res?.dataValues;

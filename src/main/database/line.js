@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-16 10:40:40
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-08 21:30:55
+ * @LastEditTime: 2023-05-28 16:41:26
  * @Description: 
  */
 
@@ -97,7 +97,7 @@ const oFn = {
                 ORDER BY start ASC
             `.replace(/\s+/g, ' ');
             const a01Result = db02.prepare(sql).all();
-            toLog('查询耗时111：', (new Date() - t01), a01Result);
+            toLog('查询耗时111：', (new Date() - t01), a01Result.length);
         });
         const t02 = new Date()*1;
         const res = await oLine.findAll({
