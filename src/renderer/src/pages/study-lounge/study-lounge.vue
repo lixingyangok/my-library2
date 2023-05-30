@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-05 17:35:19
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-25 22:23:12
+ * @LastEditTime: 2023-05-30 21:13:52
  * @Description: 
 -->
 <template>
@@ -104,7 +104,7 @@
                 <el-dropdown split-button type="primary" size="small" @command="handleCommand" >
                     待定功能
                     <!-- <el-button type="primary" size="small">字幕&nbsp;<i class="fas fa-angle-down"/></el-button> -->
-                    <template #dropdown size="small">
+                    <template #dropdown>
                         <el-dropdown-menu>
                             <el-dropdown-item command="导入Srt">导入Srt</el-dropdown-item>
                             <el-dropdown-item command="导出Srt">导出Srt</el-dropdown-item>
@@ -165,30 +165,35 @@
                     <!-- {{ aMileStones.oFrom.start_ }} - {{ aMileStones.oTo.end_ }} ●{{aMileStones.iAt}}% -->
                     <!-- 当前分钟：{{ aMileStones.iCurMinute }}-{{ aMileStones.iNextMinute }} -->
                     <div class="progress-bar">
-                        <ul v-if="aMileStones.aSteps.length" class="box-ul" >
+                        <ul v-if="aMileStones.aSteps.length" class="box-ul">
                             <li v-for="(curRow, rowIdx) of aMileStones.aSteps" :key="rowIdx"
                                 :note="`${curRow.start_}-${curRow.end_}-${curRow.long}`"
                                 :style="{'flex-grow': curRow.long/ aMileStones.iFull*100}"
                                 :class="{
                                     done: curRow.start <= oCurLine.start,
-                                    active: curRow.start == oCurLine.start
+                                    'bright-one blink': curRow.start == oCurLine.start
                                 }"
                             ></li>
                         </ul>
-                        <div class="info">
+                        <span class="cursor bright-one blink" v-else
+                            :style="{
+                                left: oCurLine.start % 60 / 60 * 100 + '%',
+                                width: oCurLine.long / 60 * 100 + '%',
+                            }"
+                        ></span>
+                        <span class="info">
                             <em>{{ aMileStones.iCurMinute }}</em> - <em>{{ aMileStones.iNextMinute }}</em> Minutes
-                            <!-- to <em>{{ aMileStones.iNextMinute }}</em> Minutes -->
-                        </div>
-                        <!-- <span class="pointer" :style="{left: `${aMileStones.iAt}%`}"></span> -->
+                        </span>
                     </div>
                     <ul class="latern-list box-ul" v-if="oMediaInfo.duration">
                         <li v-for="(iMinute, iMitIndex) of ~~(oMediaInfo.duration/60) + 1"
                             :key="iMinute"
                             :class="{
                                 'done': aMinutesAnalyze[iMitIndex]?.done,
-                                'done-today': aMinutesAnalyze[iMitIndex]?.doneByToday
+                                'bright-one': aMinutesAnalyze[iMitIndex]?.doneByToday,
                             }"
                         ></li>
+                        <!-- 'blink': aMinutesAnalyze[iMitIndex]?.doneByToday -->
                     </ul>
                 </section>
                 <div class="textarea" :key="iCurLineIdx">

@@ -131,6 +131,12 @@
 	&>*{
 		height: var(--height);
 	}
+	.bright-one{
+		background-color: rgba(0, 200, 0, 0.8) !important;
+	}
+	.blink{
+		animation: myBreath 2.5s linear infinite;
+	}
 }
 
 ul.box-ul{
@@ -143,24 +149,43 @@ ul.box-ul{
 		&[class~=done]{
 			background-color: rgba(0, 255, 0, 0.2);
 		}
-		&[class~=active]{
-			background-color: rgba(0, 200, 0, 0.8);
-			animation: myBreath 2.5s linear infinite;
-		}
 	}
 }
+
 
 .milestone-bar .progress-bar{
 	background-color: var(--bg-color);
 	flex-grow: 1;
 	flex-shrink: 1;
 	position: relative;
-	position: relative;
 	margin: 0 3px 0 0;
 	li + li{
 		border-left: solid 1px rgba(255, 255, 255, 1);
 	}
+	.info{
+		position: absolute;
+		font-size: 10px;
+		flex-shrink: 0;
+		color: #666;
+		top: -1px;
+		height: 100%;
+		left: 50%;
+		z-index: 2;
+		transform: translateX(-50%);
+		em{
+			color: #333;
+		}
+	}
+	.cursor{
+		display: inline-block;
+		position: absolute;
+		// left: 50%;
+		// width: 50px;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.2);
+	}
 }
+
 
 ul.latern-list{
 	flex-shrink: 0;
@@ -171,32 +196,13 @@ ul.latern-list{
 	max-width: 50%;
 	li{
 		width: calc(var(--height) + 1px) ;
-		&[class~=done-today]{
-			background-color: rgba(0, 200, 0, 0.8);
-		}
 	}
 	li:not(:last-child){
 		border-left: solid 1px rgba(255, 255, 255, 1);
 	}
 }
 
-
-
-.milestone-bar .info{
-	position: absolute;
-	font-size: 10px;
-	flex-shrink: 0;
-	color: #666;
-	top: -1px;
-	height: 100%;
-	left: 50%;
-	z-index: 2;
-	transform: translateX(-50%);
-	em{
-		color: #333;
-	}
-}
-
+// .progress-bar
 // ▼候选词
 
 .candidate-list{
