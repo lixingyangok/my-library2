@@ -101,3 +101,24 @@
     }
 }
 
+.file-info-bar{
+    background: #27272b;
+    color: rgba(255,255,255, 0.7);
+    padding: 3px 6px;
+    margin: 0 0 5px;
+}
+
+.today-bar{
+    margin: 5px 0 10px;
+}
+
+.wave-below{
+    // margin: 0 0 10px;
+    margin: 10px 0 0;
+    border-radius: 2px;
+    & > * + .el-button,
+    & > * + .el-button-group{
+        margin-left: 5px;
+    }
+}
+

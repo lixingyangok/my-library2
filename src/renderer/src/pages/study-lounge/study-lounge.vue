@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-05 17:35:19
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-06-01 22:20:48
+ * @LastEditTime: 2023-06-02 21:24:01
  * @Description: 
 -->
 <template>
@@ -84,8 +84,15 @@
             </div>
             <span class="handler"></span>
         </section>
-        <!-- 左右分界 -->
+        <!--
+        左右分界
+        -->
         <section class="right">
+            <article class="file-info-bar">
+                ◆文件：{{(oMediaInfo.dir||'').split('/').slice(-2).join('/') + `/${oMediaInfo.name}`}}&emsp;
+                ◆时长：{{oMediaBuffer.sDuration_}}&emsp;
+                ◆完成于：{{oMediaInfo?.finishedAt?.toLocaleString() || '进行中'}}&emsp;
+            </article>
             <MyWave ref="oMyWave"
                 :media-path="sMediaSrc"
                 :a-line-arr="aLineArr"
@@ -94,11 +101,6 @@
                 @pipe="bufferReceiver"
                 @setTimeTube="setTime"
             />
-            <article class="wave-below">
-                ◆文件：{{(oMediaInfo.dir||'').split('/').slice(-2).join('/') + `/${oMediaInfo.name}`}}&emsp;
-                ◆时长：{{oMediaBuffer.sDuration_}}&emsp;
-                ◆完成于：{{oMediaInfo?.finishedAt?.toLocaleString() || '进行中'}}&emsp;
-            </article>
             <TodayHistory ref="oTodayBar"/>
             <article class="wave-below">
                 <el-dropdown split-button type="primary" size="small" @command="handleCommand" >
