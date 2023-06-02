@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-05 17:35:19
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-30 21:13:52
+ * @LastEditTime: 2023-06-01 22:20:48
  * @Description: 
 -->
 <template>
@@ -175,12 +175,20 @@
                                 }"
                             ></li>
                         </ul>
-                        <span class="cursor bright-one blink" v-else
-                            :style="{
-                                left: oCurLine.start % 60 / 60 * 100 + '%',
-                                width: oCurLine.long / 60 * 100 + '%',
-                            }"
-                        ></span>
+                        <template v-else>
+                            <span class="cursor" 
+                                :style="{
+                                    left: 0,
+                                    right: `calc(100% - ${oCurLine.start % 60 / 60 * 100}% - 2px)`,
+                                }"
+                            ></span>
+                            <span class="cursor bright-one blink"
+                                :style="{
+                                    left: oCurLine.start % 60 / 60 * 100 + '%',
+                                    width: oCurLine.long / 60 * 100 + '%',
+                                }"
+                            ></span>
+                        </template>
                         <span class="info">
                             <em>{{ aMileStones.iCurMinute }}</em> - <em>{{ aMileStones.iNextMinute }}</em> Minutes
                         </span>
