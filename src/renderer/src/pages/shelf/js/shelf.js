@@ -8,9 +8,8 @@ import {
     findMedia,
 } from '../../../common/js/fs-fn.js';
 
-const fs = require('fs');
 const fsp = require('node:fs/promises');
-const path = require('path');
+// const path = require('path');
 // console.log('●\n', path.extname('aa.Txt'));
 
 const fnAboutDB = {

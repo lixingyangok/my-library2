@@ -2,9 +2,10 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-06 09:17:58
+ * @LastEditTime: 2023-05-25 21:30:35
  * @Description: 
  */
+const dayjs = require("dayjs");
 
 // ▼ 通过文件地址得到媒体 buffer （此方法目前没用上）
 export async function getBufferByPath(sPath){
@@ -164,6 +165,9 @@ export function fixTime(theTarget){
 		cur.start_ = secToStr(start, 'lineTime');
 		cur.end_ = secToStr(end, 'lineTime');
 		cur.text = text || '';
+		if (cur.filledAt){
+			cur.filledAt_ = dayjs(cur.filledAt).format('YYYY-MM-DD HH:mm:ss');
+		}
 	});
 	return theTarget;
 }

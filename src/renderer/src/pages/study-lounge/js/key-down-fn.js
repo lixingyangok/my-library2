@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-07 20:46:52
+ * @LastEditTime: 2023-06-25 12:17:34
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -136,6 +136,7 @@ export function fnAllKeydownFn() {
     async function recordPlace(iAimLine){ // 用异步方法防止阻断主进程
         // 考虑添加：1个延时与防抖
         const iAll = This.aLineArr.length;
+        if (!This.oCurLine) return;
         let {end, start_} = This.oCurLine;
         const {dir, name, duration, durationStr} = This.oMediaInfo;
         const fPercent = (()=>{
