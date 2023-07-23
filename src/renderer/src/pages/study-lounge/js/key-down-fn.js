@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-06-25 12:17:34
+ * @LastEditTime: 2023-07-22 19:45:05
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -18,7 +18,16 @@ export function getKeyDownFnMap(This, sType) {
         oMyWave.toPlay(iVal);
         This.setLeftLine();
     }
+    function playOrMove(ev, iVal){
+        const ScrollLock = ev.getModifierState("ScrollLock");
+        if (ScrollLock) return playAndCheck(iVal);
+        const iGoTo = iVal < 0 ? 0 : This.oTextArea.value.length;
+        This.oTextArea.selectionStart = iGoTo;
+        This.oTextArea.selectionEnd = iGoTo;
+    }
     const withNothing = [
+        { key: 'Home', name: '上一句', fn: ev => playOrMove(ev, -1)},
+        { key: 'End', name: '下一句', fn: ev => playOrMove(ev, 1)},
         { key: 'Prior', name: '上一句', fn: () => This.previousAndNext(-1) },
         { key: 'Next', name: '下一句', fn: () => This.previousAndNext(1) },
         { key: '\\', name: '上一句', fn: () => This.previousAndNext(-1) },
@@ -40,6 +49,7 @@ export function getKeyDownFnMap(This, sType) {
         { key: 'ctrl + s', name: '保存到DB', fn: () => This.saveLines() },
         { key: 'ctrl + j', name: '合并上一句', fn: () => This.putTogether(-1) },
         { key: 'ctrl + k', name: '合并下一句', fn: () => This.putTogether(1) },
+        { key: 'ctrl + ;', name: '处理引号', fn: () => This.dealQuotationMark() },
         // { key: 'ctrl + Enter', name: '播放', fn: () => oMyWave.toPlay() }, // 将来开发此方法能打阅读标记
         // { key: 'ctrl + shift + Enter', name: '播放', fn: () => oMyWave.toPlay(true) },
         { key: 'ctrl + shift + z', name: '恢复', fn: () => This.setHistory(1) },
@@ -58,10 +68,10 @@ export function getKeyDownFnMap(This, sType) {
         { key: 'alt + d', name: '', fn: () => This.toInset(2) },
         { key: 'alt + f', name: '', fn: () => This.toInset(3) },
         // 未分类
-        { key: 'alt + j', name: '', fn: () => This.previousAndNext(-1) },
-        { key: 'alt + k', name: '', fn: () => This.previousAndNext(1) },
-        { key: 'alt + u', name: '', fn: () => playAndCheck(-1) },
-        { key: 'alt + i', name: '', fn: () => playAndCheck(1) },
+        // { key: 'alt + j', name: '', fn: () => This.previousAndNext(-1) },
+        // { key: 'alt + k', name: '', fn: () => This.previousAndNext(1) },
+        { key: 'alt + j', name: '', fn: () => playAndCheck(-1) },
+        { key: 'alt + k', name: '', fn: () => playAndCheck(1) },
         { key: 'alt + l', name: '跳到最后一句', fn: () => This.goLastLine() },
         // { key: 'alt + q', name: '左侧定位', fn: () => This.setLeftLine() },
         // alt + shift
@@ -86,6 +96,22 @@ export function getKeyDownFnMap(This, sType) {
 export function fnAllKeydownFn() {
     const oInstance = getCurrentInstance();
     const This = oInstance.proxy;
+    function dealQuotationMark(){
+        // console.log('dealQuotationMark', This.oCurLine.$dc());
+        console.log('dealQuotationMark', This.oCurLine);
+        let {text=''} = This.oCurLine;
+        text = text.trim();
+        if (!text) return;
+        var aa = ['"', "'"].includes(text.at(0));
+        var bb = ['"', "'"].includes(text.at(-1));
+        if (aa || bb){
+            const iStart = aa ? 1 : 0;
+            const iEnd = bb ? -1 : Infinity;
+            This.oCurLine.text = text.slice(iStart, iEnd);
+        }else{
+            This.oCurLine.text = `"${text}"`;
+        }
+    }
     // ▼切换当前句子（上一句，下一句）
     function previousAndNext(iDirection) {
         const { oMediaBuffer, aLineArr, iCurLineIdx } = This;
@@ -629,6 +655,7 @@ export function fnAllKeydownFn() {
         saveLines,
         setHistory,
         setLeftLine,
+        dealQuotationMark,
     };
 }
 

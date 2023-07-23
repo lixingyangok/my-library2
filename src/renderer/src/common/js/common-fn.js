@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-09 17:59:23
  * @LastEditors: 李星阳
- * @LastEditTime: 2022-07-31 11:15:24
+ * @LastEditTime: 2023-07-02 17:14:30
  * @Description: 
  */
 
@@ -22,7 +22,7 @@ export function registerKeydownFn(oFnList) {
         ev.preventDefault();
         ev.stopPropagation();
         // if (typeof theFn != 'string') theFn();
-        theFn();
+        theFn(ev);
     }
     // console.log('onMounted 开始收集按键');
     document.addEventListener('keydown', keyDownFnCaller);

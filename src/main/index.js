@@ -58,7 +58,7 @@ function createWindow() {
     } else {
         mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
     }
-    // mainWindow.webContents.openDevTools(); // 打开控制台
+    mainWindow.webContents.openDevTools(); // 打开控制台
     return mainWindow;
 }
 
