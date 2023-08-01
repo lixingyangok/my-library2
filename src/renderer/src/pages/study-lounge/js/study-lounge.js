@@ -116,7 +116,7 @@ export function mainPart(){
 			cur.doneByToday = (sToday == aSomeDay[0]);
 			cur.done = finishLong / allLong > 0.9;
 		});
-		console.log('aMinutesList', aMinutesList.$dc());
+		// console.log('aMinutesList', aMinutesList.$dc());
 		return aMinutesList;
 	});
 	// ▼进度提示-旧版本（停用了）
@@ -170,14 +170,15 @@ export function mainPart(){
 				return cur.start <= iCurMinute * 60;
 			});
 			if (iFrom == -1) iFrom = 0;
-			else if (iFrom > 0) iFrom++;
+			else if (iFrom > 0) iFrom += 1;
 			const oFrom = aLineArr[iFrom] || {};
 			let iTo = (()=>{
-				if (iNextMinute > iAllMinutes) return aLineArr.length-1;
+				// ▼若当前起始于 1.x 分钟，则寻找第一个 2.x 分钟的行
 				let iResult = aLineArr.slice(iCurLineIdx).findIndex((cur, idx, wholeArr)=>{
-					return (cur.end >= (iCurMinute+1) * 60);
+					return cur.start >= iNextMinute * 60; 
 				});
-				if (iResult>=0) return iResult + iCurLineIdx;
+				if (iResult > 0) return (iResult-1) + iCurLineIdx;
+				return aLineArr.length - 1;
 			})();
 			let oTo =  {};
 			let aSteps = [];
