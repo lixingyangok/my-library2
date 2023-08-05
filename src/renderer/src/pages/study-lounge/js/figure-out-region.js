@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2020-08-16 18:35:35
  * @LastEditors: 李星阳
- * @LastEditTime: 2022-07-31 14:02:08
+ * @LastEditTime: 2023-08-05 18:53:56
  * @Description: 这是智能断句的模块
  */
 import {getPeaks, fixTime} from '../../../common/js/pure-fn.js';
@@ -12,13 +12,13 @@ import {getPeaks, fixTime} from '../../../common/js/pure-fn.js';
 // 2参是上一步的结尾的秒数，3参是在取得的区间的理想的长度（秒数）
 export function figureOut(
     oMediaBuffer,
-    fEndSec,
+    fEndSec, // 起点秒
     fLong = 2.5, // 取的结果一定要超过x秒（此注释不是特别准）
     fRightDuration=20 // 在右侧多少秒范围内判断？（目前似乎没用上）
 ) {
-    const [iPerSecPx, iWaveHeight, iAddition] = [100, 14, 25]; // 默认每秒宽度px值，波高度，添加在两头的空隙
+    const [iPerSecPx, iWaveHeight, iAddition] = [100, 13, 25]; // 默认每秒宽度px值，波高度，添加在两头的空隙
     const aWaveArr = getWaveArr(oMediaBuffer, iPerSecPx, fEndSec, fRightDuration); // 取得波形
-    // console.log('秒', fRightDuration);
+    // 初步看 iWaveHeight 有点像征兵用的标准身高值
     const aSection = getCandidateArr(aWaveArr, iPerSecPx, iWaveHeight);
     let { start, end } = (() => {
         const [oFirst, oSecond] = aSection;
@@ -57,11 +57,13 @@ function getWaveArr(oMediaBuffer, iPerSecPx, fEndSec, fRightDuration) {
         iPerSecPx * fEndSec,
         iPerSecPx * fRightDuration // 取当前位置往右x秒
     );
+    let {iWaveHeight = 0.5} = ls.get('oRecent')?.[ls.get('sFilePath')] || {};
+    // 👆 从 lg 里取值不是最佳方案，先这样用着，再优化
     // ▼或许应优化为 idx+=2 节省一半的遍历次数，
     const myArr = aPeaks.reduce((result, cur, idx, arr) => {
         if (idx % 2) return result; // 只处理0、2、4 不处理1、3、5
         // ▼此处是否需要转整形，待考究
-        const iOnePxHeight = Math.round((cur - arr[idx + 1]) * 0.5);
+        let iOnePxHeight = Math.round((cur - arr[idx + 1]) * iWaveHeight);
         result.push(iOnePxHeight);
         return result;
     }, []);

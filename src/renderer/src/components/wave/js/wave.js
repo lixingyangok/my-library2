@@ -174,8 +174,8 @@ export default function(){
 		const fStartTime = (() => {
             if (iType === true) return start + (end - start) * 0.4; // 从中间播放
             const fOldVal = oDom.oAudio.currentTime;
-            if (iType > 0) return fOldVal + 2; // 快进x秒
-            if (iType < 0) return Math.max(start, fOldVal - 2); // 快退x秒
+            if (iType > 0) return fOldVal + 3; // 快进x秒
+            if (iType < 0) return Math.max(start, fOldVal - 3); // 快退x秒
             return start;
         })();
         const { style } = oDom.oPointer;
@@ -286,13 +286,13 @@ export default function(){
 	}
     // 改变波形高度
 	function changeWaveHeigh(deltaY) {
-		let { iHeight } = oData;
 		const [min, max, iStep] = [0.1, 3, 0.15];
+		let { iHeight } = oData;
 		if (deltaY >= 0) iHeight += iStep;
 		else iHeight -= iStep;
 		if (iHeight < min) iHeight = min;
 		if (iHeight > max) iHeight = max;
-		oData.iHeight = iHeight;
+		oData.iHeight = iHeight.toFixed(2) * 1;
         ls.transact('oRecent', (oldData) => {
             const old = oldData[ls.get('sFilePath')] || {};
             oldData[ls.get('sFilePath')] = {
