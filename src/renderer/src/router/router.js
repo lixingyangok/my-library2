@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-11-28 14:36:56
  * @LastEditors: 李星阳
- * @LastEditTime: 2022-02-13 10:31:45
+ * @LastEditTime: 2023-08-06 16:49:20
  * @Description: 
  */
 import { createRouter, createWebHashHistory } from 'vue-router';
@@ -42,8 +42,7 @@ export const routes = [ {
     path: '/study-lounge',
     name: 'studyLounge',
     name_: '听写',
-    // icon_: 'fas fa-keyboard',
-    icon_: 'fas fa-graduation-cap',
+    icon_: 'fas fa-paper-plane',
     component: ()=>import( /* webpackChunkName: "study-lounge.vue" */ 
         '../pages/study-lounge/study-lounge.vue'
     ),
@@ -51,8 +50,7 @@ export const routes = [ {
     path: '/dashboard',
     name: 'dashboard',
     name_: '统计',
-    // icon_: 'fas fa-keyboard',
-    icon_: 'fas fa-graduation-cap',
+    icon_: 'fas fa-chart-pie',
     component: ()=>import( /* webpackChunkName: "dashboard.vue" */ 
         '../pages/dashboard/dashboard.vue'
     ),
