@@ -1,5 +1,6 @@
 import {SubtitlesStr2Arr} from '../../../common/js/pure-fn.js';
 import {mySort, goToLounage} from '../../../common/js/common-fn.js';
+import { ElMessageBox } from 'element-plus';
 import {
     getFolderKids,
     getFolderChildren,
@@ -128,15 +129,61 @@ const oAboutTree = {
     // ▼点击文件夹
     async ckickTree(i1, i2) {
         const {isDirectory, sItem} = this.aTree[i1][i2];
-        if (isDirectory) { 
+        if (isDirectory) { // 👈处理点击文件夹动作
             // ▼ this.aPath 正在被 watch 监听，操作会触发后续动作
-            return this.aPath.splice(i1 + 1, Infinity, sItem);
+            this.aPath.splice(i1 + 1, Infinity, sItem);
+            return;
         }
         // ▲文件夹，▼文件
         const sFilePath = `${this.aPath.join('/')}/${sItem}`;
         const isMedia = await checkFile(sFilePath, oConfig.oMedia)
         if (!isMedia) return;
         this.goToLearn(sFilePath);
+    },
+    // ▼删除一项
+    async checkDetail(oMedia){
+        console.log(oMedia.$dc());
+        const {id} = oMedia?.infoAtDb || {}; //媒体 ID
+        if (!id) return; 
+        this.oMediaInfo.isShow = true;
+        this.loadMediaInfo(id);
+    },
+    // ▼加载媒体信息
+    async loadMediaInfo(iMediaID){
+        const aTask01 = [
+            fnInvoke('db', 'doSql', `select * FROM media WHERE id=${iMediaID};`),
+            fnInvoke('db', 'doSql', `select * FROM line WHERE mediaId=${iMediaID};`),
+            fnInvoke('db', 'doSql', `select * FROM new_word WHERE mediaId=${iMediaID};`),
+        ];
+        const [[aMedia], [aLine], [aWords]] = await Promise.all(aTask01);
+        // console.log(aMedia[0], aLine, aWords);
+        Object.assign(this.oMediaInfo, {
+            oMedia: aMedia[0] || {},
+            aLines: aLine || [],
+            aWords: aWords || [],
+        });
+    },
+    // ▼删除
+    async toForgetMedia(oMedia){
+        const {id} = oMedia;
+        console.log(oMedia.$dc());
+        const sAnswer = await ElMessageBox.confirm(
+            '确认删除?', '请注意',
+            {
+                confirmButtonText: '确认删除',
+                cancelButtonText: '取消',
+                type: 'warning',
+            }
+        ).catch(xx=>xx);
+        if (sAnswer != 'confirm') return;
+        const aTask = [
+            fnInvoke('db', 'doSql', `DELETE FROM new_word WHERE mediaId=${id};`),
+            fnInvoke('db', 'doSql', `DELETE FROM line WHERE mediaId=${id};`),
+            fnInvoke('db', 'doSql', `DELETE FROM media WHERE id=${id};`),
+        ];
+        await Promise.all(aTask);
+        await this.loadMediaInfo(id);
+        this.getDirChildren();
     },
     // ▼跳转到学习页
     goToLearn(sFilePath) {

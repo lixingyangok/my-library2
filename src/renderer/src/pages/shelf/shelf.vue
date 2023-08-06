@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-02 20:27:04
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-29 19:04:09
+ * @LastEditTime: 2023-08-06 18:31:34
  * @Description: 
 -->
 
@@ -28,11 +28,16 @@
         </p>
         <div class="legend" >
             图标含义：
-            文件夹 <i class="folder-mark fas fa-folder"/> &emsp;
-            内含媒体 <i class="folder-mark fas fa-folder has-media"/> &emsp;
-            内含媒体已入库 <i class="folder-mark fas fa-folder has-media"/><i class="fas fa-check fa-xs small-check"/> &emsp;
-            媒体文件 <i class="fas fa-play-circle meida-icon" /> &emsp;
-            听写完成 <i class="fas fa-play-circle meida-icon done" />&emsp;
+            文件夹/内含媒体/媒体已入库：
+            <i class="folder-mark fas fa-folder"/>
+            &nbsp;<i class="folder-mark fas fa-folder has-media"/> 
+            &nbsp;<i class="folder-mark fas fa-folder has-media"/><i class="fas fa-check fa-xs small-check"/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            媒体文件/已入库/已完成：
+            <i class="fas fa-play-circle " />
+            &nbsp;<i class="fas fa-play-circle doing" />
+            &nbsp;<i class="fas fa-play-circle done" />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             文件路径/名称与数据库不符 <i style="color:red">红字</i>
         </div>
         <div>
@@ -44,26 +49,46 @@
             <ul v-for="(aColumn, i1) of aTree" :key="i1">
                 <li v-for="(cur, i2) of aColumn" :key="i2"
                     @click="ckickTree(i1, i2, cur)"
+                    class="one-item"
                     :class="{
                         active: cur.sItem == aPath[i1+1],
                         'name-wrong': cur.isMedia && cur.infoAtDb && !cur.bNameRight,
                     }"
                 >
                     <template v-if="cur.isDirectory">
-                        <i class="folder-mark fas fa-folder"
+                        <i class="folder-mark fas fa-folder "
                             :class="{'has-media': cur.hasMedia}"
                         />
                         <i class="fas fa-check fa-xs small-check"
                             v-if="oMediaHomes[cur.sPath]"
                         />
                     </template>
-                    <!-- fas fa-check-circle -->
-                    <!-- :class="{recorded: cur.infoAtDb}" -->
-                    <i v-else-if="cur.isMedia" 
-                        class="fas fa-play-circle meida-icon"
-                        :class="{done: (cur.infoAtDb || {}).finishedAt}"
-                    />
-                    {{cur.sItem}}
+                    <template v-else-if="cur.isMedia">
+                        <i class="fas fa-play-circle"
+                            :class="{
+                                doing: cur.infoAtDb,
+                                done: cur.infoAtDb?.finishedAt,
+                            }"
+                        />
+                    </template>
+                    <i v-else class="fas fa-file-alt"/>
+                    <!-- 左右分界 -->
+                    <el-popover v-if="cur.isMedia" placement="right" trigger="hover" 
+                        :width="300"
+                    >
+                        <template #reference>
+                            <span class="item-name">{{cur.sItem}}</span>
+                        </template>
+                        <p>{{cur.sItem}}</p>
+                        <el-button type="primary" link :key="`${i1}-${i2}`"
+                            @click="checkDetail(cur)"
+                        >
+                            详情
+                        </el-button >
+                    </el-popover>
+                    <span class="item-name" v-else>
+                        {{cur.sItem}}
+                    </span>
                 </li>
             </ul>
         </article>
@@ -153,6 +178,43 @@
             </span>
         </template>
     </el-dialog>
+    <!-- ▼媒体详情窗口 -->
+    <el-dialog title="初始化" width="550px"
+        v-model="oMediaInfo.isShow"
+    >
+        <section class="media-info" >
+            <h5> name: {{ oMediaInfo.oMedia.name || '无，或许已被删除' }} </h5>
+            <p> createdAt: {{ oMediaInfo.oMedia.createdAt }} </p>
+            <p> dir: {{ oMediaInfo.oMedia.dir }} </p>
+            <p> id: {{ oMediaInfo.oMedia.id }} </p>
+        </section>
+        <section class="new-words">
+            <ul v-if="oMediaInfo.aWords.length" >  
+                <li v-for="(cur, idx) of oMediaInfo.aWords" :key="idx">
+                    {{ cur.word }}
+                </li>
+            </ul>
+            <p v-else >
+                暂无收录词汇
+            </p>
+        </section>
+        <p>
+            当前媒体行数量：{{ oMediaInfo.aLines.length }}
+        </p>
+        <ul class="media-all-line" >
+            <li v-for="(cur, idx) of oMediaInfo.aLines" :key="idx" >
+                {{ String(idx+1).padStart(2, '0') }}_{{ cur.text }}
+            </li>
+        </ul>
+        <section class="btn-group" >
+            <el-button type="primary">
+                占位
+            </el-button>
+            <el-button type="danger" @click="toForgetMedia(oMediaInfo.oMedia)">
+                删除
+            </el-button>
+        </section>
+    </el-dialog>
 </template>
 
 <script>
@@ -186,6 +248,12 @@ export default {
             oMediaHomes: {},
             oLineMap: {},
             fucousFolder: '', // 当前入库的目录
+            oMediaInfo: {
+                isShow: false,
+                oMedia: {},
+                aLines: [],
+                aWords: [],
+            },
         };
     },
     created(){
@@ -206,7 +274,7 @@ export default {
 };
 </script>
 
-<style scoped src="./style/shelf.scss" lang="scss">
-</style>
+<style scoped src="./style/shelf.scss" lang="scss"></style>
+<style scoped src="./style/media-info.css"></style>
 
 

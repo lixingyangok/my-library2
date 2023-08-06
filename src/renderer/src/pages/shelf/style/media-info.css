@@ -1,0 +1,31 @@
+/* ▼媒体信息窗口 */
+.media-info{
+    padding: -10px 0 15px;
+    & h5{
+        font-weight: bold;
+    }
+}
+
+.new-words{
+    padding: 15px 0 15px;
+    margin: 15px 0;
+    display: flex;
+    border: dashed 1px #aaa;
+    border-width: 1px 0;
+    & li{
+        margin-right: 9px;
+    }
+}
+
+.media-all-line{
+    max-height: 45vh;
+    overflow-y: auto;
+}
+
+.btn-group{
+    text-align: center;
+    margin: 15px 0 10px;
+}
+
+
+
