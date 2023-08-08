@@ -88,6 +88,10 @@ export default {
             type: Number,
             default: 0,
         },
+        oMediaInfo: {
+            type: Object,
+            default: ()=>({}),
+        },
     },
     // ▼ 与 props 类似
     // ▼ 声明当前组件<example/>可以在行间定义的属性

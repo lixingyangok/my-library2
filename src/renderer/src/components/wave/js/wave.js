@@ -64,6 +64,14 @@ export default function(){
         oData.iScrollLeft = Math.max(0, scrollLeft); // 把新位置记下来
         toDraw();
     }
+    function toPause(){
+        if (oData.playing){
+            saveRecord({ end: oDom.oAudio.currentTime });
+        }
+        clearInterval(oData.playing);
+        oDom.oAudio.pause();
+        oData.playing = false;
+    }
     // ▲外部方法 ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     // ▼私有方法 ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     async function initFn(sPath){
@@ -168,7 +176,51 @@ export default function(){
         // console.log('画面已被清空');
 	}
     // ▼播放
+    let oPlayAction = {}; // ◀记录播放动作
+    function initRecord(start){
+        const {oMediaInfo} = props;
+        const obj = {
+            playAt: new Date().getTime(),
+            iMediaID: oMediaInfo.id,
+            iLineId: oCurLine.value.id,
+            start,
+            end: 0,
+            // endPlan: 0,
+            // endReal: 0,
+        };
+        return obj;
+    };
+    // ▼保存播放动作
+    async function saveRecord(obj){
+        if (!oPlayAction.playAt || !obj){
+            alert('无法保存播放动作');
+        }
+        const iPlayLong = 1 * (obj.end - oPlayAction.start).toFixed(2);
+        const iPlayLong02 = 1 * ((new Date().getTime() - oPlayAction.playAt) /1000).toFixed(2);
+        if (iPlayLong < 0.5){
+            return console.log(`播放时长：${iPlayLong} | ${iPlayLong02} 不保存`);
+        }
+        console.log(`保存播放记录，时长秒：${iPlayLong} | ${iPlayLong02}`);
+        var newOBJ = Object.assign(oPlayAction, obj);
+        console.log(newOBJ);
+    };
+    // ▼记录播放动作
+    async function toRecordAction(oParam){
+        const {endSec=0, startSec, isFromStop} = oParam;
+        if (isFromStop === true){ // 从静止到播放
+            console.log('从静止到播放');
+        } else if(oData.playing){
+            saveRecord({ end: oDom.oAudio.currentTime });
+            console.log('从播放播放'); 
+        } else if (endSec > 0){ // 当前句播放完成
+            alert('不应该执行至此');
+            saveRecord({ end: endSec });
+        }
+        oPlayAction = initRecord(startSec);
+    };
 	function toPlay(iType=0) {
+        // console.log(props.oMediaInfo.$dc(), oCurLine.value.$dc());
+        const isFromStop = oData.playing === false; // 第1行执行（取得旧状态
 		clearInterval(oData.playing); //把之前播放的关闭
 		const { start, end } = oCurLine.value;
 		const fStartTime = (() => {
@@ -178,26 +230,24 @@ export default function(){
             if (iType < 0) return Math.max(start, fOldVal - 3); // 快退x秒
             return start;
         })();
-        const { style } = oDom.oPointer;
-		style.left = `${fStartTime * oData.fPerSecPx}px`;
+        toRecordAction({isFromStop, startSec: fStartTime});
+		oDom.oPointer.left = `${fStartTime * oData.fPerSecPx}px`;
 		oDom.oAudio.currentTime = fStartTime;
 		oDom.oAudio.play();
-        oData.playing = setInterval(runner, ~~(1000 / 80)); // 每秒执行 x 次
-        runner();
-        function runner(){
-            if (!oDom.oAudio || !oCurLine.value) {
-                return clearInterval(oData.playing);
-            }
-			const { currentTime: cTime } = oDom.oAudio;
-			const {end} = oCurLine.value;
-			if (cTime < end && oData.playing) {
-				return style.left = cTime * oData.fPerSecPx + 'px';
-			}
-			clearInterval(oData.playing);
-			oDom.oAudio.pause();
-			oData.playing = false;
-        }
+        oData.playing = setInterval(toMovePointer, ~~(1000 / 80)); // 每秒执行 x 次
 	}
+    // ▼移动光标，
+    function toMovePointer(){
+        // console.log('toMovePointer runing');
+        const { style } = oDom.oPointer;
+        if (!oDom.oAudio || !oCurLine.value) return toPause(); // 似乎不会至此
+        const { currentTime: cTime } = oDom.oAudio;
+        const {end} = oCurLine.value;
+        if ((cTime < end) && oData.playing) {
+            return style.left = cTime * oData.fPerSecPx + 'px';
+        }
+        toPause();
+    }
     // ▼保存波形缓存 blob
     async function toSaveTemp(){
         const {oMediaBuffer} = oData;
@@ -411,6 +461,7 @@ export default function(){
         changeWaveHeigh,
         goOneLine,
         cleanCanvas,
+        toPause,
     };
     return { oDom, oData, oFn, iFinalDuration };
 }
