@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-16 10:40:40
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-28 16:41:26
+ * @LastEditTime: 2023-08-09 21:20:06
  * @Description: 
  */
 
@@ -14,8 +14,8 @@ const db02 = new Database(sPathForDB,
     { /* verbose: console.log  */}    
 );
 
-const oLine = module.exports.line = sqlize.define('line', {
-    mediaId: { // 媒体记录的行ID，防止文件hash变化后引发错误
+export const oLine = module.exports.line = sqlize.define('line', {
+    mediaId: { // 媒体记录的行ID，防止文件hash变化后引发错误（已证实此举高明2023.08.09 21:44:01 星期三）
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {

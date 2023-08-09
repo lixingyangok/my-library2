@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-22 19:31:55
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-16 21:13:23
+ * @LastEditTime: 2023-08-06 22:29:59
  * @Description: 与文件夹/文件相关的方法（纯函数）
  */
 // 本包将来可修改为，提供数据查询的包
@@ -98,7 +98,7 @@ export async function addAllMediaDbInfo(arr, oneByOne){
     if (!arr) return;
     for (const [idx, oMedia] of arr.entries()) {
         if (!oMedia.isMedia) continue;
-        if ((idx % 3) && !oneByOne) AaddMediaInfoFromDB(oMedia);
+        if ((idx % 4) && !oneByOne) AaddMediaInfoFromDB(oMedia);
         else await AaddMediaInfoFromDB(oMedia);
     }
 }

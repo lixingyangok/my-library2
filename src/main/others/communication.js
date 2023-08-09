@@ -12,6 +12,7 @@ import a3 from '../database/line.js';
 import a4 from '../database/dictionary.js';
 import a5 from '../database/new-word.js';
 import a6 from '../database/click-in-off.js';
+import a7 from '../database/action.js';
 import oBrowserViewFn from './browser-view.js';
 
 const fsp = require('node:fs/promises');
@@ -24,6 +25,7 @@ const oDbFn = { // 所有的数据库方法
     ...a4,
     ...a5,
     ...a6,
+    ...a7,
     doSql,
 };
 
