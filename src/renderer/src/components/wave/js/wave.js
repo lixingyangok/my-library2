@@ -6,6 +6,8 @@ export default function(){
     const oInstance = getCurrentInstance();
     const {props} = oInstance;
     let aPeaksData = []; // 波形数据
+    let oPlayAction = {}; // ◀记录播放动作
+
     const oDom = reactive({ // 从上到下，从外到内
         oMyWaveBar: null, // 最外层
         oCanvasDom: null, // canvas画布
@@ -66,7 +68,7 @@ export default function(){
     }
     function toPause(){
         if (oData.playing){
-            saveRecord({ end: oDom.oAudio.currentTime });
+            saveRecord();
         }
         clearInterval(oData.playing);
         oDom.oAudio.pause();
@@ -176,50 +178,48 @@ export default function(){
         // console.log('画面已被清空');
 	}
     // ▼播放
-    let oPlayAction = {}; // ◀记录播放动作
     function initRecord(start){
-        const {oMediaInfo} = props;
-        const obj = {
-            playAt: new Date().getTime(),
-            iMediaID: oMediaInfo.id,
-            iLineId: oCurLine.value.id,
-            start,
-            end: 0,
-            // endPlan: 0,
-            // endReal: 0,
+        const oRecordObj = {
+            mediaId: props.oMediaInfo.id,
+            lineId: oCurLine.value.id || null, // 断句期间可能没有 ID 
+            // ▲媒体信息 ▼播放信息
+            actionBegin: new Date().getTime(),
+            playFrom: start, // 播放起点
+            action: 'playing',
+            // ▼待定项
+            playEnd: 0, // 播放终点
+            duration: 0, // 播放了 x 秒
         };
-        return obj;
+        return oRecordObj;
     };
     // ▼保存播放动作
-    async function saveRecord(obj){
-        if (!oPlayAction.playAt || !obj){
-            alert('无法保存播放动作');
+    async function saveRecord(){
+        if (!oPlayAction.mediaId) alert('无法保存播放动作');
+        const playEnd = oDom.oAudio.currentTime;
+        const duration = 1 * (playEnd - oPlayAction.playFrom).toFixed(2);
+        if (duration <= 0.5){
+            return console.log(`播放时长短：${duration} 不记录`);
         }
-        const iPlayLong = 1 * (obj.end - oPlayAction.start).toFixed(2);
-        const iPlayLong02 = 1 * ((new Date().getTime() - oPlayAction.playAt) /1000).toFixed(2);
-        if (iPlayLong < 0.5){
-            return console.log(`播放时长：${iPlayLong} | ${iPlayLong02} 不保存`);
-        }
-        console.log(`保存播放记录，时长秒：${iPlayLong} | ${iPlayLong02}`);
-        var newOBJ = Object.assign(oPlayAction, obj);
-        console.log(newOBJ);
+        
+        oPlayAction.duration = duration;
+        oPlayAction.playEnd = playEnd;
+        console.log('oPlayAction\n', oPlayAction);
+        const saved = await fnInvoke('db', 'saveAction', oPlayAction);
+        console.log('saved', saved);
     };
     // ▼记录播放动作
     async function toRecordAction(oParam){
-        const {endSec=0, startSec, isFromStop} = oParam;
+        if (!props.oMediaInfo?.id) return;
+        const {startSec, isFromStop} = oParam;
         if (isFromStop === true){ // 从静止到播放
-            console.log('从静止到播放');
+            console.log('静止 => 播放');
         } else if(oData.playing){
-            saveRecord({ end: oDom.oAudio.currentTime });
-            console.log('从播放播放'); 
-        } else if (endSec > 0){ // 当前句播放完成
-            alert('不应该执行至此');
-            saveRecord({ end: endSec });
+            saveRecord();
+            console.log('播放中 => 播放'); 
         }
         oPlayAction = initRecord(startSec);
     };
 	function toPlay(iType=0) {
-        // console.log(props.oMediaInfo.$dc(), oCurLine.value.$dc());
         const isFromStop = oData.playing === false; // 第1行执行（取得旧状态
 		clearInterval(oData.playing); //把之前播放的关闭
 		const { start, end } = oCurLine.value;

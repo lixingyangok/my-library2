@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-09 21:11:17
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-09 21:31:34
+ * @LastEditTime: 2023-08-09 21:59:32
  * @Description: 
  */
 
@@ -28,10 +28,11 @@ export const oAction = sqlize.define('action', {
             key: 'id',
         },
     },
-    start: DataTypes.FLOAT,
-    playAt: DataTypes.DATE, // 录入时间
-    playSeconds: DataTypes.FLOAT,
-    action: DataTypes.STRING, // playing, reading, writing
+    playFrom: DataTypes.FLOAT,
+    playEnd: DataTypes.FLOAT,
+    actionBegin: DataTypes.DATE, // 录入时间
+    duration: DataTypes.FLOAT,
+    action: DataTypes.STRING, // playing, reading, writing, speaking
 });
 oAction.sync();
 
