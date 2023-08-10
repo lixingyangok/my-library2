@@ -1,6 +1,7 @@
 # my-library2
 
 An Electron application with Vue
+test
 
 ## Recommended IDE Setup
 
