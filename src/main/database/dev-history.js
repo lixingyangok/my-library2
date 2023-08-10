@@ -3,8 +3,9 @@
  * @Date: 2022-01-16 20:03:49
  * @LastEditors: 李星阳
  * @LastEditTime: 2023-04-29 17:46:27
- * @Description: 
+ * @Description: 考虑删除此表
  */
+
 import {sqlize} from './init-db.js';
 const { DataTypes } = require('sequelize');
 

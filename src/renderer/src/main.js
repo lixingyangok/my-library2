@@ -10,16 +10,19 @@ import './common/style/minireset.css';
 import './common/style/global.scss';
 import './common/lib/fontawesome-free-5.15.4-web/css/all.min.css';
 import 'element-plus/dist/index.css';
-const { ipcRenderer } = require('electron');
-
-
+try{
+    // 浏览器环境无法 require
+    const { ipcRenderer } = require('electron');
+    window.oRenderer = ipcRenderer;
+    window.fnInvoke = ipcRenderer.invoke;
+}catch(err){
+    console.log('no electron');
+}
 
 // ▼ 其它声明，全局声明一定前置
-const isDev = process.env.IS_DEV === "true";
 window.ls = store2; // lg = localStorage
 window.newPromise = newPromise;
-window.oRenderer = ipcRenderer;
-window.fnInvoke = ipcRenderer.invoke;
+
 
 ls.set('oRecent', ls.get('oRecent') || {});
 setGlobal();
