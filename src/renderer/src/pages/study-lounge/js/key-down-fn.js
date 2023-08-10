@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-07-22 19:45:05
+ * @LastEditTime: 2023-08-10 22:01:37
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -39,7 +39,7 @@ export function getKeyDownFnMap(This, sType) {
         { key: 'F2', name: '设定终点', fn: () => This.cutHere('end') },
         { key: 'F3', name: '抛弃当前句', fn: () => This.giveUpThisOne() },
         { key: 'F4', name: '查字典', fn: () => This.searchWord() },
-        { key: 'Escape', name: '取消播放', fn: () => oMyWave.playing = false }, // 停止播放
+        { key: 'Escape', name: '取消播放', fn: () => oMyWave.toPause() }, // 停止播放
     ];
     const withCtrl = [
         { key: 'ctrl + q', name: '查字典', fn: () => This.searchWord() },
@@ -578,6 +578,9 @@ export function fnAllKeydownFn() {
             toDelArr,
             isReturnAll: true,
             mediaId,
+        }).catch(err=>{
+            console.log('保存失败\n', err);
+            alert('保存失败');
         });
         console.timeEnd('保存与查询');
         if (!oResult) {

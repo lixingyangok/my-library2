@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-16 10:40:40
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-09 21:20:06
+ * @LastEditTime: 2023-08-10 22:41:02
  * @Description: 
  */
 
@@ -33,6 +33,7 @@ export const oLine = module.exports.line = sqlize.define('line', {
 
 oLine.sync();
 
+let fnRemoveLineID = null;
 const oFn = {
     // ▼批量保存（导入用）
     async saveLine(arr) {
@@ -55,6 +56,11 @@ const oFn = {
             arr[0] = oFn.saveLine(toSaveArr);
         }
         if (toDelArr.length) {
+            if (!fnRemoveLineID){
+                const {default: oFn} = await import("./action.js");
+                fnRemoveLineID = oFn.removeLineID;
+            }
+            await fnRemoveLineID(toDelArr);
             arr[1] = oLine.destroy({
                 where: { id: obj.toDelArr },
             });
