@@ -341,6 +341,13 @@ export function mainPart(){
 	function bufferReceiver(oMediaBuffer){
 		// console.log('收到了波形');
 		oData.oMediaBuffer = oMediaBuffer;
+		const {id, duration=0} = oData.oMediaInfo;
+		const iDurDifference = Math.abs(oMediaBuffer.duration - duration);
+		if (!id){
+			alert('不能‘在加载波形之前’加载库中媒体信息');
+		}else if (iDurDifference > 1){
+			dealMediaTimeGaP(oData.oMediaInfo, oMediaBuffer);
+		}
 		if (oData.iSubtitle != -1) return; // 有字幕则返回
 		setFirstLine(); // 需要考虑，因为可能尚没查到字幕，不是没有字幕
 	}
@@ -646,6 +653,26 @@ export function mainPart(){
         });
 		showFileAotuly(sFullPath);
 	}
+	// ▼ 保存媒体时长信息 GaP
+	async function dealMediaTimeGaP(oMediaInfo, oMediaBuffer){
+		// console.log('dealMediaTimeGaP', oMediaInfo.$dc(), oMediaBuffer.$dc());
+		const sMsg = `
+			${oMediaInfo.durationStr} | ${oMediaBuffer.sDuration_}
+			👈 默认方案与通过波形解析的音频时长不同，
+			改为以波形结果为准？
+		`.replace(/\s{2,}/g, ' ').trim();
+		const isSure = await vm.$confirm(sMsg, 'Warning', {
+			confirmButtonText: '确认',
+			cancelButtonText: '取消',
+			type: 'warning',
+		}).catch(()=>false);
+		if (!isSure) return;
+		await toRecordDiration(oMediaInfo, {
+			fDuration: oMediaBuffer.duration,
+			sDuration: oMediaBuffer.sDuration_,
+		});
+		vm.$message.success(`时长已经修改为 ${oMediaBuffer.sDuration_}`);
+	}
 	// 保存媒体时长信息
 	async function recordMediaTimeInfo(){
 		const aTarget = oData.aSiblings.filter(cur => {
@@ -659,7 +686,6 @@ export function mainPart(){
 			type: 'warning',
 		}).catch(()=>false);
 		if (!isSure) return;
-		// oData.isShowMediaInfo = true;
 		// await new Promise(f1 = setTimeout(f1, 600));
 		for await(const [idx, cur] of aTarget.entries()) {
 			const {sPath, infoAtDb} = cur;

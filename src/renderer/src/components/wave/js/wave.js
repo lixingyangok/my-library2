@@ -179,17 +179,24 @@ export default function(){
 	}
     // ▼播放
     function initRecord(start){
+        const actionBegin = new Date().getTime();
+        const {actionEnd} = oPlayAction;
         const oRecordObj = {
+            action: 'playing',
             mediaId: props.oMediaInfo.id,
             lineId: oCurLine.value.id || null, // 断句期间可能没有 ID 
-            // ▲媒体信息 ▼播放信息
-            actionBegin: new Date().getTime(),
+            actionBegin, 
             playFrom: start, // 播放起点
-            action: 'playing',
-            // ▼待定项
+            // ▲确定信息 ▼待定信息
+            actionEnd: 0,
             playEnd: 0, // 播放终点
             duration: 0, // 播放了 x 秒
+            // gapToPrev: 0,
         };
+        if (actionEnd){
+            oRecordObj.gapToPrev = (actionBegin - actionEnd) / 1000;
+        }
+        console.log('oRecordObj', oRecordObj);
         return oRecordObj;
     };
     // ▼保存播放动作
@@ -200,12 +207,15 @@ export default function(){
         if (duration <= 0.5){
             return console.log(`播放时长短：${duration} 不记录`);
         }
-        
-        oPlayAction.duration = duration;
-        oPlayAction.playEnd = playEnd;
+        oPlayAction = Object.assign(oPlayAction, {
+            duration: duration,
+            playEnd: playEnd,
+            actionEnd: new Date() * 1,
+        });
+
         console.log('oPlayAction\n', oPlayAction);
         const saved = await fnInvoke('db', 'saveAction', oPlayAction);
-        console.log('saved', saved);
+        if (!saved) alert('保存学习记录失败，请注意');
     };
     // ▼记录播放动作
     async function toRecordAction(oParam){

@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-03 10:09:58
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-07 22:16:59
+ * @LastEditTime: 2023-08-10 20:25:12
  * @Description: 
 -->
 <template>
@@ -146,6 +146,9 @@ export default {
         // 此处 this === getCurrentInstance()
         const oFnList = getKeyDownFnMap(this, 'obj');
         registerKeydownFn(oFnList);
+    },
+    beforeUnmount(){
+        this.toPause();
     },
 };
 </script>

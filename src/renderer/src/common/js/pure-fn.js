@@ -25,7 +25,7 @@ export async function getBufferByPath(sPath){
 	return oMediaBuffer;
 }
 
-// 通过文件路径得到时长（很快）
+// 通过文件路径得到时长（很快）偶尔与通过波形解析的时长不同
 export async function getMediaDuration(sFilePath){
 	// let sFilePath = 'C:/Users/Administrator/Desktop/书虫L2_MP3/鲁滨逊漂流记01.ogg';                     
 	const {oPromise, fnResolve, fnReject} = newPromise();
