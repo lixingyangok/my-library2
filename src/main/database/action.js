@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-09 21:11:17
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-10 22:09:10
+ * @LastEditTime: 2023-08-11 22:27:06
  * @Description: 
  */
 
@@ -31,10 +31,12 @@ export const oAction = sqlize.define('action', {
     playFrom: DataTypes.FLOAT,
     playEnd: DataTypes.FLOAT,
     actionBegin: DataTypes.DATE, // 录入时间
+    actionEnd: DataTypes.DATE, // 结束时间
+    gapToPrev: DataTypes.FLOAT, // 本次开始与上次结束的间距秒
     duration: DataTypes.FLOAT,
     action: DataTypes.STRING, // playing, reading, writing, speaking
 });
-oAction.sync();
+User.sync();
 
 /*
 User.sync() - 如果表不存在,则创建该表(如果已经存在,则不执行任何操作)
@@ -58,14 +60,14 @@ export default {
         const aRes = await Promise.all(arr);
         return aRes;
     },
-    // ▼查询：一个或多个 ★ 用 sql 查询
-    // async getAction(obj) {
-    //     // obj: {hash, dir}
-    //     const aRes = await oAction.findAll({
-    //         where: obj,
-    //     });
-    //     return aRes.map(cur => cur.dataValues);
-    // },
+    // ▼查询：一个或多个 ★ 用 sql 查询（没用上）
+    async getAction(obj) {
+        const aRes = await oAction.findAll({
+            where: obj,
+            order: [['actionBegin', 'asc']],
+        });
+        return aRes.map(cur => cur.dataValues);
+    },
 };
 
 
