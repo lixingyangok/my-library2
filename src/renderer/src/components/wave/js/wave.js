@@ -256,7 +256,8 @@ export default function(){
 		oDom.oPointer.left = `${fStartTime * oData.fPerSecPx}px`;
 		oDom.oAudio.currentTime = fStartTime;
 		oDom.oAudio.play();
-        oData.playing = setInterval(toMovePointer, ~~(1000 / 80)); // 每秒执行 x 次
+        // ▼ 每秒执行 x 次，似乎60帧即可
+        oData.playing = setInterval(toMovePointer, ~~(1000 / 60));
 	}
     // ▼移动光标，
     function toMovePointer(){
