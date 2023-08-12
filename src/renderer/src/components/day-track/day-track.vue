@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-11 19:52:29
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-12 12:38:29
+ * @LastEditTime: 2023-08-12 13:33:58
  * @Description: 
 -->
 <template>
@@ -13,7 +13,7 @@
             </li>
         </ol>
         <ul class="day-ul">
-            <li v-for="(cur, idx) of aDayAction" :key="idx" 
+            <li v-for="(cur, idx) of oAction.aTodayAction" :key="idx" 
                 :style="{
                     left: `${cur.iPercentOfDay01}%`,
                     width: `${cur.iLongPercent}%`,
@@ -29,6 +29,8 @@
 
 <script>
 import oMethod from './js/day-track.js';
+import {useActionStore} from '@/store/index.js';
+const oAction = useActionStore();
 
 export default {
     name: 'day-track',
@@ -39,13 +41,15 @@ export default {
         },
     },
     data(){
+        oAction.init();
         const oResult = {
             aDayAction: [],
+            oAction,
         };
         return oResult;
     },
     created(){
-        this.init();
+        // this.init();
     },
     methods: {
         ...oMethod,

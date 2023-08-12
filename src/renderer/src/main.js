@@ -3,6 +3,7 @@ import App from './App.vue'
 import ElementPlus from 'element-plus';
 import router from './router/router.js';
 import store2 from 'store2';
+import { createPinia } from 'pinia';
 import { newPromise, setGlobal } from './common/js/global-setting.js';
 
 // ▼ 样式
@@ -23,12 +24,13 @@ try{
 window.ls = store2; // lg = localStorage
 window.newPromise = newPromise;
 
-
+const pinia = createPinia();
 ls.set('oRecent', ls.get('oRecent') || {});
 setGlobal();
 
 // ▼ app
 const myApp = createApp(App);
 myApp.use(router);
+myApp.use(pinia);
 myApp.use(ElementPlus);
 myApp.mount('#app');

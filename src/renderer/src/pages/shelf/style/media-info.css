@@ -9,9 +9,11 @@
 .new-words{
     padding: 15px 0 15px;
     margin: 15px 0;
-    display: flex;
     border: dashed 1px #aaa;
     border-width: 1px 0;
+    & ul{
+        display: flex;
+    }
     & li{
         margin-right: 9px;
     }

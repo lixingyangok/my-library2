@@ -25,6 +25,7 @@
     "element-plus": "^2.3.4",
     "hash-wasm": "^4.9.0",
     "moment": "^2.29.4",
+    "pinia": "^2.1.6",
     "sass": "^1.62.1",
     "sequelize": "^6.31.0",
     "sqlite3": "^5.1.6",

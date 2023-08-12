@@ -1,6 +1,8 @@
 import { reactive, getCurrentInstance, watch, computed, onMounted, } from 'vue';
 import { fileToBuffer, getPeaks, getChannelArr, } from '../../../common/js/pure-fn.js';
 import { getTubePath } from '../../../common/js/common-fn.js';
+import {useActionStore} from '@/store/index.js';
+const oAction = useActionStore();
 
 export default function(){
     const oInstance = getCurrentInstance();
@@ -178,25 +180,27 @@ export default function(){
         // console.log('画面已被清空');
 	}
     // ▼播放
-    function initRecord(start){
+    function initRecord(oInitParam){
         const actionBegin = new Date().getTime();
-        const {actionEnd} = oPlayAction;
+        const {actionEnd} = oPlayAction; // 提前保存好上次行动结束时间
         const oRecordObj = {
             action: 'playing',
             mediaId: props.oMediaInfo.id,
             lineId: oCurLine.value.id || null, // 断句期间可能没有 ID 
             actionBegin, 
-            playFrom: start, // 播放起点
-            // ▲确定信息 ▼待定信息
-            actionEnd: 0,
-            playEnd: 0, // 播放终点
-            duration: 0, // 播放了 x 秒
-            // gapToPrev: 0,
+            playFrom: oInitParam.startSec, // 播放起点
+            // ▲确定信息 ▼待定信息（后补）
+            // gapToPrev: 0, // 默认不添加此键
+            // duration: 0, // 播放了 x 秒
+            // actionEnd: 0, // 行动结束时间
+            // playEnd: 0, // 播放至 x 秒
         };
-        if (actionEnd){
-            oRecordObj.gapToPrev = (actionBegin - actionEnd) / 1000;
+        if (oInitParam.playing){
+            oRecordObj.gapToPrev = 0;
+        }else if (actionEnd){
+            oRecordObj.gapToPrev = 1 * ((actionBegin - actionEnd) / 1000).toFixed(2);
         }
-        console.log('oRecordObj', oRecordObj);
+        // console.log('已经初始化学习记录', oRecordObj);
         return oRecordObj;
     };
     // ▼保存播放动作
@@ -207,30 +211,38 @@ export default function(){
         if (duration <= 0.5){
             return console.log(`播放时长短：${duration} 不记录`);
         }
-        oPlayAction = Object.assign(oPlayAction, {
+        oPlayAction = Object.assign(oPlayAction, { // 将记录补充完整（对下次生成记录有用处）
             duration: duration,
             playEnd: playEnd,
             actionEnd: new Date() * 1,
         });
-
-        console.log('oPlayAction\n', oPlayAction);
-        const saved = await fnInvoke('db', 'saveAction', oPlayAction);
-        if (!saved) alert('保存学习记录失败，请注意');
+        // ▼然后先快速拷贝出一份，以让后续程序运行，复制品用于慢慢地保存到数据库，
+        const useToSave = oPlayAction.$dc();
+        // console.log('已 “补全了”学习记录：', useToSave);
+        fnInvoke('db', 'saveAction', useToSave).then(oSaved => {
+            // console.log('已 “保存了”学习记录：', oSaved);
+            if (!oSaved) alert('保存学习记录失败，请注意');
+        });
     };
-    // ▼记录播放动作
+    // ▼ 初始化播放记录（按需记录播放动作）
     async function toRecordAction(oParam){
         if (!props.oMediaInfo?.id) return;
-        const {startSec, isFromStop} = oParam;
-        if (isFromStop === true){ // 从静止到播放
-            console.log('静止 => 播放');
-        } else if(oData.playing){
-            saveRecord();
-            console.log('播放中 => 播放'); 
+        const oInitParam = {
+            playing: oData.playing,
+            startSec: oParam.startSec, 
+        };
+        if(oData.playing){
+            await saveRecord();
+            // console.log('播放中 => 播放');
         }
-        oPlayAction = initRecord(startSec);
+        // else if (isFromStop === true){ // 从静止到播放
+        //     0 && console.log('静止 => 播放');
+        // }
+        oPlayAction = initRecord(oInitParam);
     };
 	function toPlay(iType=0) {
-        const isFromStop = oData.playing === false; // 第1行执行（取得旧状态
+        oAction.init();
+        const isFromStop = oData.playing === false; // 第1行执行（取得旧状态）（好像没用）
 		clearInterval(oData.playing); //把之前播放的关闭
 		const { start, end } = oCurLine.value;
 		const fStartTime = (() => {
