@@ -2,11 +2,11 @@
  * @Author: 李星阳
  * @Date: 2023-08-11 19:52:29
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-11 21:45:32
+ * @LastEditTime: 2023-08-12 12:38:29
  * @Description: 
 -->
 <template>
-    <div class="day-track-body" >
+    <div class="day-track-body" :style="{'--height': `${height}px`}" >
         <ol class="hours">
             <li v-for="iHour of 24" :key="iHour" >
                 <span>{{ iHour-1 }}</span>
@@ -23,7 +23,6 @@
             >
             </li>
         </ul>
-        
     </div>
 </template>
 <style src="./style/day-track.css" scoped></style>
@@ -33,6 +32,12 @@ import oMethod from './js/day-track.js';
 
 export default {
     name: 'day-track',
+    props: {
+        height: {
+            type: Number,
+            default: 70,
+        },
+    },
     data(){
         const oResult = {
             aDayAction: [],

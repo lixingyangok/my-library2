@@ -36,7 +36,7 @@ export const oAction = sqlize.define('action', {
     duration: DataTypes.FLOAT,
     action: DataTypes.STRING, // playing, reading, writing, speaking
 });
-User.sync();
+oAction.sync();
 
 /*
 User.sync() - 如果表不存在,则创建该表(如果已经存在,则不执行任何操作)

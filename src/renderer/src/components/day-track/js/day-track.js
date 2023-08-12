@@ -8,7 +8,6 @@ const oFnLib = {
     },
     async init(){
         const sToday = moment().format('yyyy-MM-DD') + ' 00:00:00';
-        const oZeroClock = moment(sToday);
         // const iTodayBegan = new Date(sToday + ' 00:00:00') * 1;
         const sql = `
             SELECT
@@ -19,9 +18,15 @@ const oFnLib = {
             where actionBeginAt like '${sToday.slice(0,10)}%'
             order by actionBeginAt
         `;
-        const aFixed = [];
         const [aResult] = await fnInvoke('db', 'doSql', sql);
-        aResult.map((oCur, idx) => {
+        this.processData(aResult);
+    },
+    // ▼加工数据
+    processData(aResult){
+        const sToday = moment().format('yyyy-MM-DD') + ' 00:00:00';
+        const oZeroClock = moment(sToday);
+        const aFixed = [];
+        aResult.forEach((oCur, idx) => {
             // const oLast = aResult[idx-1];
             const oActionBegin = moment(oCur.actionBeginAt);
             const iSecOfDay = oActionBegin.diff(oZeroClock, 'seconds');
@@ -31,21 +36,21 @@ const oFnLib = {
                 return aFixed.push(oCur);
             }
             let oPre = aFixed.at(-1);
-            if (oCur.gapToPrev && oCur.gapToPrev < 2){
+            const iGap = 9;
+            if (oCur.gapToPrev && oCur.gapToPrev < iGap){
                 // ▼ 3参传 true 得到浮点数
                 oPre.duration = moment(oCur.actionEndAt).diff(oPre.actionBeginAt, 'second', true);
                 oPre.actionEndAt = oCur.actionEndAt;
                 oPre.iLongPercent = (oPre.duration / iOneDaySeconds * 100).toFixed(2);
-                oPre.qty = (oPre.qty || 0) + 1;
+                oPre.qty = (oPre.qty || 1) + 1;
             }else{
                 oCur.iLongPercent = (oCur.duration / iOneDaySeconds * 100).toFixed(2);
                 aFixed.push(oCur);
             }
             return oCur;
         });
-        aFixed.push(aResult[0]);
+        console.log(`数量：${aResult.length} => ${aFixed.length}`);
         console.log('aFixed：', aFixed);
-        console.log('数量：', aResult.length, aFixed.length);
         this.aDayAction = aFixed;
     },
 };
