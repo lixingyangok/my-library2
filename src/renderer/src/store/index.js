@@ -2,13 +2,12 @@
  * @Author: 李星阳
  * @Date: 2023-08-12 12:05:57
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-13 15:27:29
+ * @LastEditTime: 2023-08-13 23:21:45
  * @Description: 
  */
 
 import { mapStores, defineStore } from 'pinia';
 const moment = require('moment');
-const iOneDaySeconds = 24 * 60 * 60; // 全天秒数
 const iOneDayMinites = 24 * 60; // 全天分钟数
 const shortMinutes = 45; // 短分钟（每分钟播放达到此秒数即视为100%高饱和）
 
@@ -28,15 +27,15 @@ export const useActionStore = defineStore('action', {
         async init(){
             this.count++;
             if (this.count % 2) return;
-            const sToday = moment().format('yyyy-MM-DD') + ' 00:00:00';
-            // const iTodayBegan = new Date(sToday + ' 00:00:00') * 1;
+            const sToday = moment().format('yyyy-MM-DD');
+            // gapToPrev 这个属性好像查出来也没
             const sql = `
                 SELECT
-                    mediaId, lineId, playFrom, playEnd, duration, action, gapToPrev,
+                    mediaId, lineId, playFrom, playEnd, duration, action,
                     datetime(action.actionBegin, 'localtime') as actionBeginAt,
                     datetime(action.actionEnd, 'localtime') as actionEndAt
                 from action
-                where actionBeginAt like '${sToday.slice(0,10)}%'
+                where actionBeginAt like '${sToday}%'
                 order by actionBeginAt
             `;
             const [aResult] = await fnInvoke('db', 'doSql', sql);
@@ -99,38 +98,6 @@ export const useActionStore = defineStore('action', {
             console.log(`播放记录：${aResult.length} - ${aFixed.length}`);
             this.aTodayAction = aFixed;
         },
-        // ▼加工数据
-        // processData(aResult){
-        //     const iGap = 20;
-        //     const sToday = moment().format('yyyy-MM-DD') + ' 00:00:00';
-        //     const oZeroClock = moment(sToday);
-        //     const aFixed = [];
-        //     aResult.forEach((oCur, idx) => {
-        //         // const oLast = aResult[idx-1];
-        //         const oActionBegin = moment(oCur.actionBeginAt);
-        //         const iSecOfDay = oActionBegin.diff(oZeroClock, 'seconds');
-        //         oCur.iSecOfDay = iSecOfDay;
-        //         oCur.iPercentOfDay01 = (iSecOfDay / iOneDaySeconds * 100).toFixed(5);
-        //         if (idx==0) {
-        //             return aFixed.push(oCur);
-        //         }
-        //         let oPre = aFixed.at(-1);
-        //         if (oCur.gapToPrev && oCur.gapToPrev < iGap){
-        //             // ▼ 3参传 true 得到浮点数
-        //             oPre.duration = moment(oCur.actionEndAt).diff(oPre.actionBeginAt, 'second', true);
-        //             oPre.actionEndAt = oCur.actionEndAt;
-        //             oPre.iLongPercent = (oPre.duration / iOneDaySeconds * 100).toFixed(2);
-        //             oPre.qty = (oPre.qty || 1) + 1;
-        //         }else{
-        //             oCur.iLongPercent = (oCur.duration / iOneDaySeconds * 100).toFixed(2);
-        //             aFixed.push(oCur);
-        //         }
-        //         return oCur;
-        //     });
-        //     console.log(`Action 数量：${aResult.length} => ${aFixed.length}`);
-        //     // console.log('aFixed：', aFixed);
-        //     this.aTodayAction = aFixed;
-        // },
     },
 });
 

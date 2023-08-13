@@ -2,13 +2,14 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-10 22:01:37
+ * @LastEditTime: 2023-08-13 22:19:52
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
 import { fixTime } from '../../../common/js/pure-fn.js';
 import { figureOut } from './figure-out-region.js';
-
+import TheAction from '@/common/js/action.js';
+const oActionFn = new TheAction('reading');
 let iSearchingQ = 0;
 let isSavingToDB = false; //保存事件防抖
 
@@ -40,6 +41,7 @@ export function getKeyDownFnMap(This, sType) {
         { key: 'F3', name: '抛弃当前句', fn: () => This.giveUpThisOne() },
         { key: 'F4', name: '查字典', fn: () => This.searchWord() },
         { key: 'Escape', name: '取消播放', fn: () => oMyWave.toPause() }, // 停止播放
+        { key: 'Space', name: '朗读', fn: ev => This.readAloud(ev) }, // 停止播放
     ];
     const withCtrl = [
         { key: 'ctrl + q', name: '查字典', fn: () => This.searchWord() },
@@ -63,10 +65,11 @@ export function getKeyDownFnMap(This, sType) {
         { key: 'alt + n', name: '终点左移', fn: () => This.fixRegion('end', -0.07) },
         { key: 'alt + m', name: '终点右移', fn: () => This.fixRegion('end', 0.07) },
         // 选词
-        { key: 'alt + a', name: '', fn: () => This.toInset(0) },
-        { key: 'alt + s', name: '', fn: () => This.toInset(1) },
-        { key: 'alt + d', name: '', fn: () => This.toInset(2) },
-        { key: 'alt + f', name: '', fn: () => This.toInset(3) },
+        { key: 'alt + a', name: '插入候选词', fn: () => This.toInset(0) },
+        { key: 'alt + s', name: '插入候选词', fn: () => This.toInset(1) },
+        { key: 'alt + d', name: '插入候选词', fn: () => This.toInset(2) },
+        // { key: 'alt + f', name: '插入候选词', fn: () => This.toInset(3) },
+        { key: 'alt + f', name: '插入文本', fn: () => This.smartFill() },
         // 未分类
         // { key: 'alt + j', name: '', fn: () => This.previousAndNext(-1) },
         // { key: 'alt + k', name: '', fn: () => This.previousAndNext(1) },
@@ -96,14 +99,29 @@ export function getKeyDownFnMap(This, sType) {
 export function fnAllKeydownFn() {
     const oInstance = getCurrentInstance();
     const This = oInstance.proxy;
+    function readAloud(ev){
+        // console.log(`长按 ${ev.repeat} - ${This.isReading}`);
+        // 终止条件 👉 非长按 || 已进入朗读状态
+        if (!ev.repeat || This.isReading) return;
+        console.log('开始朗读');
+        This.isReading = true;
+        oActionFn.initRecord({ // 只管启动，程序会按需保存
+            mediaId: This.oMediaInfo.id,
+            lineId: This.oCurLine.id || null, // 断句期间可能没有 ID 
+        });
+    }
+    function readingStopped(){
+        if (This.isReading == false) return;
+        This.isReading = false;
+        oActionFn.saveRecord();
+        // console.log(`朗读完成 ${duration} 秒`, This.oReadingAloud.$dc());
+    }
     function dealQuotationMark(){
-        // console.log('dealQuotationMark', This.oCurLine.$dc());
         console.log('dealQuotationMark', This.oCurLine);
-        let {text=''} = This.oCurLine;
-        text = text.trim();
+        let text = This.oCurLine.text.trim();
         if (!text) return;
-        var aa = ['"', "'"].includes(text.at(0));
-        var bb = ['"', "'"].includes(text.at(-1));
+        var aa = `"'`.includes(text.at(0));
+        var bb = `"'`.includes(text.at(-1));
         if (aa || bb){
             const iStart = aa ? 1 : 0;
             const iEnd = bb ? -1 : Infinity;
@@ -112,12 +130,62 @@ export function fnAllKeydownFn() {
             This.oCurLine.text = `"${text}"`;
         }
     }
+    function smartFill(){
+        const {
+            aArticle, oTopLineMatch, iWriting, sWriting,
+            iMatchStart, iMatchEnd, iShowUntil, oCurLine,
+        } = This;
+        if (!oTopLineMatch && !sWriting) return;
+        const {iLeftLine} = oTopLineMatch || {};
+        let sCandidate = '';
+        let aaa = iLeftLine >= 0 && (iWriting < 0 || (iWriting - iLeftLine >= 1));
+        if (aaa){
+            sCandidate = aArticle[iLeftLine].slice(oTopLineMatch.iMatchEnd);
+            if (iLeftLine + 1 != iWriting){
+                sCandidate += aArticle.slice(iLeftLine + 1, iWriting).join('\n');
+            }
+        }
+        if(iWriting >= 0){
+            const sGreen = sWriting.slice(iMatchStart, iMatchEnd);
+            if (sGreen){
+                sCandidate = sWriting.slice(iMatchEnd);
+            }else if (iLeftLine == iWriting){
+                sCandidate = sWriting.slice(oTopLineMatch.iMatchEnd, iMatchStart)
+            }else{
+                sCandidate = sWriting.slice(0, iMatchStart);
+            }
+            sCandidate += aArticle.slice(iWriting + 1).join('\n');
+        } else{
+            var iVal = Math.max(iShowUntil + 1, (iLeftLine - 1) || 0);
+            sCandidate += aArticle.slice(iVal, iVal + 2).join('\n');
+        }
+        sCandidate = sCandidate.slice(0, 100).trim();
+        var match = sCandidate.match(/^\W{1,3}\s+(?=\S)/);
+        if (match){
+            sCandidate = sCandidate.slice(match[0].length);
+        }
+        // var sHead = '' && oCurLine.text.at(-1)?.match(/\S/) ? ' ' : '';
+        var sFirst = sCandidate.match(/(\S+\s+){3}/)[0] + ' ';
+        var iFind = sCandidate.search(/[,"'!\.\?]\s/);
+        if (iFind > -1) {
+            // console.log('iFind', iFind, sCandidate);
+            sFirst = sFirst.slice(0, iFind + 2);
+        }
+        // sFirst = sFirst.match(/.+([\.,!\?]|.)/)[0];
+        oCurLine.text = (oCurLine.text + '' + sFirst).replace(/\s{2,}|\n|\r/g, ' ');
+        setLeftLine();
+        recordHistory();
+        // console.log('oTopLineMatch', oTopLineMatch?.$dc(), '\n\n');
+        // console.log(sCandidate);
+    }
     // ▼切换当前句子（上一句，下一句）
     function previousAndNext(iDirection) {
         const { oMediaBuffer, aLineArr, iCurLineIdx } = This;
         const iCurLineNew = iCurLineIdx + iDirection;
         if (iCurLineNew < 0) {
             return This.$message.warning('没有上一行');
+        }else if (!oMediaBuffer.duration && !aLineArr.length){
+            return This.$message.warning('暂无波形数据，请等待');
         }
         const oNewLine = (() => {
             if (aLineArr[iCurLineNew]) return false; //有数据，不新增
@@ -138,6 +206,7 @@ export function fnAllKeydownFn() {
         if (oNewLine) This.aLineArr.push(oNewLine);
         const {iCurLineIdx: iOldLine} = This;
         iAimLine ??= iOldLine;
+        iAimLine = Math.min(iAimLine, This.aLineArr.length - 1); // 防止越界
         This.iCurLineIdx = iAimLine;
         let isGoingUp = iAimLine < iOldLine;
         // let goOneStep = iAimLine - iOldLine == 1;
@@ -212,10 +281,10 @@ export function fnAllKeydownFn() {
         This.iWriting = -1;
         Reflect.deleteProperty(This.oRightToLeft, This.iCurLineIdx);
         const text = This.oCurLine.text.trim();
-        if (text.length <= 2) return;
+        if (text.length < 1) return;
         const aPieces = text.match(wordsReExp); // 将当前句分割
         if (!aPieces) return;
-        console.time('耗时');
+        // console.time('耗时');
         // ▼输入的上一行没有成功匹配时，会取到 -1 很不好
         const {iLeftLine = -1, iMatchEnd: iLastMatchEnd} = This.oTopLineMatch || {}; // 取得之前匹配到的位置信息
         // console.log("上次匹配：", (This.oTopLineMatch || {}).$dc());
@@ -245,8 +314,8 @@ export function fnAllKeydownFn() {
         })();
         iLastTimeChecked = This.iCurLineIdx;
         isLastTimeGotResult = !!oResult;
-        console.timeEnd('耗时');
-        console.log(`定位到行: ${oResult?.iWriting ?? '没成功'} ---`);
+        // console.timeEnd('耗时');
+        // console.log(`定位到行: ${oResult?.iWriting ?? '没成功'} ---`);
         oResult && setLeftTxtTop(oResult);
     }
     // ▼跳转到目标行（将来补充动画效果）
@@ -458,7 +527,7 @@ export function fnAllKeydownFn() {
         This.sSearching = sKey;
         This.isShowDictionary = true;
     }
-    // ▼保存生词
+    // ▼保存生词 （TODO，切换词类功能）
     async function saveWord() {
         const word = window.getSelection().toString().trim() || '';
         if (!word) return;
@@ -659,6 +728,9 @@ export function fnAllKeydownFn() {
         setHistory,
         setLeftLine,
         dealQuotationMark,
+        smartFill,
+        readAloud,
+        readingStopped,
     };
 }
 

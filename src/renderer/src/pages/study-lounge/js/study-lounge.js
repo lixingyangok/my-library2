@@ -56,6 +56,8 @@ export function mainPart(){
 		...oOperation,
 		...oInputMethod,
 		...visiableControl,
+		isReading: false,
+		// mode: ['reading', 'playing'][0],
 		sMediaSrc: getTubePath(ls('sFilePath')),
 		sHash: '',
 		oMediaInfo: {}, // 库中媒体信息
@@ -273,9 +275,11 @@ export function mainPart(){
 			return oResult;
 		}, {});
 		await vm.$nextTick();
-		const {iLineNo=0, sTxtFile} = ls('oRecent')[ls('sFilePath')] || {};
-		// ▼只有媒体变更了才重新定位行
-		if (isMediaChanged){ // 没有目标行就跳到0行（防止纵向滚动条没回顶部
+		// ▼ 没有目标行就跳到0行（防止纵向滚动条没回顶部
+		let {iLineNo=0, sTxtFile} = ls('oRecent')[ls('sFilePath')] || {};
+		// ▼ 只有媒体变更了才重新定位行，即，因保存字幕后重新加载时不要行动
+		if (isMediaChanged){ 
+			console.log(`isMediaChanged ${isMediaChanged}, iLineNo=${iLineNo}`);
 			oInstance.proxy.goLine(iLineNo);
 			isMediaChanged = false; // 复位
 		}
@@ -372,9 +376,12 @@ export function mainPart(){
 			...oWord,
 			mediaId: oData.oMediaInfo.id,
 		});
-		if (!res) vm.$message.error('删除单词未成功');
-		vm.$message.success('已删除');
-		getNewWords();
+		if (res) {
+			vm.$message.success('已删除');
+			return getNewWords();
+		}
+		vm.$message.error('删除单词未成功');
+		console.log('删除单词未成功', res);		
 	}
 	// ▼查询新词
 	async function getNewWords(){
