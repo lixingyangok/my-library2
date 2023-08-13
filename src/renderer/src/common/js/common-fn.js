@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-09 17:59:23
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-07-02 17:14:30
+ * @LastEditTime: 2023-08-13 17:53:55
  * @Description: 
  */
 
@@ -18,9 +18,13 @@ export function registerKeydownFn(oFnList) {
         const keyName = keyMap[ev.keyCode] || '';
         const keyStr = ctrl + alt + shift + keyName;
         const theFn = oFnList[keyStr];
+        // console.log(`${keyStr} ---`, theFn?.name);
         if (!theFn) return;
-        ev.preventDefault();
-        ev.stopPropagation();
+        const aDoNotPrevent = ['Space', 'Home', 'End'];
+        if (!aDoNotPrevent.includes(keyStr)){
+            ev.preventDefault();
+            ev.stopPropagation();
+        }
         // if (typeof theFn != 'string') theFn();
         theFn(ev);
     }
