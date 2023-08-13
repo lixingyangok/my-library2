@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-09 21:11:17
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-11 22:27:06
+ * @LastEditTime: 2023-08-13 20:44:05
  * @Description: 
  */
 
@@ -28,15 +28,16 @@ export const oAction = sqlize.define('action', {
             key: 'id',
         },
     },
+    // ▼ playing, reading, writing, speaking
+    action: { allowNull: false, type: DataTypes.STRING, },
+    duration: { allowNull: false, type: DataTypes.FLOAT, },
+    actionEnd: { allowNull: false, type: DataTypes.DATE, },
+    actionBegin: { allowNull: false, type: DataTypes.DATE, },
     playFrom: DataTypes.FLOAT,
     playEnd: DataTypes.FLOAT,
-    actionBegin: DataTypes.DATE, // 录入时间
-    actionEnd: DataTypes.DATE, // 结束时间
     gapToPrev: DataTypes.FLOAT, // 本次开始与上次结束的间距秒
-    duration: DataTypes.FLOAT,
-    action: DataTypes.STRING, // playing, reading, writing, speaking
 });
-oAction.sync();
+oAction.sync({ alter: true })
 
 /*
 User.sync() - 如果表不存在,则创建该表(如果已经存在,则不执行任何操作)

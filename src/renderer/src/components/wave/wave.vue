@@ -8,6 +8,7 @@
 <template>
     <article class="wave-coat" >
         <video controls class="player" ref="oAudio"
+            id="media-player"
             v-show="(mediaPath || '').endsWith('.mp4')"
             :style="{width: '600px'}"
             :src="mediaPath"

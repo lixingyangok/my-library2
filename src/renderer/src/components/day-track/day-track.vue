@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-11 19:52:29
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-12 19:46:39
+ * @LastEditTime: 2023-08-13 14:07:22
  * @Description: 
 -->
 <template>
@@ -11,12 +11,10 @@
             <li v-for="(cur, idx) of oAction.aTodayAction" :key="idx" 
                 :style="{
                     left: `${cur.leftAt}%`,
-                    top: `calc(${(100-cur.height) * 0.5}%)`,
                     width: `${cur.width}%`,
-                    height: `${cur.height}%`,
-                    opacity: cur.level,
+                    height: Math.max(20, cur.height) + '%',
+                    opacity123: cur.level,
                 }"
-                :class="`level-${cur.level}`"
             >
                 <span v-show="0"> {{getInfo(cur)}} </span>
             </li>
