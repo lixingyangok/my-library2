@@ -2,14 +2,15 @@
  * @Author: 李星阳
  * @Date: 2023-08-12 12:05:57
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-12 13:29:00
+ * @LastEditTime: 2023-08-13 15:27:29
  * @Description: 
  */
 
 import { mapStores, defineStore } from 'pinia';
 const moment = require('moment');
-const iGap = 9;
 const iOneDaySeconds = 24 * 60 * 60; // 全天秒数
+const iOneDayMinites = 24 * 60; // 全天分钟数
+const shortMinutes = 45; // 短分钟（每分钟播放达到此秒数即视为100%高饱和）
 
 // 你可以对 `defineStore()` 的返回值进行任意命名，但最好使用 store 的名字，同时以 `use` 开头且以 `Store` 结尾。(比如 `useUserStore`，`useCartStore`，`useProductStore`)
 // 第一个参数是你的应用中 Store 的唯一 ID。
@@ -39,39 +40,97 @@ export const useActionStore = defineStore('action', {
                 order by actionBeginAt
             `;
             const [aResult] = await fnInvoke('db', 'doSql', sql);
-            this.processData(aResult);
+            // this.processData(aResult);
+            this.processMinites(aResult);
         },
-        // ▼加工数据
-        processData(aResult){
+        async processMinites(aResult){
             const sToday = moment().format('yyyy-MM-DD') + ' 00:00:00';
             const oZeroClock = moment(sToday);
             const aFixed = [];
             aResult.forEach((oCur, idx) => {
-                // const oLast = aResult[idx-1];
-                const oActionBegin = moment(oCur.actionBeginAt);
-                const iSecOfDay = oActionBegin.diff(oZeroClock, 'seconds');
-                oCur.iSecOfDay = iSecOfDay;
-                oCur.iPercentOfDay01 = (iSecOfDay / iOneDaySeconds * 100).toFixed(5);
-                if (idx==0) {
-                    return aFixed.push(oCur);
+                const {actionBeginAt, actionEndAt} = oCur;
+                const oLast = aFixed.at(-1);
+                const oActionBeginAt = moment(actionBeginAt);
+                const iMinutesStart = oActionBeginAt.diff(oZeroClock, 'minute');
+                const iGap2PrevSec = oLast?.actionEndAt ? oActionBeginAt.diff(oLast?.actionEndAt, 'second') : null;
+                if ((idx==0) || (iGap2PrevSec > 60)){
+                    const oMinites = {
+                        actionBeginAt,
+                        actionEndAt,
+                        iMinutesStart, // 分数序号起点
+                        iMinutesEnd: iMinutesStart, // 分钟终点
+                        iMinutesLong: 1, // 默认值：计1分钟
+                        actionQty: 1, // 动作次数
+                        leftAt: iMinutesStart / iOneDayMinites * 100,
+                        duration: oCur.duration,
+                        kids: [oCur],
+                        width: 1 / iOneDayMinites * 100,
+                        height: oCur.duration / 60 * 100, // 100% 高
+                        level: 0.3,
+                    };
+                    oMinites.iGap2PrevSec = iGap2PrevSec;
+                    return aFixed.push(oMinites);
                 }
-                let oPre = aFixed.at(-1);
-                if (oCur.gapToPrev && oCur.gapToPrev < iGap){
-                    // ▼ 3参传 true 得到浮点数
-                    oPre.duration = moment(oCur.actionEndAt).diff(oPre.actionBeginAt, 'second', true);
-                    oPre.actionEndAt = oCur.actionEndAt;
-                    oPre.iLongPercent = (oPre.duration / iOneDaySeconds * 100).toFixed(2);
-                    oPre.qty = (oPre.qty || 1) + 1;
-                }else{
-                    oCur.iLongPercent = (oCur.duration / iOneDaySeconds * 100).toFixed(2);
-                    aFixed.push(oCur);
-                }
-                return oCur;
+                const iMinutesLong = (()=>{
+                    let second = moment(actionEndAt).diff(oLast.actionBeginAt, 'second');
+                    // let intMinutes = Math.round(second / 60);
+                    return Math.max(1, second / 60); // 最小1分钟
+                })();
+                // console.log('秒分：', moment(actionEndAt).diff(oLast.actionBeginAt, 'second'), iMinutesLong, )
+                // console.log('iMinutesLong', iMinutesLong);
+                oLast.actionEndAt = actionEndAt;
+                oLast.iGap2PrevSec = iGap2PrevSec;
+                oLast.iMinutesLong = iMinutesLong;
+                oLast.iMinutesEnd = iMinutesStart;
+                oLast.duration += oCur.duration;
+                oLast.actionQty += 1;
+                // if (oLast.duration > (iMinutesLong * 60)){ // 将来删除
+                //     oLast.duration = (iMinutesLong * 60) * 0.5;
+                // }
+                oLast.saturation = oLast.duration / (iMinutesLong * shortMinutes); // 时长饱和度百分数
+                oLast.height = oLast.saturation * 100;
+                oLast.width = iMinutesLong / iOneDayMinites * 100;
+                oLast.kids.push(oCur);
+                // oLast.level = 1-(iMinutesLong * 0.05);
+                // oLast.level += oLast.saturation * 0.5;
+                // console.log(`饱和分-秒 ${iMinutesLong}-${oLast.duration.toFixed(0)} -${oLast.saturation}`);
+                oLast.level = Math.min(oLast.level, 1); // 早期有些错误，将来去除这一行
             });
-            console.log(`Action 数量：${aResult.length} => ${aFixed.length}`);
-            // console.log('aFixed：', aFixed);
+            console.log(`播放记录：${aResult.length} - ${aFixed.length}`);
             this.aTodayAction = aFixed;
         },
+        // ▼加工数据
+        // processData(aResult){
+        //     const iGap = 20;
+        //     const sToday = moment().format('yyyy-MM-DD') + ' 00:00:00';
+        //     const oZeroClock = moment(sToday);
+        //     const aFixed = [];
+        //     aResult.forEach((oCur, idx) => {
+        //         // const oLast = aResult[idx-1];
+        //         const oActionBegin = moment(oCur.actionBeginAt);
+        //         const iSecOfDay = oActionBegin.diff(oZeroClock, 'seconds');
+        //         oCur.iSecOfDay = iSecOfDay;
+        //         oCur.iPercentOfDay01 = (iSecOfDay / iOneDaySeconds * 100).toFixed(5);
+        //         if (idx==0) {
+        //             return aFixed.push(oCur);
+        //         }
+        //         let oPre = aFixed.at(-1);
+        //         if (oCur.gapToPrev && oCur.gapToPrev < iGap){
+        //             // ▼ 3参传 true 得到浮点数
+        //             oPre.duration = moment(oCur.actionEndAt).diff(oPre.actionBeginAt, 'second', true);
+        //             oPre.actionEndAt = oCur.actionEndAt;
+        //             oPre.iLongPercent = (oPre.duration / iOneDaySeconds * 100).toFixed(2);
+        //             oPre.qty = (oPre.qty || 1) + 1;
+        //         }else{
+        //             oCur.iLongPercent = (oCur.duration / iOneDaySeconds * 100).toFixed(2);
+        //             aFixed.push(oCur);
+        //         }
+        //         return oCur;
+        //     });
+        //     console.log(`Action 数量：${aResult.length} => ${aFixed.length}`);
+        //     // console.log('aFixed：', aFixed);
+        //     this.aTodayAction = aFixed;
+        // },
     },
 });
 
