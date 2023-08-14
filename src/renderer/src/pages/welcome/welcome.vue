@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-02 20:27:04
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-04-29 21:41:55
+ * @LastEditTime: 2023-08-06 22:14:37
  * @Description: 
 -->
 
@@ -33,6 +33,8 @@
             </span>
             &nbsp;
             <el-button @click="$root.f5()">刷新</el-button>
+            &nbsp;&nbsp;
+            文件数量：{{ oMedias.iCount}}个 / 总时长：{{ oMedias.hours}}Hrs
             &nbsp;&nbsp;
             总行数：{{ iAllLines.toLocaleString() }}
         </div>
@@ -182,6 +184,7 @@ export default {
             aRecent: [],
             aClockIn: [], // 打卡数据
             iAllLines: 0,
+            oMedias: {},
         };
     },
     computed:{
@@ -202,6 +205,7 @@ export default {
         this.updateTheRecent();
         this.getAllLines();
         this.getLineData();
+        this.countMediaInfo();
     },
     mounted(){
         this.showChart();

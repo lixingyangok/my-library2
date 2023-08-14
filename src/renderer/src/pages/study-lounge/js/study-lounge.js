@@ -45,6 +45,7 @@ export function mainPart(){
 		aWordsList: [[], []], // 关键词，专有名词
 		oKeyWord: {}, // 关键词
 		oProperNoun: {}, // 专有名词
+		sNewWordSearch: '', // 搜索
 	};
 	const visiableControl = { // 控制窗口显隐
 		isShowDictionary: false,
@@ -78,6 +79,16 @@ export function mainPart(){
 		// iLeftTxtSize: 14, // 左侧文本字号
 	});
 	const oInstance = getCurrentInstance();
+	// ▼过滤后的
+	const aFilteredWords = computed(()=>{
+		if (!oData.sNewWordSearch) return oData.aWordsList;
+		const regExp = new RegExp(oData.sNewWordSearch, 'i');
+		return oData.aWordsList.map(l01 => {
+			return l01.filter(l02 => {
+				return regExp.test(l02.word);
+			});
+		});
+	});
 	// ▼当前行
 	const oCurLine = computed(()=>{
 		return oData.aLineArr[ oData.iCurLineIdx ];
@@ -364,9 +375,10 @@ export function mainPart(){
 		console.log('单词', oWord.$dc());
 		const res = await fnInvoke('db', 'switchWordType', {
 			...oWord,
+			// ▼要思考要不要添加这一行（因为当前高亮的单词可能是邻居媒体收藏的）
 			mediaId: oData.oMediaInfo.id,
 		});
-		if (!res) return;
+		if (!res) return vm.$message.error('保存未成功');
 		console.log('修改反馈', res);
 		getNewWords();
 	}
@@ -767,6 +779,7 @@ export function mainPart(){
 		handleCommand,
 		openTxt,
 		showLeftArticle,
+		aFilteredWords,
 	};
     return reactive({
         ...toRefs(oDom),

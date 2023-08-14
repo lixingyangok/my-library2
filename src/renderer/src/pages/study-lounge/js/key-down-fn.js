@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-13 22:19:52
+ * @LastEditTime: 2023-08-14 12:10:26
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -108,6 +108,8 @@ export function fnAllKeydownFn() {
         oActionFn.initRecord({ // 只管启动，程序会按需保存
             mediaId: This.oMediaInfo.id,
             lineId: This.oCurLine.id || null, // 断句期间可能没有 ID 
+            playFrom: This.oCurLine.start,
+            playEnd: This.oCurLine.end,
         });
     }
     function readingStopped(){
@@ -156,17 +158,17 @@ export function fnAllKeydownFn() {
             }
             sCandidate += aArticle.slice(iWriting + 1).join('\n');
         } else{
-            var iVal = Math.max(iShowUntil + 1, (iLeftLine - 1) || 0);
+            let iVal = Math.max(iShowUntil + 1, (iLeftLine - 1) || 0);
             sCandidate += aArticle.slice(iVal, iVal + 2).join('\n');
         }
         sCandidate = sCandidate.slice(0, 100).trim();
-        var match = sCandidate.match(/^\W{1,3}\s+(?=\S)/);
+        let match = sCandidate.match(/^\W{1,3}\s+(?=\S)/);
         if (match){
             sCandidate = sCandidate.slice(match[0].length);
         }
-        // var sHead = '' && oCurLine.text.at(-1)?.match(/\S/) ? ' ' : '';
-        var sFirst = sCandidate.match(/(\S+\s+){3}/)[0] + ' ';
-        var iFind = sCandidate.search(/[,"'!\.\?]\s/);
+        // let sHead = '' && oCurLine.text.at(-1)?.match(/\S/) ? ' ' : '';
+        let sFirst = sCandidate.match(/(\S+\s+){3}/)[0] + ' ';
+        let iFind = sFirst.search(/[,"'!\.\?\n]\s/);
         if (iFind > -1) {
             // console.log('iFind', iFind, sCandidate);
             sFirst = sFirst.slice(0, iFind + 2);
@@ -531,12 +533,14 @@ export function fnAllKeydownFn() {
     async function saveWord() {
         const word = window.getSelection().toString().trim() || '';
         if (!word) return;
-        const wordLow = word.toLowerCase();
-        const bExist = This.aFullWords.some(cur => cur.toLowerCase() == wordLow);
-        const lengthOK = word.length >= 2 && word.length <= 30;
-        if (!lengthOK || bExist) {
-            const sTips = `已经保存不可重复添加，或单词长度不在合法范围（2-30字母）`;
-            return This.$message.error(sTips);
+        const wordReExp = new RegExp(`^${word}$`, 'i');
+        const oExist = This.aWordsList.flat().find(cur => {
+            return wordReExp.test(cur.word);
+        });
+        if (oExist) return This.changeWordType(oExist);
+        const lengthOK = (word.length >= 2) && (word.length <= 30);
+        if (!lengthOK) {
+            return This.$message.error(`单词长度应 >= 2 && <= 30`);
         }
         const res = await fnInvoke('db', 'saveOneNewWord', {
             word, mediaId: This.oMediaInfo.id,

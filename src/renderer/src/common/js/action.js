@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-13 20:12:08
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-13 23:03:41
+ * @LastEditTime: 2023-08-13 23:46:50
  * @Description: 
  */
 
@@ -62,9 +62,9 @@ export default class {
             return console.log(`播放时长短：${duration} 不记录`);
         }
         // ▼然后先快速拷贝出一份，以让后续程序运行，复制品用于慢慢地保存到数据库，
-        const useToSave = Object.assign(structuredClone(this.oRecord), {
-            duration, actionEnd, playEnd,
-        });
+        const addtion = { duration, actionEnd };
+        if (playingMode) addtion.playEnd = playEnd; // 阅读模式不取动态值取初始值
+        const useToSave = Object.assign(structuredClone(this.oRecord), addtion);
         console.log(`已“补全了”记录：${duration} 秒`, /* useToSave */);
         this.doSaving(useToSave);
     };
@@ -73,6 +73,8 @@ export default class {
         // .then(this.afterSaved);
         if (!oSaved) alert('保存学习记录失败，请注意');
         oActionStore.init();
+        // console.log('useToSave', useToSave);
+        // console.log('oSaved', oSaved);
     }
 };
 

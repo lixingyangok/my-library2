@@ -57,7 +57,7 @@ const oPendingDataFn = {
             const iDone = iTotal - cur.len;
             const percentVal = (iDone / iTotal * 100).toFixed(1);
             cur.sRate = `${iDone}/${iTotal}`;
-            cur.fPercent = percentVal * 1;
+            cur.fPercent = Math.min(percentVal * 1, 100);
         }
     },
     // ▼置顶
@@ -127,6 +127,17 @@ const oRecordFn = {
         if (!r01) return;
         this.iAllLines = r01[0].iCount;
     },
+    // ▼统计所有媒体信息
+    async countMediaInfo(){
+        const sql = ` SELECT count(*) as iCount, sum(duration) as iDuration from media `;
+        const [[r01], r02] = await fnInvoke('db', 'doSql', sql).catch(err=>{
+            console.log('err', err);
+        });
+        if (!r01) return;
+        r01.hours = (r01.iDuration / (60*60)).toFixed(1) * 1;
+        this.oMedias = r01;
+    },
+    // ▼查询行
     async getLineData(){
         const iDays = 50;
         const sql = `
@@ -163,10 +174,12 @@ const oFn_recentList = {
     updateTheRecent(){
         const oRecent = ls.get('oRecent');
         const aList = Object.entries(oRecent).map(cur=>{
+            // const {fPercent} = cur[1];
             return {
                 file: cur[0],
                 ...cur[1],
                 sTime: getDateDiff(cur[1].iTime),
+                fPercent: Math.min(cur[1].fPercent, 100),
             };
         });
         aList.sort((aa,bb)=>{

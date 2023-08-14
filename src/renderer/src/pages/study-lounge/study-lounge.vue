@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-05 17:35:19
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-06-02 21:24:01
+ * @LastEditTime: 2023-08-14 12:16:46
  * @Description: 
 -->
 <template>
@@ -98,6 +98,7 @@
                 :a-line-arr="aLineArr"
                 :i-cur-line-idx="iCurLineIdx"
                 :mediaDuration="oMediaInfo.duration"
+                :oMediaInfo="oMediaInfo"
                 @pipe="bufferReceiver"
                 @setTimeTube="setTime"
             />
@@ -170,13 +171,17 @@
                         <ul v-if="aMileStones.aSteps.length" class="box-ul">
                             <li v-for="(curRow, rowIdx) of aMileStones.aSteps" :key="rowIdx"
                                 :note="`${curRow.start_}-${curRow.end_}-${curRow.long}`"
-                                :style="{'flex-grow': curRow.long/ aMileStones.iFull*100}"
+                                :style="{
+                                    'width': curRow.long / 55 * 100 + '%',
+                                    'max-width': curRow.long / 55 * 100 + 3 + '%'
+                                }"
                                 :class="{
-                                    done: curRow.start <= oCurLine.start,
+                                    'done': curRow.start <= oCurLine.start,
                                     'bright-one blink': curRow.start == oCurLine.start
                                 }"
                             ></li>
                         </ul>
+                        <!-- ▼ v-else 可能执行不到了， -->
                         <template v-else>
                             <span class="cursor" 
                                 :style="{
@@ -226,7 +231,7 @@
                 <!-- ▲下层内容，▼上层输入框 -->
                 <textarea ref="oTextArea" class="textarea textarea-real"
                     :class="{
-                        'being-wrong': oCurLine.text.match(/\s{2,}|^\s/g),
+                        'being-wrong': oCurLine.text.match(/\s{2,}|^\s|\n|\r/g),
                         'may-wrong': oCurLine.text.includes('*'),
                         'ten-times': (iCurLineIdx + 1) % 10 == 0,
                     }"
@@ -284,23 +289,35 @@
                     </li>
                 </ul>
             </article>
+            <!-- ▼ -->
+            <dayTrack ref="oDayTrack" />
         </section>
-        <!-- ▼弹出窗口 -->
+        <!--
+            ▼弹出窗口 ■■■■■■■■
+            ▼弹出窗口 ■■■■■■■■
+            ▼弹出窗口 ■■■■■■■■
+            ▼弹出窗口 ■■■■■■■■
+            ▼弹出窗口 ■■■■■■■■
+            ▼弹出窗口 ■■■■■■■■
+        -->
         <dictionaryVue :beDialog="true"
             v-model:dialogVisible="isShowDictionary"
             :word="sSearching"
         ></dictionaryVue>
         <!-- ▼单词表 -->
         <el-dialog title="单词表" v-model="isShowNewWords">
+            <div class="new-words-search-bar" >
+                <el-input v-model="sNewWordSearch" placeholder="搜索" />
+            </div>
             <div class="one-box" 
-                v-for="(oneList,i01) of aWordsList" :key="i01"
+                v-for="(oneList, i01) of aFilteredWords" :key="i01"
             >
                 <h3 class="title">
                     ◆ {{['新词汇', '专有名词'][i01]}}
                     <small>{{oneList.length}}个</small>
                 </h3>
                 <ul class="one-type-word-ul">
-                    <li class="word" v-for="(oneWord,i02) of oneList" :key="i02" >
+                    <li class="word" v-for="(oneWord, i02) of oneList" :key="i02" >
                         <span @click="changeWordType(oneWord)">
                             {{oneWord.word}}
                         </span>
@@ -387,18 +404,20 @@
 </template>
 
 <script>
-import {toRefs, computed} from 'vue';
+import {toRefs, computed, onBeforeUnmount} from 'vue';
 import {mainPart} from './js/study-lounge.js';
 import {getKeyDownFnMap, fnAllKeydownFn} from './js/key-down-fn.js';
 import MyWave from '../../components/wave/wave.vue';
-import {registerKeydownFn, getTubePath} from '@/common/js/common-fn.js'
+import {registerKeydownFn, getTubePath} from '@/common/js/common-fn.js';
 import dictionaryVue from '../dictionary/dictionary.vue';
 import myInputing from './inputing.vue';
 import TodayHistory from '@/components/today-history/today-history.vue';
+import dayTrack from '@/components/day-track/day-track.vue';
 
 export default {
     name: 'study-lounge',
     components: {
+        dayTrack,
         MyWave,
         dictionaryVue,
         myInputing,
@@ -445,9 +464,15 @@ export default {
             }
             return oData.aArticle.length;
         });
+        const oAllFn = fnAllKeydownFn();
+        document.addEventListener('keyup', oAllFn.readingStopped);
+        onBeforeUnmount(() => {
+            console.log('卸载-取消按键监听');
+            document.removeEventListener('keyup', oAllFn.readingStopped);
+        });
         return {
             ...toRefs(oData),
-            ...fnAllKeydownFn(),
+            ...oAllFn,
             sPdfViewer,
             aLineForShow,
             sWriting,
