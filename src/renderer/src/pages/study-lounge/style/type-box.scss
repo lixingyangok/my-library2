@@ -136,8 +136,8 @@ ul.box-ul{
 	display: flex;
 	height: 100%;
 	li{
-		// width: var(--height);
 		flex-grow: 1;
+		flex-shrink: 1;
 		height: 100%;
 		box-sizing: border-box;
 		&[class~=done]{
@@ -153,8 +153,11 @@ ul.box-ul{
 	position: relative;
 	margin: 0 10px 0 0;
 	background-color: var(--bg-color);
-	li + li{
-		border-left: solid 1px rgba(255, 255, 255, 1);
+	li{
+		border-right: solid 1px rgba(255, 255, 255, 1);
+	}
+	aaa.li:not(:last-child){
+		border-right: solid 1px rgba(255, 255, 255, 1);
 	}
 	.info{
 		position: absolute;

@@ -211,6 +211,7 @@
                         <!-- 'blink': aMinutesAnalyze[iMitIndex]?.doneByToday -->
                     </ul>
                 </section>
+                <happyBar/>
                 <div class="textarea" :key="iCurLineIdx">
                     <template v-for="(word, widx) of splitSentence(oCurLine.text)">
                         <span v-if="word.sClassName" :class="word.sClassName" :key="widx">
@@ -413,6 +414,7 @@ import dictionaryVue from '../dictionary/dictionary.vue';
 import myInputing from './inputing.vue';
 import TodayHistory from '@/components/today-history/today-history.vue';
 import dayTrack from '@/components/day-track/day-track.vue';
+import happyBar from '@/components/happy-bar/happy-bar.vue';
 
 export default {
     name: 'study-lounge',
@@ -422,6 +424,7 @@ export default {
         dictionaryVue,
         myInputing,
         TodayHistory,
+        happyBar,
     },
     setup(){
         const oData = mainPart();
@@ -467,7 +470,7 @@ export default {
         const oAllFn = fnAllKeydownFn();
         document.addEventListener('keyup', oAllFn.readingStopped);
         onBeforeUnmount(() => {
-            console.log('卸载-取消按键监听');
+            console.log('卸载-取消按键抬起~~');
             document.removeEventListener('keyup', oAllFn.readingStopped);
         });
         return {

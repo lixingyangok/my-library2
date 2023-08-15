@@ -1,0 +1,11 @@
+.happy-bar{
+    margin: 12px 0;
+    background: gray;
+}
+
+.insider{
+    height: 5px;
+    border-radius: 99px;
+    width: 50%;
+    background-color: aqua;
+}

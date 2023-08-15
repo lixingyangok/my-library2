@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-14 12:10:26
+ * @LastEditTime: 2023-08-14 19:27:01
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -36,7 +36,8 @@ export function getKeyDownFnMap(This, sType) {
         // ▲换行
         { key: '`', name: '播放后半句', fn: () => oMyWave.toPlay(true) },
         { key: 'Tab', name: '播放当前句', fn: () => playAndCheck() },
-        { key: 'F1', name: '设定起点', fn: () => This.cutHere('start') },
+        { key: 'F1', name: '插入文本', fn: () => This.smartFill() },
+        // { key: 'F1', name: '设定起点', fn: () => This.cutHere('start') },
         { key: 'F2', name: '设定终点', fn: () => This.cutHere('end') },
         { key: 'F3', name: '抛弃当前句', fn: () => This.giveUpThisOne() },
         { key: 'F4', name: '查字典', fn: () => This.searchWord() },
@@ -102,7 +103,9 @@ export function fnAllKeydownFn() {
     function readAloud(ev){
         // console.log(`长按 ${ev.repeat} - ${This.isReading}`);
         // 终止条件 👉 非长按 || 已进入朗读状态
+        // if (ev.isDbClick){ }
         if (!ev.repeat || This.isReading) return;
+        This.oCurLine.text = This.oCurLine.text.trim().replace(/\s{2,}/g, ' ');
         console.log('开始朗读');
         This.isReading = true;
         oActionFn.initRecord({ // 只管启动，程序会按需保存
@@ -162,7 +165,7 @@ export function fnAllKeydownFn() {
             sCandidate += aArticle.slice(iVal, iVal + 2).join('\n');
         }
         sCandidate = sCandidate.slice(0, 100).trim();
-        let match = sCandidate.match(/^\W{1,3}\s+(?=\S)/);
+        let match = sCandidate.match(/^\W{1,4}\s+(?=\S)/);
         if (match){
             sCandidate = sCandidate.slice(match[0].length);
         }

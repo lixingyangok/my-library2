@@ -357,7 +357,7 @@ export function mainPart(){
 		// console.log('收到了波形');
 		oData.oMediaBuffer = oMediaBuffer;
 		const {id, duration=0} = oData.oMediaInfo;
-		const iDurDifference = Math.abs(oMediaBuffer.duration - duration);
+		const iDurDifference = duration && Math.abs(oMediaBuffer.duration - duration);
 		if (!id){
 			alert('不能‘在加载波形之前’加载库中媒体信息');
 		}else if (iDurDifference > 1){

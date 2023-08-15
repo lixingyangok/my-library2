@@ -59,3 +59,10 @@
     }
 }
 
+
+.middle-line{
+    position: absolute;
+    border-top: solid red 1px;
+    top: 50%;
+    min-width: 1px;
+}

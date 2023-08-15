@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-11 19:52:29
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-13 14:07:22
+ * @LastEditTime: 2023-08-15 20:21:08
  * @Description: 
 -->
 <template>
@@ -24,6 +24,7 @@
                 <span>{{ iHour-1 }}</span>
             </li>
         </ol>
+        <div class="middle-line" :style="oMiddleLineStyle" />
     </div>
 </template>
 <style src="./style/day-track.css" scoped></style>
@@ -48,6 +49,17 @@ export default {
             oAction,
         };
         return oResult;
+    },
+    computed: {
+        oMiddleLineStyle(){
+            const [oFirst] = oAction.aTodayAction;
+            if (!oFirst) return {};
+            const oLast = oAction.aTodayAction.at(-1);
+            return {
+                left: `${oFirst.leftAt}%`,
+                width: `${oLast.leftAt - oFirst.leftAt + oLast.width}%`,
+            };
+        },
     },
     created(){
         // this.init();
