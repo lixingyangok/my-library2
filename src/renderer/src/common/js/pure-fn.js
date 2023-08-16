@@ -2,10 +2,10 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-25 21:30:35
+ * @LastEditTime: 2023-08-15 22:34:16
  * @Description: 
  */
-const dayjs = require("dayjs");
+import * as dayjs from 'dayjs';
 
 // ▼ 通过文件地址得到媒体 buffer （此方法目前没用上）
 export async function getBufferByPath(sPath){

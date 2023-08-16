@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-09 17:59:23
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-13 17:53:55
+ * @LastEditTime: 2023-08-15 20:47:18
  * @Description: 
  */
 
@@ -18,17 +18,19 @@ export function registerKeydownFn(oFnList) {
         const keyName = keyMap[ev.keyCode] || '';
         const keyStr = ctrl + alt + shift + keyName;
         const theFn = oFnList[keyStr];
-        // console.log(`${keyStr} ---`, theFn?.name);
         if (!theFn) return;
-        const aDoNotPrevent = ['Space', 'Home', 'End'];
-        if (!aDoNotPrevent.includes(keyStr)){
+        const toPrevent = (()=>{
+            if (keyStr != 'Space') return !['Home', 'End'].includes(keyStr);
+            // ▲非空格 ▼空格
+            if (ev.repeat) return true; // 长按时，无条件阻断默认事件
+            return !['TEXTAREA', 'INPUT'].includes(ev.target.nodeName);
+        })();
+        if (toPrevent){
             ev.preventDefault();
             ev.stopPropagation();
         }
-        // if (typeof theFn != 'string') theFn();
         theFn(ev);
     }
-    // console.log('onMounted 开始收集按键');
     document.addEventListener('keydown', keyDownFnCaller);
     onBeforeUnmount(() => {
         console.log('卸载-取消按键监听');

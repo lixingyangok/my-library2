@@ -2,13 +2,16 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-14 19:27:01
+ * @LastEditTime: 2023-08-16 23:41:05
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
 import { fixTime } from '../../../common/js/pure-fn.js';
 import { figureOut } from './figure-out-region.js';
 import TheAction from '@/common/js/action.js';
+import {useBarInfo} from '@/store/happy-bar.js';
+
+const oBarInfo = useBarInfo();
 const oActionFn = new TheAction('reading');
 let iSearchingQ = 0;
 let isSavingToDB = false; //保存事件防抖
@@ -105,6 +108,7 @@ export function fnAllKeydownFn() {
         // 终止条件 👉 非长按 || 已进入朗读状态
         // if (ev.isDbClick){ }
         if (!ev.repeat || This.isReading) return;
+        oBarInfo.setStatus(true);
         This.oCurLine.text = This.oCurLine.text.trim().replace(/\s{2,}/g, ' ');
         console.log('开始朗读');
         This.isReading = true;
@@ -118,7 +122,8 @@ export function fnAllKeydownFn() {
     function readingStopped(){
         if (This.isReading == false) return;
         This.isReading = false;
-        oActionFn.saveRecord();
+        const iDuration = oActionFn.saveRecord();
+        oBarInfo.setStatus(false, iDuration);
         // console.log(`朗读完成 ${duration} 秒`, This.oReadingAloud.$dc());
     }
     function dealQuotationMark(){

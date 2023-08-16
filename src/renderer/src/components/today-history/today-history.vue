@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-04-15 18:02:43
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-06-02 21:42:11
+ * @LastEditTime: 2023-06-03 12:41:09
  * @Description: 
 -->
 <template>
@@ -11,9 +11,9 @@
         <div class="cell" >
             录入时长：
             <ul class="lights" >
-                <li v-for="idx, of 10" :key="idx"
-                    :class="{lighting: ~~(oInfo.iFiDuration / 60) >= idx}"
-                    :name="idx"
+                <li v-for="iOrder, of 10" :key="iOrder"
+                    :class="{lighting: ~~(oInfo.iFiDuration / 60) >= oInfo.tenQty * 10 + iOrder}"
+                    :name="oInfo.tenQty * 10 + iOrder"
                 ></li>
             </ul>
             <em>{{oInfo.sFiDuration}}</em>
@@ -43,7 +43,9 @@
 import {reactive, ref} from 'vue';
 import {getTodayHistory} from '@/common/js/fs-fn.js';
 
-let oInfo = ref({});
+let oInfo = ref({
+    tenQty: 0,
+});
 const oData = reactive({
     showAnimation: false,
     isFirstRun: true,
@@ -53,13 +55,15 @@ init();
 async function init(){
     const oRes = await getTodayHistory();
     if (!oRes) return;
+    oInfo.value.tenQty = Math.floor(oRes.iFiDuration / 600);
     if (oData.isFirstRun){
         oData.isFirstRun = false;
-        oInfo.value = oRes;
+        // oInfo.value = oRes;
+        Object.assign(oInfo.value, oRes);
         return;
     }
-    console.log('\nes●\nes●\nes●\nes●');
-    console.log(oRes.$dc());
+    // { "iCreated": 0, "sCrDuration": "00:00:00", "iFilled": 154, "iFilledWords": 1214, "sFiDuration": "00:10:54", "iCrDuration": 0, "iFiDuration": 654 }
+    // ▼ 统计已经听写了几个十分钟
     setValue(oRes);
 }
 

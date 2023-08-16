@@ -2,6 +2,8 @@ import { reactive, getCurrentInstance, watch, computed, onMounted, } from 'vue';
 import { fileToBuffer, getPeaks, getChannelArr, } from '@/common/js/pure-fn.js';
 import { getTubePath } from '@/common/js/common-fn.js';
 import TheAction from '@/common/js/action.js';
+import {useBarInfo} from '@/store/happy-bar.js';
+const oBarInfo = useBarInfo();
 const oActionFn = new TheAction('playing');
 
 
@@ -71,7 +73,11 @@ export default function(){
     }
     function toPause(){
         if (oData.playing) {
-            oActionFn.saveRecord(oDom.oAudio.currentTime);
+            const {currentTime} = oDom.oAudio;
+            setTimeout(() => {
+                const iDuration = oActionFn.saveRecord(currentTime);
+                oBarInfo.setStatus(false, iDuration);
+            });
         }
         clearInterval(oData.playing);
         oDom.oAudio.pause();
@@ -203,6 +209,7 @@ export default function(){
 		oDom.oAudio.play();
         // ▼ 每秒执行 x 次，似乎60帧即可
         oData.playing = setInterval(toMovePointer, ~~(1000 / 60));
+        oBarInfo.setStatus(true);
 	}
     // ▼移动光标，
     function toMovePointer(){

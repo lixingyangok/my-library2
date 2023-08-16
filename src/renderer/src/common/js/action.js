@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-13 20:12:08
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-13 23:46:50
+ * @LastEditTime: 2023-08-16 22:39:16
  * @Description: 
  */
 
@@ -38,28 +38,34 @@ export default class {
         oAction.action = this.sActionType;
         oAction.actionBegin = actionBegin;
         if (oAction.ongoing){
-            oAction.gapToPrev = 0; // gapToPrev 好像没用处
+            // oAction.gapToPrev = 0; // gapToPrev 好像没用处
             // ▼这里执行完成之前千万不要污染 this.oRecord
-            await this.saveRecord(oAction.currentTime);
+            // await this.saveRecord(oAction.currentTime);
+            // Promise.resolve().then(()=>console.log(res))
+            this.saveRecord(oAction.currentTime);
         }else if (this.iLastActionEndAt){
-            oAction.gapToPrev = 1 * ((actionBegin - this.iLastActionEndAt) / 1000).toFixed(2);
+            var abc=0;
+            // oAction.gapToPrev = 1 * ((actionBegin - this.iLastActionEndAt) / 1000).toFixed(2);
         }
-        console.log(`已初始化记录，距离上次：${oAction.gapToPrev}`, /* oAction */);
+        // console.log(`已初始化记录，距离上次：${oAction.gapToPrev}`, /* oAction */);
         this.oRecord = oAction;
     };
     // ▼保存
-    async saveRecord(playEnd=undefined){
+    saveRecord(playEnd = undefined){
         // if (!this.oRecord.mediaId) alert('无法保存播放动作');
         // const playEnd = oDom.oAudio.currentTime;
         const playingMode = this.sActionType == 'playing';
         if (playingMode && !playEnd){
-            throw '播放模式请传入媒体当前时间点'
+            console.log(this.oRecord);
+            alert('👆播放模式请传入媒体当前时间点');
+            throw '👆播放模式请传入媒体当前时间点';
         }
         const actionEnd = new Date() * 1;
         const duration = 1 * ((actionEnd - this.oRecord.actionBegin) / 1000).toFixed(2);
-        this.iLastActionEndAt = actionEnd; // 对下次生成记录有用处
-        if (duration <= 0.5){
-            return console.log(`播放时长短：${duration} 不记录`);
+        // this.iLastActionEndAt = actionEnd; // 对下次生成记录有用处（可能无用处）
+        if (duration < 1){
+            console.log(`操作过短不记录-- ${duration}`);
+            return 0; // 返回0表示不记录
         }
         // ▼然后先快速拷贝出一份，以让后续程序运行，复制品用于慢慢地保存到数据库，
         const addtion = { duration, actionEnd };
@@ -67,6 +73,7 @@ export default class {
         const useToSave = Object.assign(structuredClone(this.oRecord), addtion);
         console.log(`已“补全了”记录：${duration} 秒`, /* useToSave */);
         this.doSaving(useToSave);
+        return duration;
     };
     async doSaving(useToSave){
         const oSaved = await fnInvoke('db', 'saveAction', useToSave);
