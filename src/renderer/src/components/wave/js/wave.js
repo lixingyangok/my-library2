@@ -75,6 +75,7 @@ export default function(){
         if (oData.playing) {
             const {currentTime} = oDom.oAudio;
             setTimeout(() => {
+                // iDuration 是不准确的，因为多次播放只会取到最后一次播放的时间长度
                 const iDuration = oActionFn.saveRecord(currentTime);
                 oBarInfo.setStatus(false, iDuration);
             });
