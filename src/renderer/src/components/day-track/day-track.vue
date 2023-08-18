@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-11 19:52:29
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-15 20:21:08
+ * @LastEditTime: 2023-08-18 19:27:56
  * @Description: 
 -->
 <template>
@@ -30,7 +30,6 @@
 <style src="./style/day-track.css" scoped></style>
 
 <script>
-import oMethod from './js/day-track.js';
 import {useActionStore} from '@/store/index.js';
 const oAction = useActionStore();
 
@@ -65,7 +64,6 @@ export default {
         // this.init();
     },
     methods: {
-        ...oMethod,
         getInfo(obj){
             const newOne = obj.$dc();
             Reflect.deleteProperty(newOne, 'kids');
