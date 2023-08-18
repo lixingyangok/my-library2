@@ -11,8 +11,6 @@ export default function(){
     const oInstance = getCurrentInstance();
     const {props} = oInstance;
     let aPeaksData = []; // 波形数据
-    let oPlayAction = {}; // ◀记录播放动作
-
     const oDom = reactive({ // 从上到下，从外到内
         oMyWaveBar: null, // 最外层
         oCanvasDom: null, // canvas画布
@@ -81,12 +79,14 @@ export default function(){
             });
         }
         clearInterval(oData.playing);
-        oDom.oAudio.pause();
+        oDom?.oAudio?.pause();
         oData.playing = false;
     }
     // ▲外部方法 ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     // ▼私有方法 ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
     async function initFn(sPath){
+        oData.oMediaBuffer = {}; // 清空旧的
+        // oDom.oViewport.scrollTo(0, 0); // 横向滚动条归位
         const oTemp = (ls('aTemp') || []).find(cur=>{
             return cur.mediaPath == sPath;
         });
@@ -107,7 +107,7 @@ export default function(){
         moveToFirstLine();
         oInstance.emit('pipe', oData.oMediaBuffer); // 向上传递数据
     }
-    // ▼加载【缓存】数据
+    // ▼加载【缓存】数据（可能没有实际启用）
     async function getTempData(oTemp){
         const {sTempPath} = oTemp;
         const aChannelData_ = await fetch(sTempPath).then(res => {
@@ -414,6 +414,7 @@ export default function(){
     });
     watch(() => props.mediaPath, (sNew, sOld)=>{
         if (sNew == sOld) return;
+        toPause(); // 切换到新之前先关停旧的
         initFn(sNew);
     }, {immediate: true});
     watch(() => props.aLineArr, async (aNew, aOld)=>{
