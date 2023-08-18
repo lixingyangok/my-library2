@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-13 20:12:08
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-16 22:39:16
+ * @LastEditTime: 2023-08-18 19:35:09
  * @Description: 
  */
 
@@ -40,11 +40,9 @@ export default class {
         if (oAction.ongoing){
             // oAction.gapToPrev = 0; // gapToPrev 好像没用处
             // ▼这里执行完成之前千万不要污染 this.oRecord
-            // await this.saveRecord(oAction.currentTime);
-            // Promise.resolve().then(()=>console.log(res))
             this.saveRecord(oAction.currentTime);
         }else if (this.iLastActionEndAt){
-            var abc=0;
+            var abc = 0;
             // oAction.gapToPrev = 1 * ((actionBegin - this.iLastActionEndAt) / 1000).toFixed(2);
         }
         // console.log(`已初始化记录，距离上次：${oAction.gapToPrev}`, /* oAction */);
@@ -107,7 +105,7 @@ function a1 (sActionType){
     // ▼初始化播放记录
     function initRecord(oActionInfo){
         const actionBegin = new Date().getTime();
-        const {actionEnd} = oRecordObj; // 提前保存好上次行动结束时间
+        // const {actionEnd} = oRecordObj; // 提前保存好上次行动结束时间
         const example = {
             action: sActionType,
             mediaId: props.oMediaInfo.id,
@@ -122,11 +120,11 @@ function a1 (sActionType){
         };
         oActionInfo.actionBegin = sActionType;
         oActionInfo.actionBegin = actionBegin;
-        if (oActionInfo.ongoing){
-            oActionInfo.gapToPrev = 0;
-        }else if (actionEnd){
-            oActionInfo.gapToPrev = 1 * ((actionBegin - actionEnd) / 1000).toFixed(2);
-        }
+        // if (oActionInfo.ongoing){
+        //     oActionInfo.gapToPrev = 0;
+        // }else if (actionEnd){
+        //     oActionInfo.gapToPrev = 1 * ((actionBegin - actionEnd) / 1000).toFixed(2);
+        // }
         // console.log('已经初始化学习记录', obj01);
         oRecordObj = structuredClone(oActionInfo)
     };
