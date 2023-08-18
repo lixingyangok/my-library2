@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-12 12:05:57
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-18 21:27:56
+ * @LastEditTime: 2023-08-18 21:53:30
  * @Description: 
  */
 
@@ -50,9 +50,7 @@ export const useActionStore = defineStore('action', {
                 const {actionBeginAt, actionEndAt} = oCur;
                 let oLast = aFixed.at(-1);
                 const oActionBeginAt = moment(actionBeginAt);
-                const oActionEndAt = moment(actionEndAt);
                 const iMinutesStart = oActionBeginAt.diff(oZeroClock, 'minute');
-                const iMinutesEnd = oActionEndAt.diff(oZeroClock, 'minute');
                 const iGap2PrevSec = oLast?.actionEndAt && oActionBeginAt.diff(oLast.actionEndAt, 'second');
                 const pushNewOne = (idx==0) || (iGap2PrevSec > 60);
                 if (pushNewOne){
@@ -62,18 +60,16 @@ export const useActionStore = defineStore('action', {
                         leftAt: iMinutesStart / iOneDayMinites * 100,
                     };
                 }
-                const iMinutesLong = (()=>{
-                    let second = oActionEndAt.diff(oLast.actionBeginAt, 'second');
+                oLast.iGap2PrevSec = iGap2PrevSec; // 目前没用，将来用于数据分析
+                oLast.actionQty = (oLast.actionQty || 0) + 1; // 目前没用，将来用于数据分析
+                oLast.iMinutesLong = (()=>{ // 计算最左到最右的距离
+                    let second = moment(actionEndAt).diff(oLast.actionBeginAt, 'second');
                     return Math.max(1, second / 60); // 最小1分钟
                 })();
                 oLast.actionEndAt = actionEndAt; // 行动终点
-                oLast.iMinutesEnd = iMinutesEnd; // 行动终点（分数序号
-                oLast.iGap2PrevSec = iGap2PrevSec;
-                oLast.iMinutesLong = iMinutesLong;
                 oLast.duration = (oLast.duration || 0) + oCur.duration;
-                oLast.actionQty = (oLast.actionQty || 0) + 1;
-                oLast.height = oLast.duration / shortMinutes * 100,
-                oLast.width = iMinutesLong / iOneDayMinites * 100;
+                oLast.height = oLast.duration / (oLast.iMinutesLong * shortMinutes) * 100,
+                oLast.width = oLast.iMinutesLong / iOneDayMinites * 100;
                 // oLast.saturation = oLast.duration / (iMinutesLong * shortMinutes); // 时长饱和度百分数
                 // oLast.kids = (oLast.kids || []).contract(oCur); // 当前没用上
                 // console.log(`饱和分-秒 ${iMinutesLong}-${oLast.duration.toFixed(0)} -${oLast.saturation}`);

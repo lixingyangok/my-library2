@@ -48,6 +48,8 @@ function toRun(){
         iWentMiniSec += iFreQ;
         iWentSec.value = iWentMiniSec / 1000;
         iFarSecGoes = (()=>{
+            if (iWentSec.value < 0.3) return iSecGoesMax * 2;
+            if (iWentSec.value < 0.6) return iSecGoesMax * 1.5;
             if (iWentSec.value < 1) return iSecGoesMax * 1;
             if (iWentSec.value < 2) return iSecGoesMax * 0.8;
             if (iWentSec.value < 3) return  iSecGoesMax * 0.6;

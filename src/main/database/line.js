@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-16 10:40:40
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-10 22:41:02
+ * @LastEditTime: 2023-08-18 22:08:28
  * @Description: 
  */
 
@@ -94,6 +94,7 @@ const oFn = {
     },
     // ▼查询：某个媒体的所有字幕行
     async getLineByMedia(mediaId) {
+        let iMS = '';
         Promise.resolve().then(()=>{
             const t01 = new Date()*1;
             const sql = `
@@ -103,7 +104,7 @@ const oFn = {
                 ORDER BY start ASC
             `.replace(/\s+/g, ' ');
             const a01Result = db02.prepare(sql).all();
-            toLog('查询耗时111：', (new Date() - t01), a01Result.length);
+            iMS = new Date() - t01;
         });
         const t02 = new Date()*1;
         const res = await oLine.findAll({
@@ -112,7 +113,7 @@ const oFn = {
             order: [['start', 'asc']],
         });
         if (!res) return;
-        toLog('查询耗时222：', (new Date() - t02));
+        toLog(`查询媒体字幕 ${res.length} 行，耗时 ${iMS}:${(new Date() - t02)} ms`);
         const aResult = res.map(cur => cur.dataValues);
         return aResult;
     },
