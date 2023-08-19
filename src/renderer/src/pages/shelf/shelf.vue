@@ -77,7 +77,9 @@
                         :width="300"
                     >
                         <template #reference>
-                            <span class="item-name">{{cur.sItem}}</span>
+                            <span class="item-name" :hash="cur.hash">
+                                {{cur.sItem}}
+                            </span>
                         </template>
                         <p>{{cur.sItem}}</p>
                         <el-button type="primary" link :key="`${i1}-${i2}`"

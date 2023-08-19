@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-16 23:41:05
+ * @LastEditTime: 2023-08-19 20:40:33
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -48,6 +48,8 @@ export function getKeyDownFnMap(This, sType) {
         { key: 'Space', name: '朗读', fn: ev => This.readAloud(ev) }, // 停止播放
     ];
     const withCtrl = [
+        { key: 'ctrl + Prior', name: '上一项', fn: () => This.visitNeighbor(-1) },
+        { key: 'ctrl + Next', name: '下一项', fn: () => This.visitNeighbor(1) },
         { key: 'ctrl + q', name: '查字典', fn: () => This.searchWord() },
         { key: 'ctrl + b', name: '显示左栏', fn: () => This.showLeftColumn() },
         { key: 'ctrl + d', name: '删除一行', fn: () => This.toDel() },
@@ -135,9 +137,9 @@ export function fnAllKeydownFn() {
         if (aa || bb){
             const iStart = aa ? 1 : 0;
             const iEnd = bb ? -1 : Infinity;
-            This.oCurLine.text = text.slice(iStart, iEnd);
+            This.oCurLine.text = text.slice(iStart, iEnd) + ' ';
         }else{
-            This.oCurLine.text = `"${text}"`;
+            This.oCurLine.text = `"${text}" `;
         }
     }
     function smartFill(){
@@ -402,17 +404,18 @@ export function fnAllKeydownFn() {
         let { iCurLineIdx, aLineArr, oMediaBuffer, oMediaBuffer: { duration } } = This;
         const { start, end } = aLineArr[iCurLineIdx]; // 当前行
         const isInsertToLeft = iDirection === -1; // true = 向左方间隙插入
-        if (start === 0 && isInsertToLeft) return; // 0开头，不可向左插入
-        const oAim = aLineArr[iCurLineIdx + iDirection] || {}; // 邻居
-        if (!aLineArr[iCurLineIdx + iDirection]){ // 用于测试
-            return alert('调试信息：没有左/右侧的邻居');
+        if (start < 0.1 && isInsertToLeft) return; // 位于极左，不再向左插入
+        // const oAim = aLineArr[iCurLineIdx + iDirection] || {}; // 邻居（旧版本）
+        const oAim = aLineArr[iCurLineIdx + iDirection]; // 邻居
+        if (!oAim && iDirection==1 ){ // 用于测试
+            return previousAndNext(1);
         }
         const newIdx = isInsertToLeft ? iCurLineIdx : iCurLineIdx + 1;
-        const oNewLine = (()=>{
-            const iStart = isInsertToLeft ? oAim.end : end;
-            // const fLong = isInsertToLeft ? (start - oAim.end) : (oAim.start - end);
-            return figureOut(oMediaBuffer, iStart); // , 0.3, fLong
+        const iStart = (()=>{
+            if (!isInsertToLeft) return end;
+            return iCurLineIdx == 0 ? Math.max(0, start - 20) : oAim.end;
         })();
+        const oNewLine = figureOut(oMediaBuffer, iStart);
         if (oNewLine.start === oNewLine.end) {
             return alert('插入取消，什么情况下会到达这里？');
         }

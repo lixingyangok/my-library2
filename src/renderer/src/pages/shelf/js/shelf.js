@@ -122,7 +122,7 @@ const oAboutTree = {
             const aItems = await getFolderChildren(sPath);
             if (!aItems) continue;
             this.aTree.splice(idx, 1, aItems);
-            addAllMediaDbInfo(this.aTree[idx])
+            addAllMediaDbInfo(this.aTree[idx]);
             aAimTo.length && this.aPath.push(aAimTo.shift());
         }
     },
