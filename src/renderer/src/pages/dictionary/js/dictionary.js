@@ -9,6 +9,9 @@
 //     return '';
 // }
 
+import { getTubePath } from '@/common/js/common-fn.js';
+import {playOnePiece} from '@/common/js/pure-fn.js';
+
 export function groupThem(arr){
     if (!arr.length) return [];
     const aResult = [];
@@ -45,6 +48,15 @@ export function splitSentence(text, sKey){
         aResult.push(text.slice(iLastEnd));
     }
     return aResult;
+}
+
+// ▼播放例句
+export function clickSentense(oTarget){
+	const path = getTubePath(oTarget.path);
+    const oNewOne = { ...oTarget, path };
+    // console.log('oNewOne', oNewOne.$dc());
+    // ▼返回的 oAudio 用于关闭播放
+    const oAudio = playOnePiece(oNewOne);
 }
 
 // export function afterOpened(){

@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-23 18:49:41
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-05-21 16:51:34
+ * @LastEditTime: 2023-08-19 22:28:23
  * @Description: 
 -->
 <template>
@@ -36,7 +36,9 @@
                             <li class="one-dir" v-for="(cur,idx) of aResult" :key="idx">
                                 <h3 class="dir-name" >{{cur.dir.split('/').slice(2).join(' > ')}}</h3>
                                 <ul class="one-file" >
-                                    <li class="one-sentence" v-for="(item, i02) of cur.aList" :key="i02">
+                                    <li class="one-sentence" v-for="(item, i02) of cur.aList" :key="i02"
+                                        @click="clickSentense(item)"
+                                    >
                                         <h4 class="file-name" v-if="(i02 === 0) || item.name != cur.aList[i02-1].name">
                                             {{item.name}}
                                         </h4>
@@ -64,7 +66,7 @@
 
 <script setup>
 import { ref, computed, watch, reactive, onMounted, onBeforeUnmount } from 'vue';
-import { splitSentence, groupThem } from './js/dictionary.js';
+import { splitSentence, groupThem, clickSentense } from './js/dictionary.js';
 import {secToStr} from '@/common/js/pure-fn.js';
 
 const props = defineProps({
@@ -101,7 +103,10 @@ function toSearch(){
     (async idx => {
         const sWhere = `WHERE text like '%${sAim}%' and text like '% %'`; // 至少包含1个空格  
         const searchRows = fnInvoke('db', 'doSql', `
-			SELECT line.text, line.start, media.id, media.dir, media.name
+			SELECT
+                line.text, media.id, media.dir, media.name,
+                line.start, line.end, 
+                (media.dir || '/' || media.name) as path
             FROM line left join media
             ON line.mediaId = media.id ${sWhere}
             ORDER BY media.dir, media.name, line.start

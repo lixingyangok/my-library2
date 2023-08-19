@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-15 22:34:16
+ * @LastEditTime: 2023-08-19 22:25:40
  * @Description: 
  */
 import * as dayjs from 'dayjs';
@@ -272,5 +272,29 @@ export function arrToblob(arr){
 		{type: 'application/json;charset=utf-8'},
 	);
 	return file;
+}
+
+// ▼播放一段时间
+let oAudio;
+export function playOnePiece(oParams){
+	// const {oPromise, fnResolve, fnReject} = newPromise();
+	oAudio?.pause();
+	oAudio = Object.assign(new Audio(oParams.path), {
+		currentTime: oParams.start,
+		ontimeupdate(ev){
+			if (ev.target.currentTime >= oParams.end){
+				ev.target.pause();
+			}
+		},
+		oncanplay(){
+			console.log('可以播放了', {
+				fDuration: oAudio.duration,
+				sDuration: secToStr(oAudio.duration),
+			});
+			oAudio.play();
+		}
+	});
+	// oAudio.oncanplay = function() { }
+	return oAudio;
 }
 
