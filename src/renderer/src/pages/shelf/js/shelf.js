@@ -177,11 +177,12 @@ const oAboutTree = {
         ).catch(xx=>xx);
         if (sAnswer != 'confirm') return;
         const aTask = [
+            fnInvoke('db', 'doSql', `DELETE FROM action WHERE mediaId=${id};`),
             fnInvoke('db', 'doSql', `DELETE FROM new_word WHERE mediaId=${id};`),
             fnInvoke('db', 'doSql', `DELETE FROM line WHERE mediaId=${id};`),
-            fnInvoke('db', 'doSql', `DELETE FROM media WHERE id=${id};`),
         ];
         await Promise.all(aTask);
+        await fnInvoke('db', 'doSql', `DELETE FROM media WHERE id=${id};`);
         await this.loadMediaInfo(id);
         this.getDirChildren();
     },
