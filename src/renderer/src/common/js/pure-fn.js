@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-19 22:25:40
+ * @LastEditTime: 2023-08-20 08:57:55
  * @Description: 
  */
 import * as dayjs from 'dayjs';
@@ -294,7 +294,6 @@ export function playOnePiece(oParams){
 			oAudio.play();
 		}
 	});
-	// oAudio.oncanplay = function() { }
-	return oAudio;
+	return oAudio; // 返回，用于接收方关停音频
 }
 

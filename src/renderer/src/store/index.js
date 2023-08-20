@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-12 12:05:57
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-18 21:53:30
+ * @LastEditTime: 2023-08-20 12:30:23
  * @Description: 
  */
 
@@ -26,20 +26,24 @@ export const useActionStore = defineStore('action', {
     actions: {
         async init(){
             this.count++;
-            if (this.count % 2) return;
+            // if (this.count % 2) return;
             const sToday = moment().format('yyyy-MM-DD');
-            // gapToPrev 这个属性好像查出来也没
             const sql = `
                 SELECT
-                    mediaId, lineId, playFrom, playEnd, duration, action,
-                    datetime(action.actionBegin, 'localtime') as actionBeginAt,
-                    datetime(action.actionEnd, 'localtime') as actionEndAt
+                    mediaId, lineId, playFrom, playEnd, action,
+                    datetime(actionBegin, 'localtime') as actionBeginAt,
+                    datetime(createdAt, 'localtime') as actionEndAt,
+                    strftime('%f', createdAt) - strftime('%f', actionBegin) as duration1,
+                    (
+                        strftime('%s', createdAt) - strftime('%S', createdAt) + strftime('%f', createdAt) -
+                        (strftime('%s', actionBegin) - strftime('%S', actionBegin) + strftime('%f', actionBegin))
+                    ) as duration
                 from action
                 where actionBeginAt like '${sToday}%'
                 order by actionBeginAt
             `;
             const [aResult] = await fnInvoke('db', 'doSql', sql);
-            // this.processData(aResult);
+            // console.log('aResult', aResult);
             this.processMinites(aResult);
         },
         async processMinites(aResult){
@@ -75,7 +79,7 @@ export const useActionStore = defineStore('action', {
                 // console.log(`饱和分-秒 ${iMinutesLong}-${oLast.duration.toFixed(0)} -${oLast.saturation}`);
                 pushNewOne && aFixed.push(oLast);
             });
-            console.log(`播放记录合并前后数量：${aResult.length} - ${aFixed.length}`);
+            console.log(`播放记录 #${this.count} 合并前后数量：${aResult.length}:${aFixed.length}`);
             this.aTodayAction = aFixed;
         },
     },

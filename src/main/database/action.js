@@ -30,14 +30,15 @@ export const oAction = sqlize.define('action', {
     },
     // ▼ playing, reading, writing, speaking
     action: { allowNull: false, type: DataTypes.STRING, },
-    duration: { allowNull: false, type: DataTypes.FLOAT, },
-    actionEnd: { allowNull: false, type: DataTypes.DATE, },
     actionBegin: { allowNull: false, type: DataTypes.DATE, },
-    playFrom: DataTypes.FLOAT,
-    playEnd: DataTypes.FLOAT,
-    // gapToPrev: DataTypes.FLOAT, // 本次开始与上次结束的间距秒（好像没用）
+    playFrom: DataTypes.DECIMAL(5, 2), // DataTypes.FLOAT 
+    playEnd: DataTypes.DECIMAL(5, 2), // DataTypes.FLOAT
 });
-oAction.sync();
+
+// duration: { allowNull: false, type: DataTypes.FLOAT, }, // 废弃此项，改为在查询时计算
+// actionEnd: { allowNull: false, type: DataTypes.DATE, }, // 废弃此项，改为 created 
+// gapToPrev: DataTypes.FLOAT, // 本次开始与上次结束的间距秒（好像没用）
+oAction.sync({ alter: true });
 
 /*
 User.sync() - 如果表不存在,则创建该表(如果已经存在,则不执行任何操作)
