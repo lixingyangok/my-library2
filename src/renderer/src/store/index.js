@@ -7,6 +7,8 @@
  */
 
 import { mapStores, defineStore } from 'pinia';
+import * as btSqliteDB from '@/database/action-db.js';
+
 const moment = require('moment');
 const iOneDayMinites = 24 * 60; // 全天分钟数
 const shortMinutes = 50; // 短分钟（每分钟播放达到此秒数即视为100%高饱和）
@@ -28,24 +30,14 @@ export const useActionStore = defineStore('action', {
         async init(){
             this.count++;
             // if (this.count % 2) return;
-            const sToday = moment().format('yyyy-MM-DD');
-            const sql = `
-                SELECT
-                    mediaId, lineId, playFrom, playEnd, action,
-                    datetime(actionBegin, 'localtime') as actionBeginAt,
-                    datetime(createdAt, 'localtime') as actionEndAt,
-                    strftime('%f', createdAt) - strftime('%f', actionBegin) as duration1,
-                    (
-                        strftime('%s', createdAt) - strftime('%S', createdAt) + strftime('%f', createdAt) -
-                        (strftime('%s', actionBegin) - strftime('%S', actionBegin) + strftime('%f', actionBegin))
-                    ) as duration
-                from action
-                where actionBeginAt like '${sToday}%'
-                order by actionBeginAt
-            `;
-            const [aResult] = await fnInvoke('db', 'doSql', sql);
+            // const sToday = moment().format('yyyy-MM-DD');
+            console.time('查询耗时');
+            const aResult = btSqliteDB.getActionByDay();
+            console.timeEnd('查询耗时');
             // console.log('aResult', aResult);
+            console.time('解析耗时');
             this.processMinites(aResult);
+            console.timeEnd('解析耗时');
         },
         async processMinites(aResult){
             const sToday = moment().format('yyyy-MM-DD') + ' 00:00:00';

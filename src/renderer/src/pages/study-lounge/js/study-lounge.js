@@ -4,6 +4,8 @@ import {SubtitlesStr2Arr, fixTime, copyString, downloadSrt, fileToStrings, getMe
 import {figureOut} from './figure-out-region.js';
 import {getTubePath, getDateDiff} from '@/common/js/common-fn.js';
 import {getFolderChildren, addAllMediaDbInfo} from '@/common/js/fs-fn.js';
+import * as btSqliteDB from '@/database/action-db.js';
+
 const fsp = require('node:fs/promises');
 const dayjs = require("dayjs");
 
@@ -257,6 +259,7 @@ export function mainPart(){
 		oData.sHash = hash;
 		isMediaChanged = aRes[0].id != oData.oMediaInfo.id;
 		oData.oMediaInfo = aRes[0];
+		getActionOfMedia(aRes[0].id);
 		getLinesFromDB();
 		await getNeighbors(); // 一定要 await 下方的方法才会正常运行
 		getNewWords();
@@ -748,6 +751,11 @@ export function mainPart(){
 		aLineArr.forEach(cur=>{
 			cur.text = '';
 		});
+	}
+	async function getActionOfMedia(iMediaID){
+		// console.log('iMediaID ♥', iMediaID);
+		const res = btSqliteDB.getMediaActions(iMediaID);
+		console.log('当前媒体Action 记录', res[0]);
 	}
 	// ============================================================================
 	init();
