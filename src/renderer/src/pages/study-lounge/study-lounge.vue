@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-05 17:35:19
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-14 12:16:46
+ * @LastEditTime: 2023-08-20 22:01:50
  * @Description: 
 -->
 <template>
@@ -287,6 +287,9 @@
                                 <template v-else>{{word}}</template>
                             </template>
                         </p>
+                        <span class="action-mark">
+                            {{cur.iSecLong?.toFixed(1)}}
+                        </span>
                     </li>
                 </ul>
             </article>
