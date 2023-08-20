@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-12 12:05:57
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-20 14:02:21
+ * @LastEditTime: 2023-08-20 20:54:54
  * @Description: 
  */
 
@@ -31,25 +31,25 @@ export const useActionStore = defineStore('action', {
             this.count++;
             // if (this.count % 2) return;
             // const sToday = moment().format('yyyy-MM-DD');
-            console.time('查询耗时');
+            console.time('♥查询耗时');
             const aResult = btSqliteDB.getActionByDay();
-            console.timeEnd('查询耗时');
+            console.timeEnd('♥查询耗时');
             // console.log('aResult', aResult);
-            console.time('解析耗时');
+            console.time('♥播放记录合并耗时');
             this.processMinites(aResult);
-            console.timeEnd('解析耗时');
+            console.timeEnd('♥播放记录合并耗时');
         },
         async processMinites(aResult){
             const sToday = moment().format('yyyy-MM-DD') + ' 00:00:00';
             const oZeroClock = moment(sToday);
             const aFixed = [];
             aResult.forEach((oCur, idx) => {
-                const {actionBeginAt, actionEndAt} = oCur;
                 let oLast = aFixed.at(-1);
+                const {actionBeginAt, actionEndAt, duration} = oCur;
                 const oActionBeginAt = moment(actionBeginAt);
                 const iMinutesStart = oActionBeginAt.diff(oZeroClock, 'minute');
                 const iGap2PrevSec = oLast?.actionEndAt && oActionBeginAt.diff(oLast.actionEndAt, 'second');
-                const pushNewOne = (idx==0) || (iGap2PrevSec > iGapSec2Merge);
+                const pushNewOne = (iGap2PrevSec > iGapSec2Merge) || (idx==0);
                 if (pushNewOne){
                     oLast = {
                         actionBeginAt, // 行动起点
@@ -64,7 +64,7 @@ export const useActionStore = defineStore('action', {
                     return Math.max(1, second / 60); // 最小1分钟
                 })();
                 oLast.actionEndAt = actionEndAt; // 行动终点
-                oLast.duration = (oLast.duration || 0) + oCur.duration;
+                oLast.duration = (oLast.duration || 0) + duration;
                 oLast.height = oLast.duration / (oLast.iMinutesLong * shortMinutes) * 100,
                 oLast.width = oLast.iMinutesLong / iOneDayMinites * 100;
                 // oLast.saturation = oLast.duration / (iMinutesLong * shortMinutes); // 时长饱和度百分数
@@ -72,7 +72,7 @@ export const useActionStore = defineStore('action', {
                 // console.log(`饱和分-秒 ${iMinutesLong}-${oLast.duration.toFixed(0)} -${oLast.saturation}`);
                 pushNewOne && aFixed.push(oLast);
             });
-            console.log(`播放记录 #${this.count} 合并前后数量：${aResult.length}:${aFixed.length}`);
+            console.log(`#${this.count} 播放记录合并前后数量：${aResult.length}:${aFixed.length}`);
             this.aTodayAction = aFixed;
         },
     },

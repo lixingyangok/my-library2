@@ -1,4 +1,5 @@
 import {btSqlite3} from './init.js';
+
 const moment = require('moment');
 const sGetDuration = `
     (
@@ -30,6 +31,20 @@ export function getMediaActions(iMediaID){
     const stmt = btSqlite3.prepare(sSql);
     const aResult = stmt.all();
     // console.log(`当前媒体 ${iMediaID} 数量0：`, aResult[0]);
+    return aResult;
+}
+
+export function getMediaActionRows(iMediaID){
+    let sSql = `
+        SELECT
+            action, playFrom, playEnd, mediaId, lineId,
+            ${getBeginAndEndTime}, ${sGetDuration}
+        from action
+        where action.mediaId = ${iMediaID}
+        order by playFrom
+    `;
+    const stmt = btSqlite3.prepare(sSql);
+    const aResult = stmt.all();
     return aResult;
 }
 

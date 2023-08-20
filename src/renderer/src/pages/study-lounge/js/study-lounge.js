@@ -259,7 +259,6 @@ export function mainPart(){
 		oData.sHash = hash;
 		isMediaChanged = aRes[0].id != oData.oMediaInfo.id;
 		oData.oMediaInfo = aRes[0];
-		getActionOfMedia(aRes[0].id);
 		getLinesFromDB();
 		await getNeighbors(); // 一定要 await 下方的方法才会正常运行
 		getNewWords();
@@ -298,6 +297,7 @@ export function mainPart(){
 			isMediaChanged = false; // 复位
 		}
 		oData.sReadingFile || showFileAotuly(sTxtFile);
+		getActionOfMedia();
 	}
 	// ▼通过文本文件路径读取其中内容（音频的原文文件）
 	async function showFileAotuly(sTxtFile){
@@ -752,10 +752,27 @@ export function mainPart(){
 			cur.text = '';
 		});
 	}
-	async function getActionOfMedia(iMediaID){
-		// console.log('iMediaID ♥', iMediaID);
+	async function getActionOfMedia(){
+		const iMediaID = oData.oMediaInfo.id;
+		console.log('iMediaID ♥', iMediaID);
 		const res = btSqliteDB.getMediaActions(iMediaID);
-		console.log('当前媒体Action 记录', res[0]);
+		const aRows = btSqliteDB.getMediaActionRows(iMediaID);
+		console.log('当前媒体Action 记录1', res[0]);
+		console.log('当前媒体Action 记录2', aRows);
+		attackActions2Lines(aRows);
+	}
+	async function attackActions2Lines(aRows){
+		let iAim = 0;
+		aRows.forEach((oCur, idx)=>{
+			let oAim = oData.aLineArr[iAim] || {};
+			if (oCur.playFrom < oAim.end){
+				var abc = 123;
+			}else{
+				if (iAim < oData.aLineArr.length - 1) iAim++;
+			}
+			oData.aLineArr[iAim].iSecLong = (oAim.iSecLong || 0) + oCur.duration;
+		});
+		console.log('aLineArr', oData.aLineArr.$dc());
 	}
 	// ============================================================================
 	init();
