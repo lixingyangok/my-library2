@@ -3213,9 +3213,9 @@ function getOutputScale(ctx) {
 
 function scrollIntoView(element, spot, scrollMatches = false) {
   let parent = element.offsetParent;
-
   if (!parent) {
-    console.error("offsetParent is not set -- cannot scroll");
+    // ▼注释防止打印错误造成干扰
+    // console.error("offsetParent is not set -- cannot scroll");
     return;
   }
 

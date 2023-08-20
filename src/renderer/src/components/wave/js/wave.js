@@ -298,8 +298,7 @@ export default function(){
 		oDom.oPointer.style.left = `${oDom.oAudio.currentTime * fPerSecPx}px`;
         await vm.$nextTick(); // 重要！等待总宽变长再滚动
 		oDom.oViewport.scrollLeft = iNewLeftPx; // 在此触发了缩放
-		if (iNewLeftPx <= 0) { // 在滚动条位于左侧原点并收缩波形时会触发
-			console.log('注意 <= 0', iNewLeftPx);
+		if (iNewLeftPx <= 0) { // 滚动条位于左侧原点时收缩波形会触发
 			waveWrapScroll();
 		}
 	}
