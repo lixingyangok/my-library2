@@ -30,9 +30,8 @@ export default class {
     // oAction.currentTime 是初始化时媒体的播放停止点，可能停在句尾，也可能在运行中某处
     // ▼初始化（按需保存）
     async initRecord(oAction){
-        const actionBegin = new Date().getTime();
         oAction.action = this.sActionType;
-        oAction.actionBegin = actionBegin;
+        oAction.actionBegin = new Date().getTime();
         if (oAction.ongoing){
             // ▼这里执行完成之前千万不要污染 this.oRecord
             this.saveRecord(oAction.currentTime);

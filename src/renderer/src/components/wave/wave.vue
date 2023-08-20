@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-03 10:09:58
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-10 20:25:12
+ * @LastEditTime: 2023-08-20 13:30:06
  * @Description: 
 -->
 <template>
@@ -55,6 +55,9 @@
                                     {{cur.iRate}}%
                                 </span>
                             </i>
+                            <p class="text" v-if="fPerSecPx>100">
+                                {{ cur.text }}
+                            </p>
                         </li>
                     </ul>
                     <i ref="oPointer" class="pointer" :class="{playing: playing}"/>

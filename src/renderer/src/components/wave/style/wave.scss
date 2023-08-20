@@ -111,23 +111,24 @@
     height: var(--canvas-height);
     overflow: hidden;
 	min-width: 100%;
-    .region{
-		--border-color: rgba(255,255,255,0.6);
-		box-sizing: border-box;
-		position: absolute;
-		top: 0px;
-        height: 100%;
-		min-width: 1px;
-		background: rgba(0,0,0,0.4);
-		z-index: 4;
-		margin: 0;
-		padding: 0;
-		border: solid var(--border-color);
-		border-width: 0 1px;
-		overflow: hidden;
-        color: rgba($color: white, $alpha: 0.5);
-	}
-	.cur{
+}
+
+.region-ul .region{
+	--border-color: rgba(255,255,255,0.6);
+	box-sizing: border-box;
+	position: absolute;
+	top: 0px;
+	height: 100%;
+	min-width: 1px;
+	background: rgba(0,0,0,0.4);
+	z-index: 4;
+	margin: 0;
+	padding: 0;
+	border: solid var(--border-color);
+	border-width: 0 1px;
+	overflow: hidden;
+	color: rgba($color: white, $alpha: 0.5);
+	&[class~=cur]{
 		--border-color: red;
 		border-width: 0 2px;
 		background: none;
@@ -155,8 +156,8 @@
 			color: black;
 		}
 	}
-	.region:before,
-	.region:after,
+	&:before,
+	&:after,
 	.idx:before,
 	.idx:after{
 		content: '';
@@ -165,12 +166,12 @@
 		position: absolute;
 		border: solid 2.5px;
 	}
-	.region:before{
+	&:before{
 		border-color: var(--border-color) transparent transparent var(--border-color);
 		top: 0;
 		left: 0
 	}
-	.region:after{
+	&:after{
 		border-color: transparent transparent var(--border-color) var(--border-color);
 		bottom: 0;
 		left: 0
@@ -185,7 +186,14 @@
 		bottom: 0;
 		right: 0
 	}
+	p.text{
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		padding: 5px 10px;
+	}
 }
+
 
 .pointer{
     width: 1px;

@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-19 20:40:33
+ * @LastEditTime: 2023-08-20 09:09:44
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -134,12 +134,12 @@ export function fnAllKeydownFn() {
         if (!text) return;
         var aa = `"'`.includes(text.at(0));
         var bb = `"'`.includes(text.at(-1));
-        if (aa || bb){
+        if (aa || bb){ // 有则删除
             const iStart = aa ? 1 : 0;
             const iEnd = bb ? -1 : Infinity;
             This.oCurLine.text = text.slice(iStart, iEnd) + ' ';
-        }else{
-            This.oCurLine.text = `"${text}" `;
+        }else{ // 无则添加（在左侧头部添加）
+            This.oCurLine.text = `"${text}`;
         }
     }
     function smartFill(){

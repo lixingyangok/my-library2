@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-09 21:11:17
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-18 19:30:39
+ * @LastEditTime: 2023-08-20 12:39:18
  * @Description: 
  */
 
@@ -38,7 +38,7 @@ export const oAction = sqlize.define('action', {
 // duration: { allowNull: false, type: DataTypes.FLOAT, }, // 废弃此项，改为在查询时计算
 // actionEnd: { allowNull: false, type: DataTypes.DATE, }, // 废弃此项，改为 created 
 // gapToPrev: DataTypes.FLOAT, // 本次开始与上次结束的间距秒（好像没用）
-oAction.sync({ alter: true });
+oAction.sync();
 
 /*
 User.sync() - 如果表不存在,则创建该表(如果已经存在,则不执行任何操作)
