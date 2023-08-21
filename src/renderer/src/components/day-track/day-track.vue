@@ -30,7 +30,7 @@
 <style src="./style/day-track.css" scoped></style>
 
 <script>
-import {useActionStore} from '@/store/index.js';
+import {useActionStore} from '@/store/action-store.js';
 const oAction = useActionStore();
 
 export default {

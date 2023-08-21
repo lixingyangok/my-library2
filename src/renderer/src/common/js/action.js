@@ -2,11 +2,11 @@
  * @Author: 李星阳
  * @Date: 2023-08-13 20:12:08
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-20 11:14:21
+ * @LastEditTime: 2023-08-21 22:44:30
  * @Description: 
  */
 
-import {useActionStore} from '@/store/index.js';
+import {useActionStore} from '@/store/action-store.js';
 const oActionStore = useActionStore();
 
 export default class {
@@ -64,7 +64,10 @@ export default class {
         const oSaved = await fnInvoke('db', 'saveAction', useToSave);
         // .then(this.afterSaved);
         if (!oSaved) alert('保存学习记录失败，请注意');
+        // ▼保存之后刷新数据
         oActionStore.init();
+        oActionStore.getMediaSum(useToSave.mediaId);
+		oActionStore.getMediaRows(useToSave.mediaId);
         // console.log('useToSave', useToSave);
         // console.log('oSaved', oSaved);
     }

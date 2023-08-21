@@ -1,17 +1,16 @@
 // 
-import {toRefs, reactive, computed, onMounted, getCurrentInstance} from 'vue';
+import {toRefs, reactive, computed, onMounted, getCurrentInstance, watch} from 'vue';
 import {SubtitlesStr2Arr, fixTime, copyString, downloadSrt, fileToStrings, getMediaDuration, secToStr} from '@/common/js/pure-fn.js';
 import {figureOut} from './figure-out-region.js';
 import {getTubePath, getDateDiff} from '@/common/js/common-fn.js';
 import {getFolderChildren, addAllMediaDbInfo} from '@/common/js/fs-fn.js';
-import * as btSqliteDB from '@/database/action-db.js';
+import {useActionStore} from '@/store/action-store.js';
 
 const fsp = require('node:fs/promises');
 const dayjs = require("dayjs");
-
-
-let isMediaChanged = false; // 是否加载了一个新的媒体
+const oActionStore = useActionStore();
 const sToday = dayjs().format('YYYY-MM-DD');
+let isMediaChanged = false; // 是否加载了一个新的媒体
 
 export function mainPart(){
 	const oDom = reactive({
@@ -754,33 +753,57 @@ export function mainPart(){
 	}
 	async function getActionOfMedia(){
 		const iMediaID = oData.oMediaInfo.id;
-		console.log('iMediaID ♥', iMediaID);
-		const res = btSqliteDB.getMediaActions(iMediaID);
-		const aRows = btSqliteDB.getMediaActionRows(iMediaID);
-		console.log('当前媒体Action 记录1', res[0]);
-		console.log('当前媒体Action 记录2', aRows);
-		attackActions2Lines(aRows);
+		oActionStore.getMediaSum(iMediaID);
+		oActionStore.getMediaRows(iMediaID);
 	}
 	async function attackActions2Lines(aRows){
-		let iAim = 0;
-		aRows.forEach((oCur, idx)=>{
-			let oAim = oData.aLineArr[iAim] || {};
-			const aa = oCur.playFrom < oAim.end;
-			const bb = oCur.playEnd > oAim.start;
-			if (aa && bb){
-				var abc = 123;
-			}else if (iAim < oData.aLineArr.length - 1){
-				iAim++;
-				oAim = oData.aLineArr[iAim];
+		let longest = 0;
+		let fnToFind = findNext2Push(oData.aLineArr);
+		aRows.forEach((oCurAction, idx)=>{
+			const oAimRow = fnToFind(oCurAction);
+			let iNewVal = (oAimRow.iSecLong || 0) + oCurAction.duration;
+			oAimRow.iSecLong = iNewVal;
+			if (iNewVal > longest) longest = iNewVal;
+			if (oCurAction.lineId && (oCurAction.lineId != oAimRow.id)){
+				console.log('Action ID 与目标行 ID 不同!!');
 			}
-			oData.aLineArr[iAim].iSecLong = (oAim.iSecLong || 0) + oCur.duration;
 		});
-		console.log('aLineArr', oData.aLineArr.$dc());
+		fnToFind = null;
+		console.log('longest', longest);
+		// console.log('aLineArr', oData.aLineArr.$dc());
 	}
+	function findNext2Push(aLineArr){
+		// let oAim = oData.aLineArr[iAim];
+		let iAim = 0;
+		let lineID = null;
+		return function (oAction){
+			// console.log('find from', iAim);
+			let oAim = aLineArr.slice(iAim).find((oCurRow, idx) => {
+				const aa = oAction.playFrom < oCurRow.end;
+				const bb = oAction.playEnd > oCurRow.start;
+				const isThisOne = aa && bb;
+				if (isThisOne) {
+					// console.log(`change ${iAim}-${iAim + idx}`);
+					iAim += idx;
+					if (oCurRow.id != lineID){
+						oCurRow.iSecLong = 0; // 清空
+						lineID = oCurRow.id;
+					}
+				}
+				return isThisOne;
+			});
+			return oAim;
+		}
+	}
+	// watch(()=>oActionStore.oMediaSum, (oNewVal)=>{
+	// 	console.log('oMediaSum 更新了', oNewVal.$dc());
+	// });
+	watch(()=>oActionStore.aMediaRows, (oNewVal)=>{
+		console.log('aMediaRows 更新了', oNewVal.$dc());
+		attackActions2Lines(oNewVal);
+	});
 	// ============================================================================
 	init();
-	
-
 	const oFn = {
 		chooseFile,
 		init,
