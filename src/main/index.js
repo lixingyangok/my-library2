@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, session } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import {makeChannels} from'./others/communication.js';
@@ -6,10 +6,8 @@ import {db, sqlize} from './database/init-db.js';
 import {protocolRegister, protocolFnSetter} from './others/protocol-maker.js';
 
 const path = require('path');
-// ▼自定义导入
-// ▼其它声明
-const isDev = process.env.IS_DEV == "true";
 const exePath = path.dirname(app.getPath('exe'));
+// const isDev = process.env.IS_DEV == "true";
 
 // ▼其它
 if (!exePath) console.log('exe位置 =', exePath);
@@ -69,6 +67,13 @@ protocolRegister();
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+    // ▼加载调试插件
+    var vueDevToolsPath = 'C:/Users/Administrator/AppData/Local/Google/Chrome/User Data/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/6.5.0_0';
+    session.defaultSession.loadExtension(vueDevToolsPath).then((name) => {
+        console.log('加载插件- ok 🎉 ---------------')
+    }).catch((err) => {
+        console.log('加载插件 wrong 🎉----------------')
+    });
     // Set app user model id for windows
     electronApp.setAppUserModelId('com.electron');
     // Default open or close DevTools by F12 in development
@@ -81,12 +86,12 @@ app.whenReady().then(() => {
     const mainWindow = createWindow(); // 在此生成 toLog
     makeChannels(mainWindow);
     protocolFnSetter();
-
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
-        if (BrowserWindow.getAllWindows().length === 0) createWindow()
-    })
+        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
+
 })
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

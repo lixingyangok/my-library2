@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-21 22:17:39
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-21 22:30:01
+ * @LastEditTime: 2023-08-22 21:28:14
  * @Description: 
  */
 /*
@@ -91,8 +91,8 @@ export const useActionStore = defineStore('action', {
         },
         async getMediaRows(iMediaID){
             const aRows = btSqliteDB.getMediaActionRows(iMediaID);
+            console.log('当前媒体Action 记录2', aRows);
             this.aMediaRows = aRows;
-            // console.log('当前媒体Action 记录2', aRows);
         },
     },
 });

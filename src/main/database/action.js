@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-09 21:11:17
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-20 12:39:18
+ * @LastEditTime: 2023-08-22 21:56:51
  * @Description: 
  */
 
@@ -34,6 +34,25 @@ export const oAction = sqlize.define('action', {
     playFrom: DataTypes.DECIMAL(5, 2), // DataTypes.FLOAT 
     playEnd: DataTypes.DECIMAL(5, 2), // DataTypes.FLOAT
 });
+
+// { type: Sequelize.QueryTypes.RAW }
+sqlize.query(`
+    CREATE VIEW IF NOT EXISTS action_view AS 
+    SELECT
+        id, mediaId, lineId, playFrom, playEnd, action,
+        datetime(actionBegin, 'localtime') as actionBeginAt,
+        datetime(createdAt, 'localtime') as actionEndAt,
+        (
+            strftime('%s', createdAt) - strftime('%S', createdAt) + strftime('%f', createdAt) -
+            (strftime('%s', actionBegin) - strftime('%S', actionBegin) + strftime('%f', actionBegin))
+        ) as duration
+    from action
+`,).then(result => {
+    console.log('❤️视图创建成功-', result);
+}).catch(err => {
+    console.error('❤️视图创建失败', err);
+});
+
 
 // duration: { allowNull: false, type: DataTypes.FLOAT, }, // 废弃此项，改为在查询时计算
 // actionEnd: { allowNull: false, type: DataTypes.DATE, }, // 废弃此项，改为 created 

@@ -753,7 +753,7 @@ export function mainPart(){
 	}
 	async function getActionOfMedia(){
 		const iMediaID = oData.oMediaInfo.id;
-		oActionStore.getMediaSum(iMediaID);
+		// oActionStore.getMediaSum(iMediaID);
 		oActionStore.getMediaRows(iMediaID);
 	}
 	async function attackActions2Lines(aRows){
@@ -765,7 +765,7 @@ export function mainPart(){
 			oAimRow.iSecLong = iNewVal;
 			if (iNewVal > longest) longest = iNewVal;
 			if (oCurAction.lineId && (oCurAction.lineId != oAimRow.id)){
-				console.log('Action ID 与目标行 ID 不同!!');
+				console.log('❤️ Action ID 与目标行 ID 不同!!');
 			}
 		});
 		fnToFind = null;
@@ -779,7 +779,9 @@ export function mainPart(){
 		return function (oAction){
 			// console.log('find from', iAim);
 			let oAim = aLineArr.slice(iAim).find((oCurRow, idx) => {
-				const aa = oAction.playFrom < oCurRow.end;
+				// const aa = (oAction.playFrom < oCurRow.end) && (oCurRow.end - oAction.playFrom) > -0.5;
+				// const aa = (oAction.playFrom < oCurRow.end) && (oAction.playFrom - oCurRow.end < -0.5);
+				const aa = (oAction.playFrom - oCurRow.end < -0.5);
 				const bb = oAction.playEnd > oCurRow.start;
 				const isThisOne = aa && bb;
 				if (isThisOne) {
@@ -800,7 +802,7 @@ export function mainPart(){
 	// });
 	watch(()=>oActionStore.aMediaRows, (oNewVal)=>{
 		console.log('aMediaRows 更新了', oNewVal.$dc());
-		attackActions2Lines(oNewVal);
+		// attackActions2Lines(oNewVal);
 	});
 	// ============================================================================
 	init();
