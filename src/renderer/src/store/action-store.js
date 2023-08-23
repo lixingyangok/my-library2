@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-21 22:17:39
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-23 22:15:32
+ * @LastEditTime: 2023-08-23 22:31:56
  * @Description: 
  */
 /*
@@ -14,6 +14,7 @@
  */
 
 import { defineStore } from 'pinia';
+import {secToStr} from '@/common/js/pure-fn.js';
 import * as btSqliteDB from '@/database/action-db.js';
 
 const moment = require('moment');
@@ -29,11 +30,22 @@ export const useActionStore = defineStore('action', {
         count: 1,
         aTodayAction: [], // 当天记录
         aDaysAction: [], // 多天记录
-        oMediaSum: {},
         aMediaRows: [],
     }),
     getters: {
         double: (state) => state.count * 2,
+        oMediaActionSum(state){
+            var oResult = state.aMediaRows.reduce((oResult, oCur)=>{
+                oResult.iSecLong += oCur.duration_um;
+                oResult.iPracticeTimes += oCur.practice_times;
+                return oResult;
+            }, {
+                iSecLong: 0,
+                iPracticeTimes: 0,
+            });
+            oResult.sTimeLong = secToStr(oResult.iSecLong);
+            return oResult;
+        },
     },
     actions: {
         async init(){

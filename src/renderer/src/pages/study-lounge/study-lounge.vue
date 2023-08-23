@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-05 17:35:19
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-23 21:54:55
+ * @LastEditTime: 2023-08-23 22:31:34
  * @Description: 
 -->
 <template>
@@ -103,6 +103,7 @@
                 @setTimeTube="setTime"
             />
             <TodayHistory ref="oTodayBar"/>
+            {{ oActionStore.oMediaActionSum }}
             <article class="wave-below">
                 <el-dropdown split-button type="primary" size="small" @command="handleCommand" >
                     待定功能

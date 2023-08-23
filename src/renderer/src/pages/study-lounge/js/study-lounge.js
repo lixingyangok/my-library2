@@ -722,15 +722,16 @@ export function mainPart(){
 		handleCommand,
 		openTxt,
 		showLeftArticle,
-		aFilteredWords,
 	};
     return reactive({
         ...toRefs(oDom),
         ...toRefs(oData),
 		...oFn,
+		oActionStore,
 		oCurLine,
 		aMileStones,
 		aMinutesAnalyze,
+		aFilteredWords,
     });
 };
 
