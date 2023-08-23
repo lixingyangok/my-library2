@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-21 22:17:39
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-22 21:28:14
+ * @LastEditTime: 2023-08-23 22:15:32
  * @Description: 
  */
 /*
@@ -40,13 +40,13 @@ export const useActionStore = defineStore('action', {
             this.count++;
             // if (this.count % 2) return;
             // const sToday = moment().format('yyyy-MM-DD');
-            console.time('♥查询耗时');
+            // console.time('♥查询当日所有练习记录耗时');
             const aResult = btSqliteDB.getActionByDay();
-            console.timeEnd('♥查询耗时');
+            // console.timeEnd('♥查询当日所有练习记录耗时');
             // console.log('aResult', aResult);
-            console.time('♥播放记录合并耗时');
+            console.time('♥合并当日练习记录耗时');
             this.processMinites(aResult);
-            console.timeEnd('♥播放记录合并耗时');
+            console.timeEnd('♥合并当日练习记录耗时');
         },
         async processMinites(aResult){
             const sToday = moment().format('yyyy-MM-DD') + ' 00:00:00';
@@ -84,14 +84,8 @@ export const useActionStore = defineStore('action', {
             console.log(`#${this.count} 播放记录合并前后数量：${aResult.length}:${aFixed.length}`);
             this.aTodayAction = aFixed;
         },
-        async getMediaSum(iMediaID){
-            const res = btSqliteDB.getMediaActions(iMediaID);
-            this.oMediaSum = res[0];
-            console.log('当前媒体Action 记录1', res[0]);
-        },
         async getMediaRows(iMediaID){
             const aRows = btSqliteDB.getMediaActionRows(iMediaID);
-            console.log('当前媒体Action 记录2', aRows);
             this.aMediaRows = aRows;
         },
     },

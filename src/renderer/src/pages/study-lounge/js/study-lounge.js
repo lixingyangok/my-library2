@@ -27,9 +27,8 @@ export function mainPart(){
 		oTodayBar: null,
 	});
 	const oOperation = { // 编辑功能
-		oIdStore: {}, // 查出来立即存在这（为啥？想不起来了）
 		aLineArr: [], // 所有行
-		oAllLine: {}, // 查出来就保存上，备份
+		oAllLine: {}, // 查出来后深拷贝存在这里，用于对比哪一行修改过
 		iCurLineIdx: 0,
 		aHistory: [{ sLineArr: '[]', iCurLineIdx: 0 }],
 		iCurStep: 0,
@@ -59,7 +58,6 @@ export function mainPart(){
 		...oInputMethod,
 		...visiableControl,
 		isReading: false,
-		// mode: ['reading', 'playing'][0],
 		sMediaSrc: getTubePath(ls('sFilePath')),
 		sHash: '',
 		oMediaInfo: {}, // 库中媒体信息
@@ -93,6 +91,13 @@ export function mainPart(){
 	// ▼当前行
 	const oCurLine = computed(()=>{
 		return oData.aLineArr[ oData.iCurLineIdx ];
+	});
+	// ▼行ID 与行对象对照表
+	const oIdD2Line = computed(()=>{
+		return oData.aLineArr.reduce((oResult, oCur)=>{
+			oResult[oCur.id] = oCur;
+			return oResult;
+		}, {});
 	});
 	// ▼ 抓捕字幕的正则表达式
 	const reFullWords = computed(()=>{
@@ -133,50 +138,10 @@ export function mainPart(){
 		// console.log('aMinutesList', aMinutesList.$dc());
 		return aMinutesList;
 	});
-	// ▼进度提示-旧版本（停用了）
-	const aProcess = computed(()=>{
-		const {oMediaInfo, iCurLineIdx, aLineArr} = oData;
-		const iPreviousStart = aLineArr[iCurLineIdx-1]?.start;
-		const {duration = 0} = oMediaInfo;
-		if (duration <= 60 || iCurLineIdx <= 1) return [];
-		const oMinute = {
-			myVal: `${Number.parseInt(oCurLine.v.start / 60)}/${Number.parseInt(duration / 60)}`,
-			sUnit: 'Min',
-			bLight: Number.parseInt(oCurLine.v.start / 60) > Number.parseInt(iPreviousStart / 60),
-		};
-		const iCurPercent = (oCurLine.v.start / duration * 100).toFixed(1).split('.')[0] * 1; // 当前行进度
-		const iPrevPercent = (iPreviousStart / duration * 100).toFixed(1).split('.')[0] * 1; // 上一行进度
-		const oPercent = {
-			myVal: iCurPercent,
-			sUnit: `%`,
-			bLight: (iCurPercent > iPrevPercent) && (iCurPercent % 10 === 0),
-		};
-		const oLine = {
-			myVal: iCurLineIdx+1,
-			sUnit: 'Row',
-			bLight: (iCurLineIdx+1) % 10 === 0,
-		};
-		return [ oLine, oMinute, oPercent, ];
-	});
-	// ▼进度提示-新版本
+	// ▼进度提示-新版本，取代 aProcess
 	const aMileStones = computed(()=>{
-		const {oMediaInfo, iCurLineIdx, aLineArr} = oData;
-		const toNextTen = (()=>{
-			const iCurLine = iCurLineIdx + 1;
-			const iNextTenIdx = (
-				iCurLine % 10 == 0
-				? iCurLine + 10 - 1
-				: Math.ceil(iCurLine / 10) * 10 - 1
-			);
-			const oTarget = aLineArr[iNextTenIdx] || {};
-			return {
-				...oTarget,
-				goNext: `${iNextTenIdx + 1}行`,
-			};
-		})();
-		const {end=0, start=0} = oCurLine.value || {};
-		const {duration = 0} = oMediaInfo;
-		const iAllMinutes = Math.floor(duration / 60);
+		const {iCurLineIdx, aLineArr} = oData;
+		const {start=0} = oCurLine.value || {};
 		const toNextMinute = (()=>{
 			const iCurMinute = Math.floor(start / 60);
 			const iNextMinute = iCurMinute + 1;
@@ -213,31 +178,7 @@ export function mainPart(){
 				goNext: `${iNextMinute}分钟`,
 			};
 		})();
-		const toNextPercent = (()=>{
-			const {duration = 0} = oMediaInfo;
-			const iCurPercent = Math.ceil(end / duration * 100); // 当前位置百分比
- 			const oneMinutePercent = 60 / duration * 100; // 每分钟占总长的百分比
-			// const iStepLong = Math.abs(10 - oneMinutePercent) < Math.abs(5 - oneMinutePercent) ? 10 : 5;
-			const iStepLong = oneMinutePercent > 5 ? 5 : 10;
-			const aCandidate = [...Array(Math.ceil(100 / iStepLong))].map((cur, idx)=>{
-				return (idx + 1) * iStepLong;
-			});
-			const iNextPercent = aCandidate.findLast(iCouldGotTo => {
-				if (iCouldGotTo - iCurPercent <= iStepLong){
-					return Math.min(iCouldGotTo, 100);
-				}
-			});
-			const oTarget = aLineArr.slice(iCurLineIdx).find(cur=>{
-				return Math.ceil(cur.start / duration * 100) >= iNextPercent;
-			}) || {};
-			return {
-				...oTarget,
-				goNext: `${iCurPercent}/${iNextPercent}%`,
-			}
-		})();
-		const oResult = [toNextMinute, toNextPercent].sort((aa, bb)=>{
-			return aa.start - bb.start;
-		});
+
 		return toNextMinute;
 	});
 	// ▼ 字幕文件位置（todo 用tube管道取
@@ -261,7 +202,7 @@ export function mainPart(){
 		getLinesFromDB();
 		await getNeighbors(); // 一定要 await 下方的方法才会正常运行
 		getNewWords();
-		console.log('aLineArr!!\n', oData.aLineArr.$dc());
+		console.log('当前媒体所有行：\n', oData.aLineArr.$dc());
 	}
 	// ▼查询库中的字幕
 	async function getLinesFromDB(aRes=[]){
@@ -273,10 +214,6 @@ export function mainPart(){
 			oData.iSubtitle = -1; // -1 表示文件不存在 
 			return;
 		}
-		oData.oIdStore = aRes.reduce((oResult, cur) => { // 保存所有id
-			oResult[cur.id] = true;
-			return oResult;
-		}, {});
 		const aLineArr = fixTime(aRes);
 		const sLineArr = JSON.stringify(aLineArr);
 		oData.aHistory[0].sLineArr = sLineArr;
@@ -296,7 +233,7 @@ export function mainPart(){
 			isMediaChanged = false; // 复位
 		}
 		oData.sReadingFile || showFileAotuly(sTxtFile);
-		getActionOfMedia();
+		oActionStore.getMediaRows(oData.oMediaInfo.id);
 	}
 	// ▼通过文本文件路径读取其中内容（音频的原文文件）
 	async function showFileAotuly(sTxtFile){
@@ -751,58 +688,11 @@ export function mainPart(){
 			cur.text = '';
 		});
 	}
-	async function getActionOfMedia(){
-		const iMediaID = oData.oMediaInfo.id;
-		// oActionStore.getMediaSum(iMediaID);
-		oActionStore.getMediaRows(iMediaID);
-	}
-	async function attackActions2Lines(aRows){
-		let longest = 0;
-		let fnToFind = findNext2Push(oData.aLineArr);
-		aRows.forEach((oCurAction, idx)=>{
-			const oAimRow = fnToFind(oCurAction);
-			let iNewVal = (oAimRow.iSecLong || 0) + oCurAction.duration;
-			oAimRow.iSecLong = iNewVal;
-			if (iNewVal > longest) longest = iNewVal;
-			if (oCurAction.lineId && (oCurAction.lineId != oAimRow.id)){
-				console.log('❤️ Action ID 与目标行 ID 不同!!');
-			}
+	watch(() => oActionStore.aMediaRows, (aNewVal)=>{
+		aNewVal.forEach(cur=>{
+			if (!cur.lineId) return;
+			oIdD2Line.value[cur.lineId].iSecLong = Math.round(cur.duration_um);
 		});
-		fnToFind = null;
-		console.log('longest', longest);
-		// console.log('aLineArr', oData.aLineArr.$dc());
-	}
-	function findNext2Push(aLineArr){
-		// let oAim = oData.aLineArr[iAim];
-		let iAim = 0;
-		let lineID = null;
-		return function (oAction){
-			// console.log('find from', iAim);
-			let oAim = aLineArr.slice(iAim).find((oCurRow, idx) => {
-				// const aa = (oAction.playFrom < oCurRow.end) && (oCurRow.end - oAction.playFrom) > -0.5;
-				// const aa = (oAction.playFrom < oCurRow.end) && (oAction.playFrom - oCurRow.end < -0.5);
-				const aa = (oAction.playFrom - oCurRow.end < -0.5);
-				const bb = oAction.playEnd > oCurRow.start;
-				const isThisOne = aa && bb;
-				if (isThisOne) {
-					// console.log(`change ${iAim}-${iAim + idx}`);
-					iAim += idx;
-					if (oCurRow.id != lineID){
-						oCurRow.iSecLong = 0; // 清空
-						lineID = oCurRow.id;
-					}
-				}
-				return isThisOne;
-			});
-			return oAim;
-		}
-	}
-	// watch(()=>oActionStore.oMediaSum, (oNewVal)=>{
-	// 	console.log('oMediaSum 更新了', oNewVal.$dc());
-	// });
-	watch(()=>oActionStore.aMediaRows, (oNewVal)=>{
-		console.log('aMediaRows 更新了', oNewVal.$dc());
-		// attackActions2Lines(oNewVal);
 	});
 	// ============================================================================
 	init();
@@ -839,8 +729,50 @@ export function mainPart(){
         ...toRefs(oData),
 		...oFn,
 		oCurLine,
-		aProcess,
 		aMileStones,
 		aMinutesAnalyze,
     });
 };
+
+// ▼关闭停用的代码
+// async function attackActions2Lines(aRows){
+// 	let longest = 0;
+// 	let fnToFind = findNext2Push(oData.aLineArr);
+// 	aRows.forEach((oCurAction, idx)=>{
+// 		const oAimRow = fnToFind(oCurAction);
+// 		let iNewVal = (oAimRow.iSecLong || 0) + oCurAction.duration;
+// 		oAimRow.iSecLong = iNewVal;
+// 		if (iNewVal > longest) longest = iNewVal;
+// 		if (oCurAction.lineId && (oCurAction.lineId != oAimRow.id)){
+// 			console.log('❤️ Action ID 与目标行 ID 不同!!');
+// 		}
+// 	});
+// 	fnToFind = null;
+// 	console.log('longest', longest);
+// 	// console.log('aLineArr', oData.aLineArr.$dc());
+// }
+// function findNext2Push(aLineArr){
+// 	// let oAim = oData.aLineArr[iAim];
+// 	let iAim = 0;
+// 	let lineID = null;
+// 	return function (oAction){
+// 		// console.log('find from', iAim);
+// 		let oAim = aLineArr.slice(iAim).find((oCurRow, idx) => {
+// 			// const aa = (oAction.playFrom < oCurRow.end) && (oCurRow.end - oAction.playFrom) > -0.5;
+// 			// const aa = (oAction.playFrom < oCurRow.end) && (oAction.playFrom - oCurRow.end < -0.5);
+// 			const aa = (oAction.playFrom - oCurRow.end < -0.5);
+// 			const bb = oAction.playEnd > oCurRow.start;
+// 			const isThisOne = aa && bb;
+// 			if (isThisOne) {
+// 				// console.log(`change ${iAim}-${iAim + idx}`);
+// 				iAim += idx;
+// 				if (oCurRow.id != lineID){
+// 					oCurRow.iSecLong = 0; // 清空
+// 					lineID = oCurRow.id;
+// 				}
+// 			}
+// 			return isThisOne;
+// 		});
+// 		return oAim;
+// 	}
+// // }

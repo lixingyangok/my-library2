@@ -2,17 +2,17 @@
  * @Author: 李星阳
  * @Date: 2023-08-12 12:05:57
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-20 20:54:54
- * @Description: 
+ * @LastEditTime: 2023-08-23 22:03:33
+ * @Description: 本文件删除于 2023.08.23 22:03:36 星期三 
  */
 
-import { mapStores, defineStore } from 'pinia';
-import * as btSqliteDB from '@/database/action-db.js';
+// import { mapStores, defineStore } from 'pinia';
+// import * as btSqliteDB from '@/database/action-db.js';
 
-const moment = require('moment');
-const iOneDayMinites = 24 * 60; // 全天分钟数
-const shortMinutes = 50; // 短分钟（每分钟播放达到此秒数即视为100%高饱和）
-const iGapSec2Merge = 120; // 间距小于此值，合并
+// const moment = require('moment');
+// const iOneDayMinites = 24 * 60; // 全天分钟数
+// const shortMinutes = 50; // 短分钟（每分钟播放达到此秒数即视为100%高饱和）
+// const iGapSec2Merge = 120; // 间距小于此值，合并
 
 // 你可以对 `defineStore()` 的返回值进行任意命名，但最好使用 store 的名字，同时以 `use` 开头且以 `Store` 结尾。(比如 `useUserStore`，`useCartStore`，`useProductStore`)
 // 第一个参数是你的应用中 Store 的唯一 ID。

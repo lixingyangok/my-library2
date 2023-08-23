@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-05 17:35:19
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-20 22:01:50
+ * @LastEditTime: 2023-08-23 21:54:55
  * @Description: 
 -->
 <template>
@@ -219,15 +219,6 @@
                         </span>
                         <template v-else>{{word}}</template>
                     </template>
-                    <!-- ▼临时注释一下 -->
-                    <!--
-                    <div class="line-info" v-show="aProcess.some(cur=>cur.bLight)">
-                        <span v-for="(cur, iCurIdx) of aProcess" :key="iCurIdx"
-                            :class="{light: cur.bLight}"
-                        >
-                            {{cur.myVal}}<small>{{cur.sUnit}}</small>
-                        </span>
-                    </div> -->
                 </div>
                 <!-- ▲下层内容，▼上层输入框 -->
                 <textarea ref="oTextArea" class="textarea textarea-real"
@@ -288,7 +279,7 @@
                             </template>
                         </p>
                         <span class="action-mark">
-                            {{cur.iSecLong?.toFixed(1)}}
+                            {{cur.iSecLong}}
                         </span>
                     </li>
                 </ul>
