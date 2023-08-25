@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-05 17:35:19
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-23 22:31:34
+ * @LastEditTime: 2023-08-24 22:24:58
  * @Description: 
 -->
 <template>
@@ -103,8 +103,13 @@
                 @setTimeTube="setTime"
             />
             <TodayHistory ref="oTodayBar"/>
-            {{ oActionStore.oMediaActionSum }}
+            
             <article class="wave-below">
+                <div class="practice-record" >
+                    <span>练习次数：{{ (oActionStore.oMediaActionSum.iSecLong / oMediaInfo.duration).toFixed(2)}}次</span>
+                    <span>播放次数：{{ oActionStore.oMediaActionSum.iPracticeTimes }}</span>
+                    <span>练习时长：{{ oActionStore.oMediaActionSum.sTimeLong }}</span>
+                </div>
                 <el-dropdown split-button type="primary" size="small" @command="handleCommand" >
                     待定功能
                     <!-- <el-button type="primary" size="small">字幕&nbsp;<i class="fas fa-angle-down"/></el-button> -->

@@ -294,6 +294,7 @@ export function mainPart(){
 	// ▼接收子组件波形数据
 	function bufferReceiver(oMediaBuffer){
 		// console.log('收到了波形');
+		// TODO 经常收到的波形不属于当前媒体文件（旧的波形）
 		oData.oMediaBuffer = oMediaBuffer;
 		const {id, duration=0} = oData.oMediaInfo;
 		const iDurDifference = duration && Math.abs(oMediaBuffer.duration - duration);

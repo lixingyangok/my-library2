@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-20 09:09:44
+ * @LastEditTime: 2023-08-24 23:17:24
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -34,8 +34,10 @@ export function getKeyDownFnMap(This, sType) {
         { key: 'End', name: '下一句', fn: ev => playOrMove(ev, 1)},
         { key: 'Prior', name: '上一句', fn: () => This.previousAndNext(-1) },
         { key: 'Next', name: '下一句', fn: () => This.previousAndNext(1) },
-        { key: '\\', name: '上一句', fn: () => This.previousAndNext(-1) },
+        { key: 'Backslash', name: '上一句', fn: () => This.previousAndNext(-1) },
         { key: 'Enter', name: '下一句', fn: () => This.previousAndNext(1) },
+        { key: 'w', name: '上一句', fn: () => This.previousAndNext(-1) },
+        { key: 's', name: '下一句', fn: () => This.previousAndNext(1) },
         // ▲换行
         { key: '`', name: '播放后半句', fn: () => oMyWave.toPlay(true) },
         { key: 'Tab', name: '播放当前句', fn: () => playAndCheck() },
@@ -108,12 +110,13 @@ export function fnAllKeydownFn() {
     function readAloud(ev){
         // console.log(`长按 ${ev.repeat} - ${This.isReading}`);
         // 终止条件 👉 非长按 || 已进入朗读状态
-        // if (ev.isDbClick){ }
-        if (!ev.repeat || This.isReading) return;
-        oBarInfo.setStatus(true);
-        This.oCurLine.text = This.oCurLine.text.trim().replace(/\s{2,}/g, ' ');
-        console.log('开始朗读');
+        // if (!ev.repeat || This.isReading) return;
+        if (This.isReading) return;
         This.isReading = true;
+        This.oMyWave.toPlay();
+        This.oCurLine.text = This.oCurLine.text.trim().replace(/\s{2,}/g, ' ');
+        oBarInfo.setStatus(true);
+        console.log('开始朗读');
         oActionFn.initRecord({ // 只管启动，程序会按需保存
             mediaId: This.oMediaInfo.id,
             lineId: This.oCurLine.id || null, // 断句期间可能没有 ID 
@@ -121,9 +124,11 @@ export function fnAllKeydownFn() {
             playEnd: This.oCurLine.end,
         });
     }
-    function readingStopped(){
-        if (This.isReading == false) return;
+    function readingStopped(ev){
+        if (!This.isReading) return;
         This.isReading = false;
+        This.oMyWave.toPause();
+        // console.log(`松开空格 ${This.isReading}`, ev);
         const iDuration = oActionFn.saveRecord();
         oBarInfo.setStatus(false, iDuration);
         // console.log(`朗读完成 ${duration} 秒`, This.oReadingAloud.$dc());

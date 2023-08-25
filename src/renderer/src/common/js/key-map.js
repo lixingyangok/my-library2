@@ -40,31 +40,7 @@ export const oAlphabet = {
 	'90': 'z',
 };
 
-
-export const keyMap = {
-	...oAlphabet,
-	'8': 'BackSpace',
-	'9': 'Tab',
-	'12': 'Clear',
-	'13': 'Enter',
-	'19': 'Pause',
-	'20': 'Caps_Lock',
-	'27': 'Escape',
-	'32': 'Space',
-	'33': 'Prior',
-	'34': 'Next',
-	'35': 'End',
-	'36': 'Home',
-	'37': 'Left',
-	'38': 'Up',
-	'39': 'Right',
-	'40': 'Down',
-	'41': 'Select',
-	'42': 'Print',
-	'43': 'Execute',
-	'45': 'Insert',
-	'46': 'Delete',
-	'47': 'Help',
+const oNumbers = {
 	// ▼主键区数字
 	'48': '0',
 	'49': '1',
@@ -87,14 +63,10 @@ export const keyMap = {
 	'103': 'KP_7',
 	'104': 'KP_8',
 	'105': 'KP_9',
-	// ▼未知
-	'106': 'KP_Multiply KP_Multiply',
-	'107': 'KP_Add KP_Add',
-	'108': 'KP_Separator KP_Separator',
-	'109': 'KP_Subtract KP_Subtract',
-	'110': 'KP_Decimal KP_Decimal',
-	'111': 'KP_Divide KP_Divide',
-	// ▼功能键
+};
+
+// ▼功能键
+const oTopRow = {
 	'112': 'F1',
 	'113': 'F2',
 	'114': 'F3',
@@ -107,6 +79,34 @@ export const keyMap = {
 	'121': 'F10',
 	'122': 'F11',
 	'123': 'F12',
+};
+
+export const keyMap = {
+	...oAlphabet,
+	...oNumbers,
+	...oTopRow,
+	'8': 'BackSpace',
+	'9': 'Tab',
+	'12': 'Clear',
+	'13': 'Enter',
+	'19': 'Pause',
+	'20': 'Caps_Lock',
+	'27': 'Escape',
+	'32': 'Space',
+	'33': 'Prior',
+	'34': 'Next',
+	'35': 'End',
+	'36': 'Home',
+	'37': 'Left',
+	'38': 'Up',
+	'39': 'Right',
+	'40': 'Down',
+	'41': 'Select',
+	'42': 'Print',
+	'43': 'Execute',
+	'45': 'Insert',
+	'46': 'Delete',
+	'47': 'Help',
 	// 其它
 	'186': ';',
 	'188': ',',
@@ -114,7 +114,14 @@ export const keyMap = {
 	'192': '`',
 	'219': '[',
 	'221': ']',
-	'220': '\\',
+	'220': 'Backslash',
+	// ▼未知
+	'106': 'KP_Multiply KP_Multiply',
+	'107': 'KP_Add KP_Add',
+	'108': 'KP_Separator KP_Separator',
+	'109': 'KP_Subtract KP_Subtract',
+	'110': 'KP_Decimal KP_Decimal',
+	'111': 'KP_Divide KP_Divide',
 };
 
 export default {

@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-15 20:50:04
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-16 23:39:57
+ * @LastEditTime: 2023-08-24 22:15:35
  * @Description: 
 -->
 <template>
@@ -38,11 +38,11 @@ const iSecGoesMax = 12; // 每秒前进百分比
 // let isRunningInBar = false;
 
 function toRun(){
-    console.log('toRun ----------------');
+    clearInterval(iTimer);
+    console.log('toRun -----');
     iWentMiniSec = 0;
     iLong.value = 0;
     iLeftAt.value = 0;
-    clearInterval(iTimer);
     iTimer = setInterval(()=>{
         // isRunningInBar = true;
         iWentMiniSec += iFreQ;
@@ -55,17 +55,18 @@ function toRun(){
             if (iWentSec.value < 3) return  iSecGoesMax * 0.6;
             if (iWentSec.value < 4) return  iSecGoesMax * 0.4;
             if (iWentSec.value < 5) return  iSecGoesMax * 0.2;
-            return iSecGoesMax * 0.1;
+            if (iWentSec.value < 6) return  iSecGoesMax * 0.1;
+            return iSecGoesMax * 0.05;
         })();
         iLong.value += (iFarSecGoes / iSecRunTimes);
         if ((iWentSec.value >= 60) || (iLong.value>=100)){
-            toStop();
+            toStop(true);
         }
     }, iFreQ);
 }
 function toStop(iDurationSec){
-    console.log('toStop');
     clearInterval(iTimer);
+    console.log('toStop ---');
     iTimer = setInterval(()=>{
         if (iDurationSec){
             if (iLong.value < 100){
@@ -76,11 +77,9 @@ function toStop(iDurationSec){
             }else{
                 clearInterval(iTimer);
                 console.log('Stoped');
-                // oBarInfo.setStatus(false);
                 iLong.value = 0;
-                // isRunningInBar = false;
             }
-        }else{
+        }else{ // 回退
             if (iLong.value > 0) {
                 iLong.value -= 0.8;
             } else {
@@ -88,11 +87,6 @@ function toStop(iDurationSec){
                 iLong.value = 0;
                 iWentSec.value = 0;
             }
-            // if (iLeftAt.value > 0) iLeftAt.value -= 0.8;
-            // if (iLong.value <= 0 && iLeftAt.value <= 0){
-            //     clearInterval(iTimer);
-            //     iWentSec.value = 0;
-            // }
         }
     }, iFreQ);
 }

@@ -127,17 +127,6 @@
 	border: solid var(--border-color);
 	border-width: 0 1px;
 	overflow: hidden;
-	color: rgba($color: white, $alpha: 0.5);
-	&[class~=cur]{
-		--border-color: red;
-		border-width: 0 2px;
-		background: none;
-		box-shadow: 0px 0px 0px calc(100 * 1000px) rgba(0, 0, 0, 0.4);
-		border-right-color: blue;
-		.idx:before, .idx:after{
-			--border-color: blue;
-		}
-	}
 	.idx{
 		padding: 5px 0 0 8px;
 		display: inline-block;
@@ -190,7 +179,23 @@
 		position: absolute;
 		left: 0;
 		bottom: 0;
-		padding: 5px 10px;
+		padding: 3px 8px;
+		margin: 0 0 3px;
+		color: rgba(255, 255, 255, 0.6);
+		background-color: rgba(0, 0, 0, 0.3);
+	}
+	&[class~=cur]{
+		--border-color: red;
+		border-width: 0 2px;
+		background: none;
+		box-shadow: 0px 0px 0px calc(100 * 1000px) rgba(0, 0, 0, 0.4);
+		border-right-color: blue;
+		.idx:before, .idx:after{
+			--border-color: blue;
+		}
+		p.text{
+			color: rgba(255, 255, 255, 0.8);
+		}
 	}
 }
 

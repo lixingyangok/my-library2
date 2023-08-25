@@ -69,14 +69,15 @@
 	color: rgba($color: #fff, $alpha: 0.1);
 	margin-top: calc(-1 * var(--box-height));
 	caret-color: #000;
-	background-color: transparent;
-	transition: all 0.4s;
+	background-color: rgba(0, 0, 0, 0.05);
+	transition: all 0.2s;
 	&:hover{
 		border-color: var(--el-color-primary-light-5);
 	}
 	&:focus{
 		outline: none;
 		border-color: var(--el-color-primary);
+		background-color: transparent;
 	}
 	// &[class~=ten-times]{
 	// 	background-color: rgba($color: green, $alpha: 0.06);
