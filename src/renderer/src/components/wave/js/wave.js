@@ -187,7 +187,7 @@ export default function(){
 		Context.clearRect(0, 0, 5_000, 200);
         // console.log('画面已被清空');
 	}
-	function toPlay(iType=0) {
+	function toPlay(iType=0, oEv={}) {
 		clearInterval(oData.playing); // 把之前播放的关闭
         oDom.oAudio ||= document.getElementById('media-player');
         const {currentTime} = oDom.oAudio;
@@ -204,6 +204,7 @@ export default function(){
             ongoing: !!oData.playing,
             mediaId: props.oMediaInfo.id,
             lineId: oCurLine.value.id || null, // 断句期间可能没有 ID 
+            isSpaceDown: oEv.keyCode === 32, // 记录是否由空格触发
         });
 		oDom.oPointer.left = `${playFrom * oData.fPerSecPx}px`;
 		oDom.oAudio.currentTime = playFrom;

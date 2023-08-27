@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-09 17:59:23
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-24 23:19:59
+ * @LastEditTime: 2023-08-26 09:03:50
  * @Description: 
  */
 
@@ -22,22 +22,22 @@ export function registerKeydownFn(oFnList) {
         if (!theFn) return;
         const toPrevent = (()=>{
             const iTyping = ['TEXTAREA', 'INPUT'].includes(ev.target.nodeName);
-            if (iTyping && (keyStr.length === 1 || keyStr === 'Space')) {
+            if (!iTyping) return true; //不在输入状态，则阻止默认事件
+            if (keyStr.length === 1 || keyStr === 'Space'){
                 theFn = null;
                 return false;
             }
+            // else if (Space){
+            //     // console.log(`双击与长按：${iGap}-${ev.repeat}`);
+            //     if (ev.repeat) return true; // 长按时，无条件阻断默认事件
+            //     let iGap = -1 * (spacePressedAt - (spacePressedAt = new Date().getTime()));
+            //     if (iGap < 300) {
+            //         ev.dbclick = true;
+            //         return true;
+            //     }
+            // }
             // if (keyStr != 'Space') return !['Home', 'End'].includes(keyStr);
-            // ▲非空格
-            // ▼空格
-            let iGap = -1 * (spacePressedAt - (spacePressedAt = new Date().getTime()));
-            // console.log(`双击与长按：${iGap}-${ev.repeat}`);
-            if (ev.repeat) return true; // 长按时，无条件阻断默认事件
-            if (iGap < 300) {
-                ev.dbclick = true;
-                return true;
-            }
-            // return !['TEXTAREA', 'INPUT'].includes(ev.target.nodeName) // 在输入框之外也阻断;
-            return !iTyping; // 在输入框之外也阻断;
+            return true; // 在输入框之外也阻断;
         })();
         if (toPrevent){
             ev.preventDefault();

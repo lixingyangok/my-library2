@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-24 23:17:24
+ * @LastEditTime: 2023-08-27 21:35:08
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -10,7 +10,6 @@ import { fixTime } from '../../../common/js/pure-fn.js';
 import { figureOut } from './figure-out-region.js';
 import TheAction from '@/common/js/action.js';
 import {useBarInfo} from '@/store/happy-bar.js';
-
 const oBarInfo = useBarInfo();
 const oActionFn = new TheAction('reading');
 let iSearchingQ = 0;
@@ -46,7 +45,7 @@ export function getKeyDownFnMap(This, sType) {
         { key: 'F2', name: '设定终点', fn: () => This.cutHere('end') },
         { key: 'F3', name: '抛弃当前句', fn: () => This.giveUpThisOne() },
         { key: 'F4', name: '查字典', fn: () => This.searchWord() },
-        { key: 'Escape', name: '取消播放', fn: () => oMyWave.toPause() }, // 停止播放
+        { key: 'Escape', name: '取消播放', fn: () => This.Esc() }, // 停止播放
         { key: 'Space', name: '朗读', fn: ev => This.readAloud(ev) }, // 停止播放
     ];
     const withCtrl = [
@@ -107,13 +106,20 @@ export function getKeyDownFnMap(This, sType) {
 export function fnAllKeydownFn() {
     const oInstance = getCurrentInstance();
     const This = oInstance.proxy;
+    function Esc(){
+        if (This.oMyWave.playing) {
+            return This.oMyWave.toPause();
+        }else{
+            This.oTextArea.blur();
+        }
+    }
     function readAloud(ev){
         // console.log(`长按 ${ev.repeat} - ${This.isReading}`);
         // 终止条件 👉 非长按 || 已进入朗读状态
         // if (!ev.repeat || This.isReading) return;
         if (This.isReading) return;
         This.isReading = true;
-        This.oMyWave.toPlay();
+        This.oMyWave.toPlay(null, ev);
         This.oCurLine.text = This.oCurLine.text.trim().replace(/\s{2,}/g, ' ');
         oBarInfo.setStatus(true);
         console.log('开始朗读');
@@ -751,6 +757,7 @@ export function fnAllKeydownFn() {
         smartFill,
         readAloud,
         readingStopped,
+        Esc,
     };
 }
 

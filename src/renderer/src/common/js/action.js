@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-13 20:12:08
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-23 21:46:46
+ * @LastEditTime: 2023-08-27 21:27:05
  * @Description: 
  */
 
@@ -43,8 +43,13 @@ export default class {
         // if (!this.oRecord.mediaId) alert('无法保存播放动作');
         // const playEnd = oDom.oAudio.currentTime;
         const playingMode = this.sActionType == 'playing';
+        if (playingMode && this.oRecord.isSpaceDown){
+            // 由空格触发的播放事件不保存, 由后面的抬起空格保存
+            return;
+        }
         if (playingMode && !playEnd){
             console.log(this.oRecord);
+            // ▼二参似乎可以省略，因为可以通过 created at 来推导结束点
             alert('👆播放模式请传入媒体当前时间点');
             throw '👆播放模式请传入媒体当前时间点';
         }

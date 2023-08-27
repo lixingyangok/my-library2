@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-08-15 20:50:04
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-24 22:15:35
+ * @LastEditTime: 2023-08-27 21:34:38
  * @Description: 
 -->
 <template>
@@ -59,7 +59,7 @@ function toRun(){
             return iSecGoesMax * 0.05;
         })();
         iLong.value += (iFarSecGoes / iSecRunTimes);
-        if ((iWentSec.value >= 60) || (iLong.value>=100)){
+        if ((iWentSec.value >= 60) || (iLong.value >= 100)){
             toStop(true);
         }
     }, iFreQ);
@@ -68,7 +68,8 @@ function toStop(iDurationSec){
     clearInterval(iTimer);
     console.log('toStop ---');
     iTimer = setInterval(()=>{
-        if (iDurationSec){
+        // if (iDurationSec){
+        if (iWentSec.value >= 1){
             if (iLong.value < 100){
                 iLong.value += 0.8;
             }

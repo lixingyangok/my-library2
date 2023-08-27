@@ -70,7 +70,7 @@
 	margin-top: calc(-1 * var(--box-height));
 	caret-color: #000;
 	background-color: rgba(0, 0, 0, 0.05);
-	transition: all 0.2s;
+	transition: all 0.06s;
 	&:hover{
 		border-color: var(--el-color-primary-light-5);
 	}

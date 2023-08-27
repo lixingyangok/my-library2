@@ -692,7 +692,8 @@ export function mainPart(){
 	watch(() => oActionStore.aMediaRows, (aNewVal)=>{
 		aNewVal.forEach(cur=>{
 			if (!cur.lineId) return;
-			oIdD2Line.value[cur.lineId].iSecLong = Math.round(cur.duration_um);
+			const oRow = oIdD2Line.value[cur.lineId];
+			if (oRow) oRow.iSecLong = Math.round(cur.duration_um);
 		});
 	});
 	// ============================================================================
