@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-27 21:35:08
+ * @LastEditTime: 2023-09-01 22:11:29
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -187,8 +187,9 @@ export function fnAllKeydownFn() {
         if (match){
             sCandidate = sCandidate.slice(match[0].length);
         }
-        // let sHead = '' && oCurLine.text.at(-1)?.match(/\S/) ? ' ' : '';
-        let sFirst = sCandidate.match(/(\S+\s+){3}/)[0] + ' ';
+        // let sFirst = sCandidate.match(/(\S+\s+){3}/)[0] + ' ';
+        // let sFirst = sCandidate.match(/(\S+\s{0,1}){1,3}/)[0] + ' ';
+        let sFirst = sCandidate.match(/(\S+\s{0,1}){1,3}/)[0] + ' ';
         let iFind = sFirst.search(/[,"'!\.\?\n]\s/);
         if (iFind > -1) {
             // console.log('iFind', iFind, sCandidate);

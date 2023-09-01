@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-12-05 17:35:19
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-24 22:24:58
+ * @LastEditTime: 2023-09-01 21:50:47
  * @Description: 
 -->
 <template>
@@ -14,7 +14,7 @@
             ></iframe>
             <!--  -->
             <div class="txt-box" ref="oLeftTxtWrap" v-if="leftType == 'txt'">
-                <div v-if="'测试' && 0">
+                <div v-if="0 && '测试中'">
                     aArticle.length：{{aArticle.length}}<br/>
                     iShowUntil：{{iShowUntil}}<br/>
                     oTopLineMatch?.iLeftLine：{{oTopLineMatch?.iLeftLine}}<br/>
@@ -48,7 +48,7 @@
                             }}
                         </li>
                         <li name="▲当前行上方-4-空行"
-                            v-if="oTopLineMatch?.iLeftLine + 1 != iWriting" 
+                            v-if="(iWriting > -1) && (iWriting != oTopLineMatch?.iLeftLine + 1)" 
                         >
                             {{aArticle.slice(oTopLineMatch?.iLeftLine + 1, iWriting).join('\n')}}
                         </li>
