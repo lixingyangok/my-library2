@@ -298,7 +298,8 @@ export default function(){
         oData.fPerSecPx = iPerSecPx;
 		oDom.oPointer.style.left = `${oDom.oAudio.currentTime * fPerSecPx}px`;
         await vm.$nextTick(); // 重要！等待总宽变长再滚动
-		oDom.oViewport.scrollLeft = iNewLeftPx; // 在此触发了缩放
+        // ▼在此触发了缩放（没有滚动条时触发不成功，将通过 watch 监听 iPerSecPx 的变化触发后续动作
+		oDom.oViewport.scrollLeft = iNewLeftPx; 
 		if (iNewLeftPx <= 0) { // 滚动条位于左侧原点时收缩波形会触发
 			waveWrapScroll();
 		}
@@ -389,7 +390,9 @@ export default function(){
         return false;
     }
     // =================================================================================================================
-
+    watch(() => oData.iPerSecPx, (iNew)=>{
+        waveWrapScroll();
+    });
     watch(() => oDom.oMyWaveBar, (oNew)=>{
         if (!oNew) return;
         setTimeout(()=>{

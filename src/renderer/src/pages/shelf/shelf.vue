@@ -82,6 +82,7 @@
                             </span>
                         </template>
                         <p>{{cur.sItem}}</p>
+                        <p>hash: {{cur.hash}}</p>
                         <el-button type="primary" link :key="`${i1}-${i2}`"
                             @click="checkDetail(cur)"
                         >
