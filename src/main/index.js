@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import {makeChannels} from'./others/communication.js';
 import {db, sqlize} from './database/init-db.js';
 import {protocolRegister, protocolFnSetter} from './others/protocol-maker.js';
+import { openServer, closeServer } from './server/server.js';
 
 const path = require('path');
 const exePath = path.dirname(app.getPath('exe'));
@@ -12,6 +13,7 @@ const exePath = path.dirname(app.getPath('exe'));
 // ▼其它
 if (!exePath) console.log('exe位置 =', exePath);
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+// app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
 global.toLog = () => null;
 global.db = db;
 global.sqlize = sqlize;
@@ -51,6 +53,10 @@ function createWindow() {
     });
     // HMR for renderer base on electron-vite cli.
     // Load the remote URL for development or the local html file for production.
+    console.log('==========');
+    console.log('==========');
+    console.log('==========');
+    console.log(process.env['ELECTRON_RENDERER_URL']);
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
         mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
     } else {
@@ -85,6 +91,7 @@ app.whenReady().then(() => {
     // ▼创建窗口
     const mainWindow = createWindow(); // 在此生成 toLog
     makeChannels(mainWindow);
+    openServer();
     protocolFnSetter();
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the
@@ -98,7 +105,8 @@ app.whenReady().then(() => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-        app.quit()
+        app.quit();
+        closeServer();
     }
 });
 
@@ -108,6 +116,7 @@ app.on('window-all-closed', () => {
 
 // ▼ 在主进程中添加chrome的禁用同源策略的方法
 // app.commandLine.appendSwitch("disable-site-isolation-trials");
+// app.commandLine.appendSwitch('disable-web-security');
 
 // // 允许 iframe 访问第三方url（有效性未知）
 // mainWindow.webContents.session.webRequest.onHeadersReceived(

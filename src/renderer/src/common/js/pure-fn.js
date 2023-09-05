@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-20 08:57:55
+ * @LastEditTime: 2023-09-02 20:16:16
  * @Description: 
  */
 import * as dayjs from 'dayjs';
@@ -73,8 +73,12 @@ export async function fileToBuffer(oFile){
 export function getFakeBuffer(buffer){
 	// 结果为真 buffer.length === buffer.duration * buffer.sampleRate
 	// 结果为真 buffer.length === buffer.getChannelData(0).length
-	const iLeap = 50; // 压缩
-	// console.log('buffer.sampleRate-', buffer.sampleRate, buffer.sampleRate/iLeap);
+	let iLeap = 100; // 压缩
+	if (buffer.sampleRate>=96000){
+		iLeap = 200;
+	}
+	console.log(`buffer.sampleRate: ${buffer.sampleRate}`, buffer.sampleRate/iLeap);
+
 	const buffer_ = { // 原始数据
 		duration: buffer.duration,
 		sDuration_: secToStr(buffer.duration),

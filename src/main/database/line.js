@@ -113,7 +113,7 @@ const oFn = {
             order: [['start', 'asc']],
         });
         if (!res) return;
-        toLog(`查询媒体字幕 ${res.length} 行，耗时 ${iMS}:${(new Date() - t02)} ms`);
+        toLog(`查询媒体字幕 ${res.length} 行，耗时对比 ${iMS}:${(new Date() - t02)} ms`);
         const aResult = res.map(cur => cur.dataValues);
         return aResult;
     },

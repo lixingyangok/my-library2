@@ -16,8 +16,8 @@
 import { defineStore } from 'pinia';
 import {secToStr} from '@/common/js/pure-fn.js';
 import * as btSqliteDB from '@/database/action-db.js';
+import moment from 'moment';
 
-const moment = require('moment');
 const iOneDayMinites = 24 * 60; // 全天分钟数
 const shortMinutes = 50; // 短分钟（每分钟播放达到此秒数即视为100%高饱和）
 const iGapSec2Merge = 120; // 间距小于此值，合并

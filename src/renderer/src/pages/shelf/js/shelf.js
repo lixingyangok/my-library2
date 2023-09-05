@@ -10,7 +10,6 @@ import {
 } from '../../../common/js/fs-fn.js';
 
 const fsp = require('node:fs/promises');
-// const path = require('path');
 // console.log('●\n', path.extname('aa.Txt'));
 
 const fnAboutDB = {

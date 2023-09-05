@@ -111,9 +111,9 @@ export const keyMap = {
 	'186': ';',
 	'188': ',',
 	'190': '.',
-	'192': '`',
 	'219': '[',
 	'221': ']',
+	'192': 'Tilde', // `
 	'220': 'Backslash',
 	// ▼未知
 	'106': 'KP_Multiply KP_Multiply',

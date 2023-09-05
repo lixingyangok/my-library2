@@ -1,13 +1,13 @@
 import { resolve } from 'path'
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import { defineConfig, externalizeDepsPlugin } from 'electron-vite';
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
     main: {
-        plugins: [externalizeDepsPlugin()]
+        plugins: [externalizeDepsPlugin()],
     },
     preload: {
-        plugins: [externalizeDepsPlugin()]
+        plugins: [externalizeDepsPlugin()],
     },
     renderer: {
         resolve: {
@@ -18,4 +18,19 @@ export default defineConfig({
         },
         plugins: [vue()],
     },
+    server: {
+        proxy: {
+            "/api": {
+                target: "http://localhost:8899",
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, ""),
+            },
+            "/": {
+                target: "http://localhost:8899",
+                changeOrigin: true,
+                // rewrite: (path) => path.replace(/^\//, ""),
+            },
+        },
+    },
 });
+

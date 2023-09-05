@@ -5,7 +5,7 @@ import router from './router/router.js';
 import store2 from 'store2';
 import { createPinia } from 'pinia';
 import { newPromise, setGlobal } from './common/js/global-setting.js';
-import {btSqlite3} from '@/database/init.js'; // 好像不用挂到全局
+// import {btSqlite3} from '@/database/init.js'; // 好像不用挂到全局
 
 // ▼ 样式
 import './common/style/minireset.css';
@@ -43,7 +43,7 @@ const myApp = createApp(App);
 // console.log('myApp', Object.keys(myApp));
 // myApp._component.abc = 123;
 // console.log('myApp', myApp._component.abc);
-myApp.provide('$btSqlite3', btSqlite3);
+// myApp.provide('$btSqlite3', btSqlite3);
 
 myApp.use(router);
 myApp.use(pinia);

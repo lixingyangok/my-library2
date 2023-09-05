@@ -1,6 +1,6 @@
 
 import { reactive } from 'vue';
-const moment = require('moment');
+import moment from 'moment';
 
 export function audioControl() {
     const aDom = [];

@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-09-01 22:11:29
+ * @LastEditTime: 2023-09-02 19:06:16
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -38,7 +38,7 @@ export function getKeyDownFnMap(This, sType) {
         { key: 'w', name: '上一句', fn: () => This.previousAndNext(-1) },
         { key: 's', name: '下一句', fn: () => This.previousAndNext(1) },
         // ▲换行
-        { key: '`', name: '播放后半句', fn: () => oMyWave.toPlay(true) },
+        { key: 'Tilde', name: '播放后半句', fn: () => oMyWave.toPlay(true) },
         { key: 'Tab', name: '播放当前句', fn: () => playAndCheck() },
         { key: 'F1', name: '插入文本', fn: () => This.smartFill() },
         // { key: 'F1', name: '设定起点', fn: () => This.cutHere('start') },

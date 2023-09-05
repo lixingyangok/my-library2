@@ -1,5 +1,5 @@
 import {btSqlite3} from './init.js';
-const moment = require('moment');
+import moment from 'moment';
 
 // ▼查询某个媒体的练习记录
 export function getMediaActionRows(iMediaID){
