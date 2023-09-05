@@ -17,18 +17,13 @@ export default defineConfig({
             },
         },
         plugins: [vue()],
-    },
-    server: {
-        proxy: {
-            "/api": {
-                target: "http://localhost:8899",
-                changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api/, ""),
-            },
-            "/": {
-                target: "http://localhost:8899",
-                changeOrigin: true,
-                // rewrite: (path) => path.replace(/^\//, ""),
+        server: {
+            proxy: {
+                "/api": {
+                    target: "http://localhost:8899",
+                    changeOrigin: true,
+                    rewrite: (path) => path.replace(/^\/api/, ""),
+                },
             },
         },
     },

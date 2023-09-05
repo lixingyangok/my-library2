@@ -20,9 +20,10 @@ function openServer() {
         // 获得HTTP请求的method和url:
         console.log(request.method + ': ' + request.url);
         // 将HTTP响应200写入response, 同时设置Content-Type: text/html:
-        response.writeHead(200, {"Content-Type": "application/json;charset=utf-8", "access-control-allow-origin": "*",});
+        // response.writeHead(200, {"Content-Type": "application/json;charset=utf-8", "access-control-allow-origin": "*",});
+        response.writeHead(200, {"Content-Type": "application/json;charset=utf-8"});
         // 将HTTP响应的HTML内容写入response:
-        response.end('Hello world!' + new Date()*1);
+        response.end(JSON.stringify({abc: 'Hello world!' + new Date()*1}));
     });
     // server.on('request', (req, res) => {
     //     toLog("server.on('request'");
