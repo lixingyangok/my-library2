@@ -33,9 +33,9 @@ function openServer() {
                 code: 200,
                 submit: {
                     body: oBody,
-                    oRequestUrl: urlToPlainObject(oRequestUrl),
-                    url: request.url,
                     method,
+                    url: request.url,
+                    oRequestUrl: urlToPlainObject(oRequestUrl),
                 },
                 data: {
                     ...fnDoer(oBody),

@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue';
-import AppBrowser from './App-browser.vue';
+import AppBrowser from './pages-browser/app/App-browser.vue';
 import ElementPlus from 'element-plus';
 import router from './router/router.js';
 import store2 from 'store2';
