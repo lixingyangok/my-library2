@@ -352,7 +352,7 @@ export default function(){
         iNewLeft = Math.max(0, iNewLeft);
         iNewLeft = Math.min(iNewLeft, oLongBar.offsetWidth - oViewport.offsetWidth);
 		// if ('不要动画') return (oViewport['scrollLeft'] = iNewLeft);
-		const [iTakeTime, iTimes] = [400, 30]; // 走完全程耗时, x毫秒走一步
+		const [iTakeTime, iTimes] = [400, 40]; // 走完全程耗时, x毫秒走一步
 		const iOneStep = ~~((iNewLeft - iOldVal) / (iTakeTime / iTimes)); // 步长
 		oData.scrollTimer = setInterval(()=>{
 			let iAimTo = oViewport['scrollLeft'] + iOneStep;

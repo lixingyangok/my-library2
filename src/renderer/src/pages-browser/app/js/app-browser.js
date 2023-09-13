@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-09-10 17:13:28
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-09-10 19:51:11
+ * @LastEditTime: 2023-09-10 20:39:47
  * @Description: 
  */
 
@@ -14,10 +14,12 @@ export default {
             headers: { "Content-Type": "application/json"},
         });
         const oData = await oRes.json();
-        const {text} = oData.data;
+        const {text, announcer} = oData.data;
         if (!text) return;
+        this.aSpeakHistory.push(text);
         console.log('=>', text);
-        text && toReadAloud(text);
+        text && toReadAloud(text, announcer);
+        return text;
     },
     setTime(){
         const this_ = this;
@@ -27,13 +29,7 @@ export default {
     },
 };
 
-// await fetch('/api/send_text', {
-//     method: 'post',
-//     headers: { "Content-Type": "application/json"},
-//     body: JSON.stringify({
-//         sTime: '呼叫接口时间：' + new Date().toString(), 
-//     }),
-// });
+
 
 var text = '许多人认为当他们富有，取得成功时，幸福自然就会随之而来。我告诉你:事实并非如此';
 var text = 'Many people think that when they become rich and successful, happiness will naturally follow.'; 

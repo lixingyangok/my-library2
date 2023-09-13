@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2023-09-10 17:12:37
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-09-10 19:24:41
+ * @LastEditTime: 2023-09-10 19:59:50
  * @Description: 
 -->
 <template>
@@ -10,6 +10,12 @@
         <h1>
             <time>{{ sTime }}</time>
         </h1>
+        <p>Ran times: {{iRanTimes}}</p>
+        <ul class="speak-history">
+            <li v-for="(cur, idx) of aSpeakHistory" :key="idx" >
+                {{ cur }}
+            </li>
+        </ul>
     </div>
 </template>
 
@@ -20,12 +26,17 @@ export default {
     data(){
         return {
             sTime: '',
+            iRanTimes: 0,
+            aSpeakHistory: [],
         };
     },
     async created(){
         this.setTime();
-        setInterval(this.getText, 200);
-
+        const this_=this;
+        setInterval(()=>{
+            this_.iRanTimes++;
+            this_.getText();
+        }, 300);
     },
     methods:{
         ...all_fn,
@@ -34,6 +45,4 @@ export default {
 }
 </script>
 
-<style src="./style/app-browser.css">
-    
-</style>
+<style src="./style/app-browser.css"> </style>

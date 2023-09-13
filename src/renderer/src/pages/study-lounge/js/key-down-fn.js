@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-09-02 19:06:16
+ * @LastEditTime: 2023-09-10 20:09:13
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -59,6 +59,7 @@ export function getKeyDownFnMap(This, sType) {
         { key: 'ctrl + j', name: '合并上一句', fn: () => This.putTogether(-1) },
         { key: 'ctrl + k', name: '合并下一句', fn: () => This.putTogether(1) },
         { key: 'ctrl + ;', name: '处理引号', fn: () => This.dealQuotationMark() },
+        { key: 'ctrl + f', name: '处理引号', fn: () => This.tts_reader() },
         // { key: 'ctrl + Enter', name: '播放', fn: () => oMyWave.toPlay() }, // 将来开发此方法能打阅读标记
         // { key: 'ctrl + shift + Enter', name: '播放', fn: () => oMyWave.toPlay(true) },
         { key: 'ctrl + shift + z', name: '恢复', fn: () => This.setHistory(1) },
@@ -112,6 +113,17 @@ export function fnAllKeydownFn() {
         }else{
             This.oTextArea.blur();
         }
+    }
+    async function tts_reader(){
+        let text = This.oCurLine.text.trim();
+        if (!text) return;
+        await fetch('/api/send_text', {
+            method: 'post',
+            headers: { "Content-Type": "application/json"},
+            body: JSON.stringify({
+                text, announcer: 'Jenny',
+            }),
+        });
     }
     function readAloud(ev){
         // console.log(`长按 ${ev.repeat} - ${This.isReading}`);
@@ -759,6 +771,7 @@ export function fnAllKeydownFn() {
         readAloud,
         readingStopped,
         Esc,
+        tts_reader,
     };
 }
 
