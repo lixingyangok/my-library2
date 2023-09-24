@@ -696,10 +696,6 @@ export function mainPart(){
 			if (oRow) oRow.iSecLong = Math.round(cur.duration_um);
 		});
 	});
-	// ▼监听此项之后，可能 textarea 的报错样式将不会出现，观察一下
-	watch(() => oCurLine.value?.text, (text='')=>{
-		oCurLine.value.text = text.trimStart().replace(/\s{2,}/g, ' ');
-	});
 	// ============================================================================
 	init();
 	const oFn = {
