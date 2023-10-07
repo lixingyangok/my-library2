@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2021-02-19 16:35:07
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-09-10 20:09:13
+ * @LastEditTime: 2023-10-07 11:36:26
  * @Description: 
  */
 import { getCurrentInstance } from 'vue';
@@ -58,8 +58,8 @@ export function getKeyDownFnMap(This, sType) {
         { key: 'ctrl + s', name: '保存到DB', fn: () => This.saveLines() },
         { key: 'ctrl + j', name: '合并上一句', fn: () => This.putTogether(-1) },
         { key: 'ctrl + k', name: '合并下一句', fn: () => This.putTogether(1) },
-        { key: 'ctrl + ;', name: '处理引号', fn: () => This.dealQuotationMark() },
-        { key: 'ctrl + f', name: '处理引号', fn: () => This.tts_reader() },
+        { key: 'ctrl + f', name: '朗读', fn: () => This.tts_reader() },
+        { key: `ctrl + '`, name: '处理引号', fn: () => This.dealQuotationMark() },
         // { key: 'ctrl + Enter', name: '播放', fn: () => oMyWave.toPlay() }, // 将来开发此方法能打阅读标记
         // { key: 'ctrl + shift + Enter', name: '播放', fn: () => oMyWave.toPlay(true) },
         { key: 'ctrl + shift + z', name: '恢复', fn: () => This.setHistory(1) },

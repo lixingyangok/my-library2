@@ -115,6 +115,7 @@ export const keyMap = {
 	'221': ']',
 	'192': 'Tilde', // `
 	'220': 'Backslash',
+	'222': "'", // 引号键 Quote
 	// ▼未知
 	'106': 'KP_Multiply KP_Multiply',
 	'107': 'KP_Add KP_Add',
