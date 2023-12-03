@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-04-15 18:02:43
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-06-03 12:41:09
+ * @LastEditTime: 2023-12-03 15:28:57
  * @Description: 
 -->
 <template>
@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import {reactive, ref} from 'vue';
+import {reactive, ref, watch} from 'vue';
 import {getTodayHistory} from '@/common/js/fs-fn.js';
 
 let oInfo = ref({
@@ -50,10 +50,13 @@ const oData = reactive({
     showAnimation: false,
     isFirstRun: true,
 });
+const oProps = defineProps({
+    iMediaID: Number,
+});
 
 init();
 async function init(){
-    const oRes = await getTodayHistory();
+    const oRes = await getTodayHistory(oProps.iMediaID);
     if (!oRes) return;
     oInfo.value.tenQty = Math.floor(oRes.iFiDuration / 600);
     if (oData.isFirstRun){
@@ -81,10 +84,16 @@ function setValue(oRes){
         });
     }, 2 * 1000);
 }
+watch(() => oProps.iMediaID, (iNew, iOld) => {
+    if (iNew != iOld){
+        init();
+        console.log('hello 2');
+    }
+});
 
 function showUp(){
     init();
-    console.log('hello');
+    console.log('hello 1');
 }
 
 //关键点 把方法暴露给父组件

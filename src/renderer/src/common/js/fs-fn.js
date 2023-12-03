@@ -2,7 +2,7 @@
  * @Author: 李星阳
  * @Date: 2022-01-22 19:31:55
  * @LastEditors: 李星阳
- * @LastEditTime: 2023-08-06 22:29:59
+ * @LastEditTime: 2023-12-03 15:17:31
  * @Description: 与文件夹/文件相关的方法（纯函数）
  */
 // 本包将来可修改为，提供数据查询的包
@@ -142,22 +142,28 @@ export async function findMedia(sPath, oTarget) {
 }
 
 // 查询：某天/某几天 的学习数据
-export async function getLearningHistory(){
-    const [r01, r02] = await fnInvoke('db', 'doSql', `
+export async function getLearningHistory(iMediaID){
+    let sql = `
         SELECT *,
             julianday('now', 'localtime') - julianday(createdAt, 'localtime') as gap
         FROM "line"
         where
-            julianday('now') - julianday(date(createdAt, 'localtime')) < 1 or
-            julianday('now') - julianday(date(filledAt, 'localtime')) < 1
-    `);
+            (
+                julianday('now') - julianday(date(createdAt, 'localtime')) < 1 or
+                julianday('now') - julianday(date(filledAt, 'localtime')) < 1
+            )
+    `;
+    if (iMediaID){
+        sql += `and mediaId = ${iMediaID}`;
+    }
+    const [r01, r02] = await fnInvoke('db', 'doSql', sql);
     if (!r01) return;
     return r01;
 }
 
 // 查询：当天的学习数据
-export async function getTodayHistory(){
-    const arr = await getLearningHistory();
+export async function getTodayHistory(iMediaID){
+    const arr = await getLearningHistory(iMediaID);
     if (!arr) return;
     const oResult = {
         iCreated: 0,

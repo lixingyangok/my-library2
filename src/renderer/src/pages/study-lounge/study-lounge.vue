@@ -102,8 +102,9 @@
                 @pipe="bufferReceiver"
                 @setTimeTube="setTime"
             />
-            <TodayHistory ref="oTodayBar"/>
-            
+            <TodayHistory ref="oTodayBar"
+                :iMediaID="oMediaInfo.id"
+            />
             <article class="wave-below">
                 <div class="practice-record" >
                     <span>练习次数：{{ (oActionStore.oMediaActionSum.iSecLong / oMediaInfo.duration).toFixed(2)}}次</span>
